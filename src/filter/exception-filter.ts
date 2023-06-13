@@ -28,7 +28,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const bodyMessage = exception.response;
 
-    let error_code:any;
+    let error_code: any;
     if (Array.isArray(bodyMessage.message)) {
       error_code = bodyMessage.message[0];
     } else {
