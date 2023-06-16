@@ -15,6 +15,7 @@ import {
   AuthNotActiveException,
 } from 'src/exceptions/auth-exception';
 import { GenerateOtp } from 'src/utils/generate-otp';
+import { Email } from 'src/utils/email';
 
 @Injectable()
 export class AuthService {
@@ -65,6 +66,12 @@ export class AuthService {
       throw new AuthNotActiveException();
     }
     const otp = await GenerateOtp.generateOTP();
-    return { otp, status_done: 'belum beres' };
+
+    const sendEmailForgot = await Email.sendEmailForgot({
+      full_name: findUser.email,
+      email,
+      otp,
+    });
+    return { ...sendEmailForgot };
   }
 }
