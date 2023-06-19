@@ -10,14 +10,16 @@ import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forRootAsync({
-    useClass: DatabaseConnectionService,
-  }),
-  ConfigModule.forRoot({ isGlobal: true }),
-  TestModule,
-  AuthModule,
-  RolesModule,
-  UsersModule,],
+  imports: [
+    TypeOrmModule.forRootAsync({
+      useClass: DatabaseConnectionService,
+    }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    TestModule,
+    AuthModule,
+    RolesModule,
+    UsersModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
