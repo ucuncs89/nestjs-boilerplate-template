@@ -10,6 +10,12 @@ import {
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import * as bcrypt from 'bcrypt';
+import {
+  AuthEmailNotRegisterException,
+  AuthNotActiveException,
+} from 'src/exceptions/auth-exception';
+import { GenerateOtp } from 'src/utils/generate-otp';
+import { Email } from 'src/utils/email';
 
 @Injectable()
 export class AuthService {
@@ -50,5 +56,22 @@ export class AuthService {
     const token = this.jwtService.sign(payloadJwt);
 
     return { token, expired_at: new Date().setDate(new Date().getDate() + 1) };
+  }
+  async forgotPassword(email: string) {
+    const findUser = await this.userService.findUserByEmail(email);
+    if (!findUser) {
+      throw new AuthEmailNotRegisterException();
+    }
+    if (!findUser.is_active) {
+      throw new AuthNotActiveException();
+    }
+    const otp = await GenerateOtp.generateOTP();
+
+    const sendEmailForgot = await Email.sendEmailForgot({
+      full_name: findUser.email,
+      email,
+      otp,
+    });
+    return { ...sendEmailForgot };
   }
 }

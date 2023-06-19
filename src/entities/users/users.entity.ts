@@ -4,10 +4,12 @@ import {
   Generated,
   JoinTable,
   ManyToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BaseFieldEntity } from '../default/base_field.entity';
 import { RolesEntity } from '../roles/roles.entity';
+import { UsersDetailEntity } from './users_detail.entity';
 
 @Entity('users')
 export class UsersEntity extends BaseFieldEntity {
@@ -43,4 +45,10 @@ export class UsersEntity extends BaseFieldEntity {
     },
   })
   roles: RolesEntity[];
+
+  @OneToOne(() => UsersDetailEntity)
+  @JoinTable({
+    name: 'user_id',
+  })
+  user_detail: UsersEntity;
 }
