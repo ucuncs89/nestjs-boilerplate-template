@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/entities/users/users.entity';
@@ -15,7 +15,7 @@ import {
   AuthNotActiveException,
 } from 'src/exceptions/auth-exception';
 import { GenerateOtp } from 'src/utils/generate-otp';
-import { Email } from 'src/utils/email';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +24,7 @@ export class AuthService {
     private userRepository: Repository<UsersEntity>,
     private userService: UsersService,
     private jwtService: JwtService,
+    @Inject('cloami_rmq') private client: ClientProxy,
   ) {}
 
   async login(loginUserDTO: LoginUserDTO) {
@@ -67,11 +68,11 @@ export class AuthService {
     }
     const otp = await GenerateOtp.generateOTP();
 
-    const sendEmailForgot = await Email.sendEmailForgot({
+    this.client.emit('send-email-register', {
       full_name: findUser.email,
       email,
       otp,
     });
-    return { ...sendEmailForgot };
+    return true;
   }
 }
