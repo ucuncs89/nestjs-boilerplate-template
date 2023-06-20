@@ -32,6 +32,18 @@ export class UsersEntity extends BaseFieldEntity {
   @Column({ type: 'boolean', default: false })
   is_active: boolean;
 
+  @Column({ type: 'boolean', default: true })
+  need_verification: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  path_picture: string;
+
+  @Column({ type: 'text', nullable: true })
+  base_path: string;
+
+  @Column({ type: 'boolean', default: false })
+  is_forgot_password: boolean;
+
   @ManyToMany(() => RolesEntity)
   @JoinTable({
     name: 'user_roles',
