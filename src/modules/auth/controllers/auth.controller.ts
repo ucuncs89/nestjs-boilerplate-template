@@ -20,7 +20,6 @@ export class AuthController {
   }
   @Post('otp-request')
   async otpRequest(@Query('email') email: string) {
-    // const data = await this.authService.otpRequest({ email });
     return { message: 'OTP sent successfully', email };
   }
 }
