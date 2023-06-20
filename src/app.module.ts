@@ -22,7 +22,7 @@ import { RabbitModule } from './rabbit/rabbit.module';
     UsersModule,
     RabbitModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
