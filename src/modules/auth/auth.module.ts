@@ -8,10 +8,16 @@ import { env } from 'process';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersService } from '../users/services/users.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { UsersOtpEntity } from 'src/entities/users/users_otp.entity';
+import { OtpRateLimiterEntity } from 'src/entities/users/otp_rate_limiter.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UsersEntity]),
+    TypeOrmModule.forFeature([
+      UsersEntity,
+      UsersOtpEntity,
+      OtpRateLimiterEntity,
+    ]),
     ClientsModule.register([
       {
         name: 'cloami_rmq',
