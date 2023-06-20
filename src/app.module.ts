@@ -4,11 +4,12 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConnectionService } from './config/database.config';
 import { ConfigModule } from '@nestjs/config';
+import * as path from 'path';
+import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { TestModule } from './modules/test/test.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
-import { RabbitModule } from './rabbit/rabbit.module';
 
 @Module({
   imports: [
@@ -16,11 +17,25 @@ import { RabbitModule } from './rabbit/rabbit.module';
       useClass: DatabaseConnectionService,
     }),
     ConfigModule.forRoot({ isGlobal: true }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      typesOutputPath: path.join(
+        __dirname,
+        '../src/generated/i18n.generated.ts',
+      ),
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+      ],
+    }),
     TestModule,
     AuthModule,
     RolesModule,
     UsersModule,
-    RabbitModule,
   ],
   controllers: [AppController],
   providers: [AppService],

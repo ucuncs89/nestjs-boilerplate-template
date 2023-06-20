@@ -16,11 +16,11 @@ export class RegisterUserDTO {
 }
 export class LoginUserDTO {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsEmail()
+  @IsNotEmpty({ message: 'email_not_empty' })
+  @IsEmail({}, { message: 'email_not_valid' })
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'password_not_empty' })
   password: string;
 }
