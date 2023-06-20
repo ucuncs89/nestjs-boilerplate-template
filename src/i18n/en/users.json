@@ -1,0 +1,5 @@
+{
+  "email_not_registered": "Account not yet registered",
+  "email_alredy_registered": "Email already registered",
+  "user_email_not_found": "Unregistered e-mail"
+}
