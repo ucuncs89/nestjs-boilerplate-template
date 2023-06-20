@@ -20,6 +20,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { UsersOtpEntity } from 'src/entities/users/users_otp.entity';
 import { OtpRateLimiterEntity } from 'src/entities/users/otp_rate_limiter.entity';
 import { DateUtils } from 'src/utils/date-utils';
+import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
+import { saltOrRounds } from 'src/constant/saltOrRounds';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +34,9 @@ export class AuthService {
 
     @InjectRepository(OtpRateLimiterEntity)
     private otpRateLimiterRepository: Repository<OtpRateLimiterEntity>,
+
+    @InjectRepository(UsersPasswordEntity)
+    private userPasswordRepository: Repository<UsersPasswordEntity>,
 
     private userService: UsersService,
     private jwtService: JwtService,
@@ -259,6 +264,75 @@ export class AuthService {
         i18n.t('auth.need_verify'),
         'AUTH_OTP_SENDING_FAILED',
       );
+    }
+  }
+
+  async putResetPassword(payload, i18n) {
+    const { user, new_password } = payload;
+
+    const findUser = await this.userRepository.findOne({
+      where: { id: user.id },
+    });
+    if (!findUser) {
+      throw new AppErrorNotFoundException(
+        i18n.t('users.email_not_registered'),
+        'email_not_registered',
+      );
+    }
+    if (findUser.need_verification) {
+      throw new AppErrorException(
+        i18n.t('auth.need_verify'),
+        'auth_need_verify',
+      );
+    }
+    if (!findUser.password) {
+      throw new AppErrorException(
+        i18n.t('auth.need_verify'),
+        'auth_need_verify',
+      );
+    }
+    const findUserPassword = await this.userPasswordRepository.find({
+      where: {
+        user_id: user.id,
+      },
+      select: {
+        user_id: true,
+        password: true,
+      },
+    });
+    const comparePasswordInUsers = await bcrypt.compare(
+      new_password,
+      findUser.password,
+    );
+    if (comparePasswordInUsers) {
+      throw new AppErrorException(i18n.t('auth.password_already_exist'));
+    }
+    if (findUserPassword.length > 0) {
+      for (let i = 0; i < findUserPassword.length; i++) {
+        const comparePassword = await bcrypt.compare(
+          new_password,
+          findUserPassword[i].password,
+        );
+        if (comparePassword) {
+          throw new AppErrorException(i18n.t('auth.password_already_exist'));
+        }
+      }
+    }
+    try {
+      const passwordHash = await bcrypt.hash(new_password, saltOrRounds);
+      findUser.password = passwordHash;
+      findUser.updated_at = new Date().toISOString();
+      findUser.updated_by = payload.user.id;
+      await this.userRepository.save(findUser);
+
+      const data = await this.userPasswordRepository.create({
+        user_id: user.id,
+        password: passwordHash,
+      });
+      await this.userPasswordRepository.save(data);
+      return true;
+    } catch (error) {
+      throw new AppErrorException(error);
     }
   }
 }
