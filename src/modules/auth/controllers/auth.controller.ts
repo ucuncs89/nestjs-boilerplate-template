@@ -1,10 +1,20 @@
-import { Body, Controller, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { LoginUserDTO } from '../dto/auth.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { OtpVerificationDto } from '../dto/otp-verification.dto.';
 import { OtpRequestDto } from '../dto/otp-request.dto';
+import { JwtAuthGuard } from '../jwt-auth.guard';
+import { PutForgotPassword } from '../dto/put-forgot-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -40,5 +50,22 @@ export class AuthController {
   ) {
     const data = await this.authService.otpVerification(payload, i18n);
     return { message: i18n.t('auth.otp_verification'), data };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('password')
+  async resetPassword(
+    @Req() req,
+    @Body() payload: PutForgotPassword,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.authService.putResetPassword(
+      {
+        user: req.user,
+        ...payload,
+      },
+      i18n,
+    );
+    return { message: i18n.t('auth.reset_password_success'), data };
   }
 }
