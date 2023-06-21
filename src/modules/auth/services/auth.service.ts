@@ -22,6 +22,7 @@ import { OtpRateLimiterEntity } from 'src/entities/users/otp_rate_limiter.entity
 import { DateUtils } from 'src/utils/date-utils';
 import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
 import { saltOrRounds } from 'src/constant/saltOrRounds';
+import { base64Decode } from 'src/utils/base64-convert';
 
 @Injectable()
 export class AuthService {
@@ -74,9 +75,9 @@ export class AuthService {
         );
       }
     }
-
+    const passwordConvert = base64Decode(loginUserDTO.password);
     const comparePassword = await bcrypt.compare(
-      loginUserDTO.password,
+      passwordConvert,
       findUser.password,
     );
     if (!comparePassword) {
@@ -268,7 +269,7 @@ export class AuthService {
   }
 
   async putResetPassword(payload, i18n) {
-    const { user, new_password } = payload;
+    const { user, password } = payload;
 
     const findUser = await this.userRepository.findOne({
       where: { id: user.id },
@@ -300,8 +301,9 @@ export class AuthService {
         password: true,
       },
     });
+    const passwordConvert = base64Decode(password);
     const comparePasswordInUsers = await bcrypt.compare(
-      new_password,
+      passwordConvert,
       findUser.password,
     );
     if (comparePasswordInUsers) {
@@ -310,7 +312,7 @@ export class AuthService {
     if (findUserPassword.length > 0) {
       for (let i = 0; i < findUserPassword.length; i++) {
         const comparePassword = await bcrypt.compare(
-          new_password,
+          passwordConvert,
           findUserPassword[i].password,
         );
         if (comparePassword) {
@@ -319,7 +321,7 @@ export class AuthService {
       }
     }
     try {
-      const passwordHash = await bcrypt.hash(new_password, saltOrRounds);
+      const passwordHash = await bcrypt.hash(passwordConvert, saltOrRounds);
       findUser.password = passwordHash;
       findUser.updated_at = new Date().toISOString();
       findUser.updated_by = payload.user.id;
