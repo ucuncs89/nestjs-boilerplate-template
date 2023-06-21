@@ -28,6 +28,9 @@ export type I18nTranslations = {
         "email_not_registered": string;
         "email_alredy_registered": string;
         "user_email_not_found": string;
+        "success_create": string;
+        "user_not_found": string;
+        "token_is_required": string;
     };
 };
 export type I18nPath = Path<I18nTranslations>;

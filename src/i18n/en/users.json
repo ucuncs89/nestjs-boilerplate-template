@@ -1,5 +1,8 @@
 {
   "email_not_registered": "Account not yet registered",
   "email_alredy_registered": "Email already registered",
-  "user_email_not_found": "Unregistered e-mail"
+  "user_email_not_found": "Unregistered e-mail",
+  "success_create":"Successfully",
+  "user_not_found":"User Not Found",
+  "token_is_required":"Token is required"
 }

@@ -15,12 +15,17 @@ import { OtpVerificationDto } from '../dto/otp-verification.dto.';
 import { OtpRequestDto } from '../dto/otp-request.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import { PutForgotPassword } from '../dto/put-forgot-password.dto';
+import { JwtService } from '@nestjs/jwt';
+import { AppErrorException } from 'src/exceptions/app-exception';
 
 @ApiTags('auth')
 @Controller('auth')
 @ApiBearerAuth()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private jwtService: JwtService,
+  ) {}
 
   @Post('login')
   async login(
@@ -52,20 +57,30 @@ export class AuthController {
     return { message: i18n.t('auth.otp_verification'), data };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put('password')
   async resetPassword(
-    @Req() req,
-    @Body() payload: PutForgotPassword,
+    @Query('token') token: string,
+    @Body()
+    payload: PutForgotPassword,
     @I18n() i18n: I18nContext,
   ) {
+    if (!token) {
+      throw new AppErrorException(
+        await i18n.t('auth.token_is_required'),
+        'token_is_required',
+      );
+    }
+    const verifToken = this.jwtService.verify(token);
     const data = await this.authService.putResetPassword(
       {
-        user: req.user,
+        user: verifToken,
         ...payload,
       },
       i18n,
     );
-    return { message: i18n.t('auth.reset_password_success'), data };
+    return {
+      message: i18n.t('auth.reset_password_success'),
+      data,
+    };
   }
 }
