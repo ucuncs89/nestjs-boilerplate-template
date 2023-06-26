@@ -9,10 +9,15 @@ import { UsersActivationController } from './controllers/users-activation.contro
 import { UsersActivationService } from './services/users-activation.service';
 import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
 import { UsersManageController } from './controllers/users-manage.controller';
+import { PermissionsEntity } from 'src/entities/permission/permission.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UsersEntity, UsersPasswordEntity]),
+    TypeOrmModule.forFeature([
+      UsersEntity,
+      UsersPasswordEntity,
+      PermissionsEntity,
+    ]),
     ClientsModule.register([
       {
         name: 'cloami_rmq',

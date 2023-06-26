@@ -2,23 +2,27 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  OneToMany,
+  JoinColumn,
+  ManyToOne,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { PermissionsEntity } from '../permission/permission.entity';
-import { UsersEntity } from '../users/users.entity';
+import { RolesEntity } from '../roles/roles.entity';
 
-@Entity('roles')
-export class RolesEntity {
+@Entity('permissions')
+export class PermissionsEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'int', nullable: true })
+  parent_id: number;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   title: string;
 
   @Column({ type: 'text', nullable: false })
   description: string;
-
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
@@ -40,31 +44,29 @@ export class RolesEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
-  @ManyToMany(() => PermissionsEntity)
+  @OneToMany(() => PermissionsEntity, (permission) => permission.parent)
+  details?: PermissionsEntity[];
+
+  @ManyToOne(() => PermissionsEntity, (permission) => permission.details, {
+    nullable: true,
+    createForeignKeyConstraints: false,
+  })
+  @JoinColumn({
+    name: 'parent_id',
+  })
+  parent?: PermissionsEntity;
+
+  @ManyToMany(() => RolesEntity)
   @JoinTable({
     name: 'roles_permission',
     joinColumn: {
-      name: 'role_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
       name: 'permission_id',
       referencedColumnName: 'id',
     },
-  })
-  permissions: PermissionsEntity[];
-
-  @ManyToMany(() => UsersEntity)
-  @JoinTable({
-    name: 'user_roles',
-    joinColumn: {
+    inverseJoinColumn: {
       name: 'role_id',
       referencedColumnName: 'id',
     },
-    inverseJoinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id',
-    },
   })
-  users: UsersEntity[];
+  roles: RolesEntity[];
 }

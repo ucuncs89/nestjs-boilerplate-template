@@ -8,5 +8,14 @@ export class GetUserListDto {
   page_size: number;
 
   @ApiProperty({ required: false })
-  search?: string;
+  keyword?: string;
+
+  @ApiProperty({ required: false })
+  roles?: number;
+
+  @ApiProperty({ required: false })
+  order_by: string;
+
+  @ApiProperty({ required: false })
+  sort_by?: string;
 }

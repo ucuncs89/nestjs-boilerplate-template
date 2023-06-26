@@ -71,7 +71,30 @@ export class UsersService {
   }
 
   async findAll(query) {
-    const { search, page_size, page } = query;
+    const { keywoard, page_size, page, roles, order_by, sort_by } = query;
+    let orderObj = {};
+    switch (sort_by) {
+      case 'full_name':
+        orderObj = {
+          full_name: order_by,
+        };
+        break;
+      case 'email':
+        orderObj = {
+          email: order_by,
+        };
+        break;
+      case 'created_at':
+        orderObj = {
+          id: order_by,
+        };
+        break;
+      default:
+        orderObj = {
+          id: order_by,
+        };
+        break;
+    }
     const [result, total] = await this.userRepository.findAndCount({
       select: {
         id: true,
@@ -83,14 +106,17 @@ export class UsersService {
       },
       where: [
         {
-          full_name: search ? ILike(`%${search}%`) : Not(IsNull()),
+          full_name: keywoard ? ILike(`%${keywoard}%`) : Not(IsNull()),
           is_active: true,
+          roles: { id: roles ? roles : Not(IsNull()) },
         },
         {
-          email: search ? ILike(`%${search}%`) : Not(IsNull()),
+          email: keywoard ? ILike(`%${keywoard}%`) : Not(IsNull()),
+          roles: { id: roles ? roles : Not(IsNull()) },
           is_active: true,
         },
       ],
+      order: orderObj,
       relations: { roles: true },
       take: page_size,
       skip: page,

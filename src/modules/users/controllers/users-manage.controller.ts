@@ -51,7 +51,10 @@ export class UsersManageController {
     const data = await this.usersService.findAll({
       page: (_page - 1) * _page_size,
       page_size: _page_size,
-      search: query.search,
+      keywoard: query.keyword,
+      roles: query.roles,
+      order_by: query.order_by || 'DESC',
+      sort_by: query.sort_by || 'created_at',
     });
     const pagination = await Pagination.pagination(
       data.total_data,
