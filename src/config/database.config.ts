@@ -15,7 +15,7 @@ export class DatabaseConnectionService implements TypeOrmOptionsFactory {
       database: process.env.DB_NAME,
       synchronize: false,
       dropSchema: false,
-      logging: true,
+      logging: false,
       entities: ['dist/**/**/*.entity.js'],
     };
   }

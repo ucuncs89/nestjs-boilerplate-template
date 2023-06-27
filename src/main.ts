@@ -9,14 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
-    bufferLogs: true,
-    logger: ['verbose', 'log', 'debug', 'debug', 'warn'],
   });
-  app.enableCors({
-    origin: true,
-    credentials: true,
-  });
-
   const config = new DocumentBuilder()
     .setTitle('Cloami')
     .setDescription('Cloami - Backend')
