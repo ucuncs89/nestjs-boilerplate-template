@@ -1,8 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { BaseFieldEntity } from '../default/base_field.entity';
 
 @Entity('notifications')
-export class UsersEntity extends BaseFieldEntity {
+export class NotificationsEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,4 +16,25 @@ export class UsersEntity extends BaseFieldEntity {
 
   @Column({ type: 'boolean' })
   is_read: boolean;
+
+  @Column({
+    type: 'timestamp with time zone',
+    default: 'NOW()',
+  })
+  created_at: string;
+
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  updated_at?: string;
+
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  deleted_at?: string;
+
+  @Column({ type: 'int', nullable: true })
+  created_by: number;
+
+  @Column({ type: 'int', nullable: true })
+  updated_by: number;
+
+  @Column({ type: 'int', nullable: true })
+  deleted_by: number;
 }

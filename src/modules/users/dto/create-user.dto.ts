@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsArray, IsEmail, IsNotEmpty } from 'class-validator';
 
-export class CreateUsersRoles {
-  @IsNotEmpty()
-  @ApiProperty()
-  id: number;
-}
 export class CreateUserDto {
   @IsNotEmpty()
   @ApiProperty()
@@ -18,8 +13,8 @@ export class CreateUserDto {
 
   @ApiProperty({
     isArray: true,
-    type: CreateUsersRoles,
+    type: 'number',
   })
   @IsNotEmpty()
-  roles: CreateUsersRoles[];
+  roles: number[];
 }

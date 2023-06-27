@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { UserActivationDto } from '../dto/user-activation.dto';
 import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
 import { saltOrRounds } from 'src/constant/saltOrRounds';
+import { base64Decode } from 'src/utils/base64-convert';
 
 @Injectable()
 export class UsersActivationService {
@@ -40,8 +41,9 @@ export class UsersActivationService {
         password: true,
       },
     });
+    const passwordConvert = base64Decode(userActivationDto.password);
     const comparePasswordInUsers = await bcrypt.compare(
-      userActivationDto.password,
+      passwordConvert,
       findUser.password,
     );
     if (comparePasswordInUsers) {
@@ -50,7 +52,7 @@ export class UsersActivationService {
     if (findUserPassword.length > 0) {
       for (let i = 0; i < findUserPassword.length; i++) {
         const comparePassword = await bcrypt.compare(
-          userActivationDto.password,
+          passwordConvert,
           findUserPassword[i].password,
         );
         if (comparePassword) {
@@ -59,10 +61,7 @@ export class UsersActivationService {
       }
     }
     try {
-      const passwordHash = await bcrypt.hash(
-        userActivationDto.password,
-        saltOrRounds,
-      );
+      const passwordHash = await bcrypt.hash(passwordConvert, saltOrRounds);
       findUser.password = passwordHash;
       findUser.updated_at = new Date().toISOString();
       findUser.updated_by = user_id;

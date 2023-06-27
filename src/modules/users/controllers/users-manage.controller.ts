@@ -21,6 +21,7 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { Pagination } from 'src/utils/pagination';
 import { GetUserListDto } from '../dto/get-user-list.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserActivationByAdminDto } from '../dto/activation-user-by-admin.dto';
 
 @ApiBearerAuth()
 @ApiTags('Users Management')
@@ -51,7 +52,10 @@ export class UsersManageController {
     const data = await this.usersService.findAll({
       page: (_page - 1) * _page_size,
       page_size: _page_size,
-      search: query.search,
+      keywoard: query.keyword,
+      roles: query.roles,
+      order_by: query.order_by || 'DESC',
+      sort_by: query.sort_by || 'created_at',
     });
     const pagination = await Pagination.pagination(
       data.total_data,
@@ -85,6 +89,23 @@ export class UsersManageController {
       {
         id,
         ...updateUserDto,
+        user_id: req.user.id,
+      },
+      i18n,
+    );
+    return { message: 'Successfully', data };
+  }
+  @Put(':id/activation')
+  async updateActivationByAdmin(
+    @Req() req,
+    @Param('id') id: number,
+    @Body() payload: UserActivationByAdminDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.usersService.activationByAdmin(
+      {
+        id,
+        ...payload,
         user_id: req.user.id,
       },
       i18n,

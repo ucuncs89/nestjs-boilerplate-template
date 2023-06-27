@@ -11,6 +11,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
 import { env } from 'process';
 import { UsersRolesEntity } from 'src/entities/users/users_roles.entity';
+import { error } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +33,13 @@ export class UsersService {
         'email_alredy_registered',
       );
     }
+    const arrRoles = [];
+    if (createUserDto.roles.length > 0) {
+      createUserDto.roles.forEach((v) => {
+        arrRoles.push({ id: v });
+      });
+    }
+
     try {
       const insert = this.userRepository.create({
         email: createUserDto.email.toLowerCase(),
@@ -39,7 +47,7 @@ export class UsersService {
         is_active: false,
         need_verification: true,
         is_forgot_password: true,
-        roles: createUserDto.roles,
+        roles: arrRoles,
         created_by: user_id,
         password: '',
       });
@@ -58,8 +66,7 @@ export class UsersService {
       });
       return true;
     } catch (error) {
-      console.log(error);
-      throw new AppErrorException(error);
+      throw new AppErrorException(error.message);
     }
   }
 
@@ -71,7 +78,30 @@ export class UsersService {
   }
 
   async findAll(query) {
-    const { search, page_size, page } = query;
+    const { keywoard, page_size, page, roles, order_by, sort_by } = query;
+    let orderObj = {};
+    switch (sort_by) {
+      case 'full_name':
+        orderObj = {
+          full_name: order_by,
+        };
+        break;
+      case 'email':
+        orderObj = {
+          email: order_by,
+        };
+        break;
+      case 'created_at':
+        orderObj = {
+          id: order_by,
+        };
+        break;
+      default:
+        orderObj = {
+          id: order_by,
+        };
+        break;
+    }
     const [result, total] = await this.userRepository.findAndCount({
       select: {
         id: true,
@@ -83,14 +113,17 @@ export class UsersService {
       },
       where: [
         {
-          full_name: search ? ILike(`%${search}%`) : Not(IsNull()),
-          is_active: true,
+          full_name: keywoard ? ILike(`%${keywoard}%`) : Not(IsNull()),
+          roles: { id: roles ? roles : Not(IsNull()) },
+          deleted_at: IsNull(),
         },
         {
-          email: search ? ILike(`%${search}%`) : Not(IsNull()),
-          is_active: true,
+          email: keywoard ? ILike(`%${keywoard}%`) : Not(IsNull()),
+          roles: { id: roles ? roles : Not(IsNull()) },
+          deleted_at: IsNull(),
         },
       ],
+      order: orderObj,
       relations: { roles: true },
       take: page_size,
       skip: page,
@@ -149,13 +182,15 @@ export class UsersService {
 
   async update(payload, i18n) {
     const { id, roles, email, full_name, user_id } = payload;
-    for (const role of roles) {
-      role.user_id = id;
-      role.role_id = role.id;
-      delete role.id;
+    const arrRoles = [];
+    if (roles.length > 0) {
+      roles.forEach((v) => {
+        arrRoles.push({ role_id: v, user_id: id });
+      });
     }
     const queryRunner = this.connection.createQueryRunner();
     await this.findOne(id, i18n);
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -166,7 +201,7 @@ export class UsersService {
         updated_by: user_id,
       });
       await queryRunner.manager.delete(UsersRolesEntity, { user_id: id });
-      await queryRunner.manager.insert(UsersRolesEntity, roles);
+      await queryRunner.manager.insert(UsersRolesEntity, arrRoles);
       await queryRunner.commitTransaction();
       return payload;
     } catch (error) {
@@ -175,5 +210,28 @@ export class UsersService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async activationByAdmin(payload, i18n) {
+    const { id, is_active, user_id } = payload;
+    const user = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (user.password === '') {
+      throw new AppErrorException('the user has not set a password');
+    }
+    user.is_active = is_active;
+    user.need_verification = !is_active;
+    user.updated_at = new Date().toISOString();
+    user.updated_by = user_id;
+    this.userRepository.save(user);
+    return {
+      id,
+      is_active,
+      email: user.email,
+      need_verification: user.need_verification,
+    };
   }
 }
