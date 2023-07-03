@@ -74,6 +74,12 @@ export class AuthService {
           'auth_need_verify',
         );
       }
+      if (findUser.deleted_at) {
+        throw new AppErrorNotFoundException(
+          i18n.t('auth.error_not_found'),
+          'auth_error_not_found',
+        );
+      }
     }
     const passwordConvert = base64Decode(loginUserDTO.password);
     const comparePassword = await bcrypt.compare(
