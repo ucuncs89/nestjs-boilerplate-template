@@ -23,6 +23,7 @@ import { DateUtils } from 'src/utils/date-utils';
 import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
 import { saltOrRounds } from 'src/constant/saltOrRounds';
 import { base64Decode } from 'src/utils/base64-convert';
+import { UsersTokenEntity } from 'src/entities/users/users_token.entity';
 
 @Injectable()
 export class AuthService {
@@ -38,6 +39,9 @@ export class AuthService {
 
     @InjectRepository(UsersPasswordEntity)
     private userPasswordRepository: Repository<UsersPasswordEntity>,
+
+    @InjectRepository(UsersTokenEntity)
+    private usersTokenRepository: Repository<UsersTokenEntity>,
 
     private userService: UsersService,
     private jwtService: JwtService,
@@ -342,5 +346,8 @@ export class AuthService {
     } catch (error) {
       throw new AppErrorException(error);
     }
+  }
+  async logout(user_id: number) {
+    await this.usersTokenRepository.delete({ user_id });
   }
 }

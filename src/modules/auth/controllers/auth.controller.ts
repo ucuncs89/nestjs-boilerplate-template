@@ -83,4 +83,11 @@ export class AuthController {
       data,
     };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Req() req) {
+    await this.authService.logout(req.user.id);
+    return { message: 'Logout Successfully' };
+  }
 }
