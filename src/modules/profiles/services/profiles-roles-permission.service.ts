@@ -43,4 +43,19 @@ export class ProfileRolesPermissionService {
       throw new AppErrorException(error);
     }
   }
+  async findAllPermissionById(parent_id, roles) {
+    const data = await this.permissionRepository.find({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        parent_id: true,
+      },
+      where: {
+        parent_id,
+        roles: { id: In(roles) },
+      },
+    });
+    return data;
+  }
 }
