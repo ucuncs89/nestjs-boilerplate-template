@@ -11,6 +11,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UsersOtpEntity } from 'src/entities/users/users_otp.entity';
 import { OtpRateLimiterEntity } from 'src/entities/users/otp_rate_limiter.entity';
 import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
+import { UsersTokenEntity } from 'src/entities/users/users_token.entity';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
       UsersOtpEntity,
       OtpRateLimiterEntity,
       UsersPasswordEntity,
+      UsersTokenEntity,
     ]),
     ClientsModule.register([
       {

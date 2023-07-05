@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ProfilesModule } from './modules/profiles/profiles.module';
     RolesModule,
     UsersModule,
     ProfilesModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -23,6 +23,8 @@ import { DateUtils } from 'src/utils/date-utils';
 import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
 import { saltOrRounds } from 'src/constant/saltOrRounds';
 import { base64Decode } from 'src/utils/base64-convert';
+import { UsersTokenEntity } from 'src/entities/users/users_token.entity';
+import { ChangePasswordDto } from '../dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -38,6 +40,9 @@ export class AuthService {
 
     @InjectRepository(UsersPasswordEntity)
     private userPasswordRepository: Repository<UsersPasswordEntity>,
+
+    @InjectRepository(UsersTokenEntity)
+    private usersTokenRepository: Repository<UsersTokenEntity>,
 
     private userService: UsersService,
     private jwtService: JwtService,
@@ -336,6 +341,85 @@ export class AuthService {
       const data = await this.userPasswordRepository.create({
         user_id: user.id,
         password: passwordHash,
+      });
+      await this.userPasswordRepository.save(data);
+      return true;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+  async logout(user_id: number) {
+    await this.usersTokenRepository.delete({ user_id });
+  }
+
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+    user_id: number,
+    i18n,
+  ) {
+    const findUser = await this.userRepository.findOne({
+      where: { id: user_id },
+    });
+    if (!findUser) {
+      throw new AppErrorNotFoundException(
+        i18n.t('users.email_not_registered'),
+        'email_not_registered',
+      );
+    }
+    if (findUser.need_verification) {
+      throw new AppErrorException(
+        i18n.t('auth.need_verify'),
+        'auth_need_verify',
+      );
+    }
+    if (!findUser.password) {
+      throw new AppErrorException(
+        i18n.t('auth.need_verify'),
+        'auth_need_verify',
+      );
+    }
+    const findUserPassword = await this.userPasswordRepository.find({
+      where: {
+        user_id,
+      },
+      select: {
+        user_id: true,
+        password: true,
+      },
+    });
+    const oldPasswordConvert = base64Decode(changePasswordDto.old_password);
+    const newPasswordConvert = base64Decode(changePasswordDto.new_password);
+    const comparePasswordInUsers = await bcrypt.compare(
+      oldPasswordConvert,
+      findUser.password,
+    );
+    if (!comparePasswordInUsers) {
+      throw new AppErrorException(i18n.t('auth.password_incorrect'));
+    }
+    if (findUserPassword.length > 0) {
+      for (let i = 0; i < findUserPassword.length; i++) {
+        const comparePassword = await bcrypt.compare(
+          newPasswordConvert,
+          findUserPassword[i].password,
+        );
+        if (comparePassword) {
+          throw new AppErrorException(i18n.t('auth.password_already_exist'));
+        }
+      }
+    }
+    try {
+      const newPasswordHash = await bcrypt.hash(
+        newPasswordConvert,
+        saltOrRounds,
+      );
+      findUser.password = newPasswordHash;
+      findUser.updated_at = new Date().toISOString();
+      findUser.updated_by = user_id;
+      await this.userRepository.save(findUser);
+
+      const data = await this.userPasswordRepository.create({
+        user_id,
+        password: newPasswordHash,
       });
       await this.userPasswordRepository.save(data);
       return true;

@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../jwt-auth.guard';
 import { PutForgotPassword } from '../dto/put-forgot-password.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AppErrorException } from 'src/exceptions/app-exception';
+import { ChangePasswordDto } from '../dto/change-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -82,5 +83,27 @@ export class AuthController {
       message: i18n.t('auth.reset_password_success'),
       data,
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Req() req) {
+    await this.authService.logout(req.user.id);
+    return { message: 'Logout Successfully' };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('change-password')
+  async changePassword(
+    @Req() req,
+    @I18n() i18n: I18nContext,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    const data = await this.authService.changePassword(
+      changePasswordDto,
+      req.user.id,
+      i18n,
+    );
+    return { message: i18n.t('auth.password_change_success'), data };
   }
 }
