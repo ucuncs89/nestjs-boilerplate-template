@@ -71,6 +71,6 @@ export class CustomersEntity {
     (customer_documents: CustomerDocumentsEntity) =>
       customer_documents.customer,
   )
-  @JoinColumn({ name: 'customer_id', referencedColumnName: 'customer_id' })
+  @JoinColumn({ name: 'customer_id' })
   customer_documents: CustomerDocumentsEntity[];
 }
