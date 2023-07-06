@@ -12,6 +12,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
 import { FilesModule } from './modules/files/files.module';
+import { CustomersModule } from './modules/customers/customers.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { FilesModule } from './modules/files/files.module';
     UsersModule,
     ProfilesModule,
     FilesModule,
+    CustomersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

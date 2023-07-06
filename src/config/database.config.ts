@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TypeOrmOptionsFactory, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import 'dotenv/config';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Injectable()
 export class DatabaseConnectionService implements TypeOrmOptionsFactory {
@@ -15,8 +16,9 @@ export class DatabaseConnectionService implements TypeOrmOptionsFactory {
       database: process.env.DB_NAME,
       synchronize: false,
       dropSchema: false,
-      logging: false,
+      logging: true,
       entities: ['dist/**/**/*.entity.js'],
+      namingStrategy: new SnakeNamingStrategy(),
     };
   }
 }
