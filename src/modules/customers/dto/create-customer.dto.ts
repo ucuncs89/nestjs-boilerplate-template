@@ -1,9 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
+
+export enum TypeCustomerDocumentsEnum {
+  SPPKP = 'SPPKP',
+  NPWP = 'NPWP',
+  KTP = 'KTP',
+}
 
 export class CustomerDocumentsDto {
-  @ApiProperty()
-  type: string;
+  @ApiProperty({ enum: TypeCustomerDocumentsEnum })
+  @IsEnum(TypeCustomerDocumentsEnum)
+  type: TypeCustomerDocumentsEnum;
 
   @ApiProperty()
   base_url: string;

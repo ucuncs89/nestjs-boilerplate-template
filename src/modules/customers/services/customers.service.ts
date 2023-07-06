@@ -4,7 +4,10 @@ import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CustomersEntity } from 'src/entities/customers/customers.entity';
 import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
 import { CustomerDocumentsEntity } from 'src/entities/customers/customer_documents.entity';
 
 @Injectable()
@@ -17,23 +20,7 @@ export class CustomersService {
 
   async create(createCustomerDto: CreateCustomerDto, user_id, i18n) {
     const code = await this.generateCodeCustomer();
-    // const data = await this.customersRepository.insert({
-    //   company_address: createCustomerDto.company_address,
-    //   company_name: createCustomerDto.company_name,
-    //   company_phone_number: createCustomerDto.company_phone_number,
-    //   customer_documents: createCustomerDto.customer_documents,
-    //   pic_email: createCustomerDto.pic_email,
-    //   pic_full_name: createCustomerDto.pic_full_name,
-    //   pic_id_number: createCustomerDto.pic_id_number,
-    //   pic_phone_number: createCustomerDto.pic_phone_number,
-    //   taxable: createCustomerDto.taxable,
-    //   created_by: user_id,
-    //   code,
-    //   status: 'Not yet validated',
-    // });
-
     const queryRunner = this.connection.createQueryRunner();
-
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -96,6 +83,15 @@ export class CustomersService {
         pic_phone_number: true,
         status: true,
         last_order: true,
+        customer_documents: {
+          id: true,
+          type: true,
+          file_url: true,
+          base_url: true,
+        },
+      },
+      relations: {
+        customer_documents: true,
       },
       where: [
         {
@@ -150,12 +146,62 @@ export class CustomersService {
     return data;
   }
 
-  update(id: number, updateCustomerDto: UpdateCustomerDto) {
-    return `This action updates a #${id} customer`;
+  async update(id: number, updateCustomerDto: UpdateCustomerDto, user_id) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.update(CustomersEntity, id, {
+        company_address: updateCustomerDto.company_address,
+        company_name: updateCustomerDto.company_name,
+        company_phone_number: updateCustomerDto.company_phone_number,
+        pic_email: updateCustomerDto.pic_email,
+        pic_full_name: updateCustomerDto.pic_full_name,
+        pic_id_number: updateCustomerDto.pic_id_number,
+        pic_phone_number: updateCustomerDto.pic_phone_number,
+        taxable: updateCustomerDto.taxable,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      });
+      for (const documents of updateCustomerDto.customer_documents) {
+        documents.customer_id = id;
+      }
+      await queryRunner.manager.delete(CustomerDocumentsEntity, {
+        customer_id: id,
+      });
+      await queryRunner.manager.insert(
+        CustomerDocumentsEntity,
+        updateCustomerDto.customer_documents,
+      );
+      await queryRunner.commitTransaction();
+      return updateCustomerDto;
+    } catch (error) {
+      console.log(error);
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} customer`;
+  async remove(id: number, user_id) {
+    const customer = await this.customersRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true },
+    });
+    if (!customer) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    try {
+      customer.deleted_at = new Date().toISOString();
+      customer.deleted_by = user_id;
+      this.customersRepository.save(customer);
+      return true;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
   }
 
   async generateCodeCustomer() {

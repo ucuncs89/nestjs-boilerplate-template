@@ -50,6 +50,6 @@ export class CustomerDocumentsEntity {
     (customer: CustomersEntity) => customer.customer_documents,
     { cascade: true },
   )
-  @JoinColumn({ name: 'id' })
+  @JoinColumn()
   public customer: CustomersEntity;
 }
