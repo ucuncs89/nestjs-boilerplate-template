@@ -22,6 +22,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/modules/roles/roles.guard';
 import { HasRoles } from 'src/modules/roles/has-roles.decorator';
 import { I18n, I18nContext } from 'nestjs-i18n';
+import { ValidationCustomerDto } from '../dto/validation-customer.dto';
 
 @ApiBearerAuth()
 @ApiTags('Customers')
@@ -74,17 +75,38 @@ export class CustomersController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Req() req,
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
-    return this.customersService.update(+id, updateCustomerDto, req.user.id);
+    const data = await this.customersService.update(
+      +id,
+      updateCustomerDto,
+      req.user.id,
+    );
+    return { data };
   }
 
   @Delete(':id')
   async remove(@Req() req, @Param('id') id: string) {
     const data = await this.customersService.remove(+id, req.user.id);
     return { message: 'Successfully', data };
+  }
+
+  @HasRoles(Role.SUPERADMIN, Role.FINANCE)
+  @UseGuards(JwtAuthGuard)
+  @Put(':id/validation')
+  async validateCustomer(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() validationCustomerDto: ValidationCustomerDto,
+  ) {
+    const data = await this.customersService.validateCustomer(
+      +id,
+      validationCustomerDto,
+      req.user.id,
+    );
+    return { data };
   }
 }
