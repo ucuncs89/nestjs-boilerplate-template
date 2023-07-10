@@ -26,7 +26,6 @@ import { ValidationCustomerDto } from '../dto/validation-customer.dto';
 
 @ApiBearerAuth()
 @ApiTags('Customers')
-// @HasRoles(Role.SUPERADMIN,Role.)
 @UseGuards(JwtAuthGuard)
 @Controller('customers')
 export class CustomersController {
@@ -94,8 +93,8 @@ export class CustomersController {
     return { message: 'Successfully', data };
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @HasRoles(Role.SUPERADMIN, Role.FINANCE)
-  @UseGuards(JwtAuthGuard)
   @Put(':id/validation')
   async validateCustomer(
     @Req() req,

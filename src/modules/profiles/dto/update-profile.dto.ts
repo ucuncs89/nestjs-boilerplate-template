@@ -7,8 +7,8 @@ export class UpdateProfileDto {
   full_name: string;
 
   @ApiProperty()
-  base_path: string;
+  base_path?: string;
 
   @ApiProperty()
-  path_picture: string;
+  path_picture?: string;
 }

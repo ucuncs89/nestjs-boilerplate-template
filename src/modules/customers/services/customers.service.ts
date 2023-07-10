@@ -84,15 +84,6 @@ export class CustomersService {
         pic_phone_number: true,
         status: true,
         last_order: true,
-        customer_documents: {
-          id: true,
-          type: true,
-          file_url: true,
-          base_url: true,
-        },
-      },
-      relations: {
-        customer_documents: true,
       },
       where: [
         {
