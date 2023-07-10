@@ -59,4 +59,23 @@ export class FilesService {
       throw new AppErrorException(error);
     }
   }
+  async deleteFileByFileName(file_name, user_id) {
+    const file = await this.filesRepository.findOne({
+      where: {
+        file_name,
+      },
+    });
+    if (!file) {
+      throw new AppErrorNotFoundException();
+    }
+    if (file.created_by !== user_id) {
+      throw new AppErrorException('This File not Owners');
+    }
+    try {
+      fs.unlinkSync(`${file.path}`);
+      return true;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
 }

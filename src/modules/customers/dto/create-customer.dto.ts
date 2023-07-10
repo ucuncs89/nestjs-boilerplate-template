@@ -42,22 +42,20 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   pic_full_name: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  pic_id_number: string;
+  @ApiProperty({ required: false })
+  pic_id_number?: string;
 
   @ApiProperty()
   @IsNotEmpty()
   pic_phone_number: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  pic_email: string;
+  pic_email?: string;
 
   @ApiProperty({
     isArray: true,
     type: CustomerDocumentsDto,
   })
   @ApiProperty()
-  customer_documents: CustomerDocumentsDto[];
+  customer_documents?: CustomerDocumentsDto[];
 }

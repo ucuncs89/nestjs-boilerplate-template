@@ -74,8 +74,8 @@ export class ProfilesService {
           id: user_id,
         },
       });
-      user.base_path = updateProfileDto.base_path || user.base_path;
-      user.path_picture = updateProfileDto.path_picture || user.path_picture;
+      user.base_path = updateProfileDto.base_path;
+      user.path_picture = updateProfileDto.path_picture;
       user.full_name = updateProfileDto.full_name;
       user.updated_at = new Date().toISOString();
       user.updated_by = user_id;
