@@ -9,6 +9,7 @@ import {
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import { CustomerDocumentsEntity } from 'src/entities/customers/customer_documents.entity';
+import { ValidationCustomerDto } from '../dto/validation-customer.dto';
 
 @Injectable()
 export class CustomersService {
@@ -176,7 +177,6 @@ export class CustomersService {
       await queryRunner.commitTransaction();
       return updateCustomerDto;
     } catch (error) {
-      console.log(error);
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
     } finally {
@@ -217,8 +217,34 @@ export class CustomersService {
       const id = customer[0] ? `${customer[0].id + 1}` : '1';
       return pad.substring(0, pad.length - id.length) + id;
     } catch (error) {
-      console.log(error);
       throw error;
     }
+  }
+
+  async validateCustomer(
+    id: number,
+    validationCustomerDto: ValidationCustomerDto,
+    user_id: number,
+  ) {
+    const customer = await this.customersRepository.findOne({
+      select: {
+        id: true,
+        status: true,
+        updated_at: true,
+      },
+      where: {
+        id: id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    if (!customer) {
+      throw new AppErrorNotFoundException();
+    }
+    customer.updated_at = new Date().toISOString();
+    customer.updated_by = user_id;
+    customer.status = validationCustomerDto.status;
+    this.customersRepository.save(customer);
+    return { id, status: customer.status };
   }
 }
