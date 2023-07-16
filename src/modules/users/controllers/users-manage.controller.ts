@@ -11,14 +11,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
-import { RolesGuard } from 'src/modules/roles/roles.guard';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { HasRoles } from 'src/modules/roles/has-roles.decorator';
-import { Role } from 'src/modules/roles/enum/role.enum';
+import { RolesGuard } from '../../../modules/roles/roles.guard';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
+import { HasRoles } from '../../../modules/roles/has-roles.decorator';
+import { Role } from '../../../modules/roles/enum/role.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { Pagination } from 'src/utils/pagination';
+import { Pagination } from '../../../utils/pagination';
 import { GetUserListDto } from '../dto/get-user-list.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserActivationByAdminDto } from '../dto/activation-user-by-admin.dto';

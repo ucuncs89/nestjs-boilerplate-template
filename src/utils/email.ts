@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { env } from 'process';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import { AppErrorException } from '../exceptions/app-exception';
 type Data = {
   data: any;
 };

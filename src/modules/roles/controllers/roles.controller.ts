@@ -11,8 +11,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { Pagination } from 'src/utils/pagination';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
+import { Pagination } from '../../../utils/pagination';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { GetRolesListDto } from '../dto/get-roles-list.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';

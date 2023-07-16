@@ -14,13 +14,13 @@ import {
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { CustomersService } from '../services/customers.service';
-import { Pagination } from 'src/utils/pagination';
+import { Pagination } from '../../../utils/pagination';
 import { GetListCustomersDto } from '../dto/get-list-custmer.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Role } from 'src/modules/roles/enum/role.enum';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/roles/roles.guard';
-import { HasRoles } from 'src/modules/roles/has-roles.decorator';
+import { Role } from '../../../modules/roles/enum/role.enum';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
+import { RolesGuard } from '../../../modules/roles/roles.guard';
+import { HasRoles } from '../../../modules/roles/has-roles.decorator';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ValidationCustomerDto } from '../dto/validation-customer.dto';
 

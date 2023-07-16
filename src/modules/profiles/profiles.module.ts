@@ -4,9 +4,9 @@ import { ProfilesService } from './services/profiles.service';
 import { ProfilesRolesPermissionController } from './controllers/profiles-roles-permission.controller';
 import { ProfileRolesPermissionService } from './services/profiles-roles-permission.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/entities/users/users.entity';
-import { PermissionsEntity } from 'src/entities/permission/permission.entity';
-import { RolesEntity } from 'src/entities/roles/roles.entity';
+import { UsersEntity } from '../../entities/users/users.entity';
+import { PermissionsEntity } from '../../entities/permission/permission.entity';
+import { RolesEntity } from '../../entities/roles/roles.entity';
 
 @Module({
   imports: [

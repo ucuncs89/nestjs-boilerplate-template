@@ -16,7 +16,7 @@ import { OtpRequestDto } from '../dto/otp-request.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard';
 import { PutForgotPassword } from '../dto/put-forgot-password.dto';
 import { JwtService } from '@nestjs/jwt';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import { AppErrorException } from '../../../exceptions/app-exception';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 
 @ApiTags('auth')
