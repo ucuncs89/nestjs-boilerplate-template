@@ -4,10 +4,10 @@ import * as crypto from 'crypto';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FilesEntity } from 'src/entities/master/files.entity';
+import { FilesEntity } from '../../../entities/master/files.entity';
 
 @Injectable()
 export class FilesService {
@@ -21,7 +21,7 @@ export class FilesService {
     let data = {};
     try {
       const fileBuffer = fs.readFileSync(`files/${filename}`);
-      const hashSum = crypto.createHash('sha1');
+      const hashSum = crypto.createHash('sha256');
       hashSum.update(fileBuffer);
       const hash = hashSum.digest('hex');
       data = this.filesRepository.create({

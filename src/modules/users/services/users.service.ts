@@ -1,17 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/entities/users/users.entity';
+import { UsersEntity } from '../../../entities/users/users.entity';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
 import { env } from 'process';
-import { UsersRolesEntity } from 'src/entities/users/users_roles.entity';
-import { error } from 'console';
+import { UsersRolesEntity } from '../../../entities/users/users_roles.entity';
 
 @Injectable()
 export class UsersService {

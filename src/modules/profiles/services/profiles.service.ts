@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RolesEntity } from 'src/entities/roles/roles.entity';
-import { UsersEntity } from 'src/entities/users/users.entity';
+import { RolesEntity } from '../../../entities/roles/roles.entity';
+import { UsersEntity } from '../../../entities/users/users.entity';
 import { In, Repository } from 'typeorm';
 import { UpdateProfileDto } from '../dto/update-profile.dto';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import { AppErrorException } from '../../../exceptions/app-exception';
 
 @Injectable()
 export class ProfilesService {

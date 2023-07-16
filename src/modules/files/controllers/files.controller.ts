@@ -15,9 +15,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import 'dotenv/config';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
 import { FilesService } from '../services/files.service';
-import { editFileName, imageFileFilter } from 'src/utils/file-upload';
+import { editFileName, imageFileFilter } from '../../../utils/file-upload';
 
 @ApiTags('files')
 @ApiBearerAuth()
@@ -28,13 +28,16 @@ export class FilesController {
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
-      limits: {
-        fileSize: 8000000, // Compliant: 8MB
-      },
       storage: diskStorage({
         destination: './files',
         filename: editFileName,
+        limits: {
+          fileSize: 8000000, // Compliant: 8MB
+        },
       }),
+      limits: {
+        fileSize: 8000000, // Compliant: 8MB
+      },
       fileFilter: imageFileFilter,
     }),
   )

@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProfileRolesPermissionService } from '../services/profiles-roles-permission.service';

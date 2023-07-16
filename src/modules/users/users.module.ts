@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/entities/users/users.entity';
+import { UsersEntity } from '../../entities/users/users.entity';
 import { UsersService } from './services/users.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { env } from 'process';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UsersActivationController } from './controllers/users-activation.controller';
 import { UsersActivationService } from './services/users-activation.service';
-import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
+import { UsersPasswordEntity } from '../../entities/users/users_password.entity';
 import { UsersManageController } from './controllers/users-manage.controller';
-import { PermissionsEntity } from 'src/entities/permission/permission.entity';
+import { PermissionsEntity } from '../../entities/permission/permission.entity';
 
 @Module({
   imports: [

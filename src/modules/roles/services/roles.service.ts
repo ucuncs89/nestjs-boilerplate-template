@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RolesEntity } from 'src/entities/roles/roles.entity';
+import { RolesEntity } from '../../../entities/roles/roles.entity';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 import { IsNull, Repository } from 'typeorm';
 
 @Injectable()
