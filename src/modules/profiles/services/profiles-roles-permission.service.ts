@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PermissionsEntity } from 'src/entities/permission/permission.entity';
+import { PermissionsEntity } from '../../../entities/permission/permission.entity';
 
-import { AppErrorException } from 'src/exceptions/app-exception';
+import { AppErrorException } from '../../../exceptions/app-exception';
 import { In, IsNull, Repository } from 'typeorm';
 
 @Injectable()

@@ -1,29 +1,29 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/entities/users/users.entity';
-import { UsersService } from 'src/modules/users/services/users.service';
+import { UsersEntity } from '../../../entities/users/users.entity';
+import { UsersService } from '../../../modules/users/services/users.service';
 import { Repository } from 'typeorm';
 import { LoginUserDTO } from '../dto/auth.dto';
 import {
   AppErrorException,
   AppErrorNotFoundException,
   AppErrorOtpException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 import * as bcrypt from 'bcrypt';
 import {
   AuthEmailNotRegisterException,
   AuthNotActiveException,
-} from 'src/exceptions/auth-exception';
-import { GenerateOtp } from 'src/utils/generate-otp';
+} from '../../../exceptions/auth-exception';
+import { GenerateOtp } from '../../../utils/generate-otp';
 import { ClientProxy } from '@nestjs/microservices';
-import { UsersOtpEntity } from 'src/entities/users/users_otp.entity';
-import { OtpRateLimiterEntity } from 'src/entities/users/otp_rate_limiter.entity';
-import { DateUtils } from 'src/utils/date-utils';
-import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
-import { saltOrRounds } from 'src/constant/saltOrRounds';
-import { base64Decode } from 'src/utils/base64-convert';
-import { UsersTokenEntity } from 'src/entities/users/users_token.entity';
+import { UsersOtpEntity } from '../../../entities/users/users_otp.entity';
+import { OtpRateLimiterEntity } from '../../../entities/users/otp_rate_limiter.entity';
+import { DateUtils } from '../../../utils/date-utils';
+import { UsersPasswordEntity } from '../../../entities/users/users_password.entity';
+import { saltOrRounds } from '../../../constant/saltOrRounds';
+import { base64Decode } from '../../../utils/base64-convert';
+import { UsersTokenEntity } from '../../../entities/users/users_token.entity';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 
 @Injectable()

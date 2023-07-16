@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/entities/users/users.entity';
+import { UsersEntity } from '../../../entities/users/users.entity';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserActivationDto } from '../dto/user-activation.dto';
-import { UsersPasswordEntity } from 'src/entities/users/users_password.entity';
-import { saltOrRounds } from 'src/constant/saltOrRounds';
-import { base64Decode } from 'src/utils/base64-convert';
+import { UsersPasswordEntity } from '../../../entities/users/users_password.entity';
+import { saltOrRounds } from '../../../constant/saltOrRounds';
+import { base64Decode } from '../../../utils/base64-convert';
 
 @Injectable()
 export class UsersActivationService {

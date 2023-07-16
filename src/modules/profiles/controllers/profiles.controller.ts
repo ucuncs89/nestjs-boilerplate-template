@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Put, Req, UseGuards } from '@nestjs/common';
 import { ProfilesService } from '../services/profiles.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { UpdateProfileDto } from '../dto/update-profile.dto';
 

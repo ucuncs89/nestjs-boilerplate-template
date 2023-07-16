@@ -3,7 +3,7 @@ import { RolesEntity } from './roles.entity';
 import { PermissionsEntity } from '../permission/permission.entity';
 
 @Entity('roles_permission')
-export class UsersRolesEntity {
+export class RolesPermissionEntity {
   @PrimaryColumn({ type: 'int' })
   role_id: number;
 

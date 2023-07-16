@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CustomersEntity } from 'src/entities/customers/customers.entity';
+import { CustomersEntity } from '../../../entities/customers/customers.entity';
 import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
-import { CustomerDocumentsEntity } from 'src/entities/customers/customer_documents.entity';
+} from '../../../exceptions/app-exception';
+import { CustomerDocumentsEntity } from '../../../entities/customers/customer_documents.entity';
 import { ValidationCustomerDto } from '../dto/validation-customer.dto';
 
 @Injectable()

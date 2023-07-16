@@ -7,6 +7,6 @@ export class AppController {
 
   @Get()
   redirect(@Res() res) {
-    return res.redirect('/documentation');
+    return { hello: 'world' };
   }
 }
