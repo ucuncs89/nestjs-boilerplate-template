@@ -135,6 +135,9 @@ export class CustomersService {
       },
       where: { id, deleted_at: IsNull() },
     });
+    if (!data) {
+      throw new AppErrorNotFoundException();
+    }
     return data;
   }
 
@@ -208,7 +211,7 @@ export class CustomersService {
       const id = customer[0] ? `${customer[0].id + 1}` : '1';
       return pad.substring(0, pad.length - id.length) + id;
     } catch (error) {
-      throw error;
+      throw new Error(error);
     }
   }
 
