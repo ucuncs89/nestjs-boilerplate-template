@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Query,
   Req,
+  Put,
 } from '@nestjs/common';
 import { CreateVendorDto } from '../dto/create-vendor.dto';
 import { UpdateVendorDto } from '../dto/update-vendor.dto';
@@ -20,7 +20,7 @@ import { Pagination } from 'src/utils/pagination';
 import { I18n, I18nContext } from 'nestjs-i18n';
 
 @ApiBearerAuth()
-@ApiTags('Vendors')
+@ApiTags('vendors')
 @UseGuards(JwtAuthGuard)
 @Controller('vendors')
 export class VendorsController {
@@ -68,13 +68,23 @@ export class VendorsController {
     return { data };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVendorDto: UpdateVendorDto) {
-    return this.vendorsService.update(+id, updateVendorDto);
+  @Put(':id')
+  async update(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updateVendorDto: UpdateVendorDto,
+  ) {
+    const data = await this.vendorsService.update(
+      +id,
+      updateVendorDto,
+      req.user.id,
+    );
+    return { data };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.vendorsService.remove(+id);
+  async remove(@Req() req, @Param('id') id: string) {
+    const data = await this.vendorsService.remove(+id, req.user.id);
+    return { message: 'Successfully', data };
   }
 }

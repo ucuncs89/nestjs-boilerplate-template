@@ -152,12 +152,71 @@ export class VendorsService {
     return data;
   }
 
-  update(id: number, updateVendorDto: UpdateVendorDto) {
-    return `This action updates a #${id} vendor`;
+  async update(id: number, updateVendorDto: UpdateVendorDto, user_id) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.update(VendorsEntity, id, {
+        company_address: updateVendorDto.company_address,
+        company_name: updateVendorDto.company_name,
+        company_phone_number: updateVendorDto.company_phone_number,
+        pic_email: updateVendorDto.pic_email,
+        pic_full_name: updateVendorDto.pic_full_name,
+        pic_id_number: updateVendorDto.pic_id_number,
+        pic_phone_number: updateVendorDto.pic_phone_number,
+        taxable: updateVendorDto.taxable,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      });
+      for (const documents of updateVendorDto.vendor_documents) {
+        documents.vendor_id = id;
+      }
+      for (const type of updateVendorDto.vendor_type) {
+        type.vendor_id = id;
+      }
+      await queryRunner.manager.delete(VendorDocumentsEntity, {
+        vendor_id: id,
+      });
+      await queryRunner.manager.delete(VendorTypeEntity, {
+        vendor_id: id,
+      });
+      await queryRunner.manager.insert(
+        VendorTypeEntity,
+        updateVendorDto.vendor_type,
+      );
+      await queryRunner.manager.insert(
+        VendorDocumentsEntity,
+        updateVendorDto.vendor_documents,
+      );
+      await queryRunner.commitTransaction();
+      return updateVendorDto;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} vendor`;
+  async remove(id: number, user_id) {
+    const vendor = await this.vendorsRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true },
+    });
+    if (!vendor) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    try {
+      vendor.deleted_at = new Date().toISOString();
+      vendor.deleted_by = user_id;
+      this.vendorsRepository.save(vendor);
+      return true;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
   }
   async generateCodeVendor() {
     const pad = '0000';
