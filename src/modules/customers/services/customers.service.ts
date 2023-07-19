@@ -10,6 +10,8 @@ import {
 } from '../../../exceptions/app-exception';
 import { CustomerDocumentsEntity } from '../../../entities/customers/customer_documents.entity';
 import { ValidationCustomerDto } from '../dto/validation-customer.dto';
+import { RolesPermissionGuard } from 'src/modules/roles/roles-permission';
+import { Role } from 'src/modules/roles/enum/role.enum';
 
 @Injectable()
 export class CustomersService {
@@ -17,6 +19,7 @@ export class CustomersService {
     @InjectRepository(CustomersEntity)
     private customersRepository: Repository<CustomersEntity>,
     private connection: Connection,
+    private readonly rolePermissionGuard: RolesPermissionGuard,
   ) {}
 
   async create(createCustomerDto: CreateCustomerDto, user_id, i18n) {
@@ -64,11 +67,6 @@ export class CustomersService {
         };
         break;
       case 'created_at':
-        orderObj = {
-          id: order_by,
-        };
-        break;
-      default:
         orderObj = {
           id: order_by,
         };
@@ -183,10 +181,16 @@ export class CustomersService {
       where: {
         id,
       },
-      select: { id: true, deleted_at: true, deleted_by: true },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
     });
     if (!customer) {
       throw new AppErrorNotFoundException('Not Found');
+    }
+    if (customer.status === 'Validated') {
+      await this.rolePermissionGuard.canDeleteByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
     }
     try {
       customer.deleted_at = new Date().toISOString();
