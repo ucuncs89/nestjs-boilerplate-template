@@ -13,6 +13,8 @@ import { UsersModule } from './modules/users/users.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
 import { FilesModule } from './modules/files/files.module';
 import { CustomersModule } from './modules/customers/customers.module';
+import { VendorsModule } from './modules/vendors/vendors.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { CustomersModule } from './modules/customers/customers.module';
     ProfilesModule,
     FilesModule,
     CustomersModule,
+    VendorsModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

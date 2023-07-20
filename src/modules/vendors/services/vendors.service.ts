@@ -1,48 +1,53 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCustomerDto } from '../dto/create-customer.dto';
-import { UpdateCustomerDto } from '../dto/update-customer.dto';
+import { CreateVendorDto } from '../dto/create-vendor.dto';
+import { UpdateVendorDto } from '../dto/update-vendor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CustomersEntity } from '../../../entities/customers/customers.entity';
+import { VendorsEntity } from 'src/entities/vendors/vendors.entity';
 import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from '../../../exceptions/app-exception';
-import { CustomerDocumentsEntity } from '../../../entities/customers/customer_documents.entity';
-import { ValidationCustomerDto } from '../dto/validation-customer.dto';
-import { RolesPermissionGuard } from 'src/modules/roles/roles-permission';
-import { Role } from 'src/modules/roles/enum/role.enum';
+} from 'src/exceptions/app-exception';
+import { VendorDocumentsEntity } from 'src/entities/vendors/vendor_documents.entity';
+import { VendorTypeEntity } from 'src/entities/vendors/vendor_type.entity';
 
 @Injectable()
-export class CustomersService {
+export class VendorsService {
   constructor(
-    @InjectRepository(CustomersEntity)
-    private customersRepository: Repository<CustomersEntity>,
+    @InjectRepository(VendorsEntity)
+    private vendorsRepository: Repository<VendorsEntity>,
     private connection: Connection,
-    private readonly rolePermissionGuard: RolesPermissionGuard,
   ) {}
-
-  async create(createCustomerDto: CreateCustomerDto, user_id, i18n) {
-    const code = await this.generateCodeCustomer();
+  async create(createVendorDto: CreateVendorDto, user_id, i18n) {
+    const code = await this.generateCodeVendor();
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const customer = await queryRunner.manager.insert(CustomersEntity, {
-        ...createCustomerDto,
+      const vendor = await queryRunner.manager.insert(VendorsEntity, {
+        ...createVendorDto,
         created_by: user_id,
         code,
         status: 'Not yet validated',
       });
-      for (const documents of createCustomerDto.customer_documents) {
-        documents.customer_id = customer.raw[0].id;
+      for (const documents of createVendorDto.vendor_documents) {
+        documents.vendor_id = vendor.raw[0].id;
       }
+      for (const type of createVendorDto.vendor_type) {
+        type.vendor_id = vendor.raw[0].id;
+      }
+
       await queryRunner.manager.insert(
-        CustomerDocumentsEntity,
-        createCustomerDto.customer_documents,
+        VendorDocumentsEntity,
+        createVendorDto.vendor_documents,
+      );
+
+      await queryRunner.manager.insert(
+        VendorTypeEntity,
+        createVendorDto.vendor_type,
       );
       await queryRunner.commitTransaction();
-      return createCustomerDto;
+      return createVendorDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
@@ -72,7 +77,7 @@ export class CustomersService {
         };
         break;
     }
-    const [result, total] = await this.customersRepository.findAndCount({
+    const [result, total] = await this.vendorsRepository.findAndCount({
       select: {
         id: true,
         code: true,
@@ -81,7 +86,10 @@ export class CustomersService {
         pic_full_name: true,
         pic_phone_number: true,
         status: true,
-        last_order: true,
+        vendor_type: {
+          id: true,
+          name: true,
+        },
       },
       where: [
         {
@@ -97,6 +105,9 @@ export class CustomersService {
           deleted_at: IsNull(),
         },
       ],
+      relations: {
+        vendor_type: true,
+      },
       order: orderObj,
       take: page_size,
       skip: page,
@@ -108,7 +119,7 @@ export class CustomersService {
   }
 
   async findOne(id: number) {
-    const data = await this.customersRepository.findOne({
+    const data = await this.vendorsRepository.findOne({
       select: {
         id: true,
         code: true,
@@ -121,7 +132,8 @@ export class CustomersService {
         pic_id_number: true,
         pic_phone_number: true,
         pic_email: true,
-        customer_documents: {
+        vendor_type: { id: true, name: true },
+        vendor_documents: {
           id: true,
           type: true,
           file_url: true,
@@ -129,7 +141,8 @@ export class CustomersService {
         },
       },
       relations: {
-        customer_documents: true,
+        vendor_type: true,
+        vendor_documents: true,
       },
       where: { id, deleted_at: IsNull() },
     });
@@ -139,35 +152,45 @@ export class CustomersService {
     return data;
   }
 
-  async update(id: number, updateCustomerDto: UpdateCustomerDto, user_id) {
+  async update(id: number, updateVendorDto: UpdateVendorDto, user_id) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager.update(CustomersEntity, id, {
-        company_address: updateCustomerDto.company_address,
-        company_name: updateCustomerDto.company_name,
-        company_phone_number: updateCustomerDto.company_phone_number,
-        pic_email: updateCustomerDto.pic_email,
-        pic_full_name: updateCustomerDto.pic_full_name,
-        pic_id_number: updateCustomerDto.pic_id_number,
-        pic_phone_number: updateCustomerDto.pic_phone_number,
-        taxable: updateCustomerDto.taxable,
+      await queryRunner.manager.update(VendorsEntity, id, {
+        company_address: updateVendorDto.company_address,
+        company_name: updateVendorDto.company_name,
+        company_phone_number: updateVendorDto.company_phone_number,
+        pic_email: updateVendorDto.pic_email,
+        pic_full_name: updateVendorDto.pic_full_name,
+        pic_id_number: updateVendorDto.pic_id_number,
+        pic_phone_number: updateVendorDto.pic_phone_number,
+        taxable: updateVendorDto.taxable,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
       });
-      for (const documents of updateCustomerDto.customer_documents) {
-        documents.customer_id = id;
+      for (const documents of updateVendorDto.vendor_documents) {
+        documents.vendor_id = id;
       }
-      await queryRunner.manager.delete(CustomerDocumentsEntity, {
-        customer_id: id,
+      for (const type of updateVendorDto.vendor_type) {
+        type.vendor_id = id;
+      }
+      await queryRunner.manager.delete(VendorDocumentsEntity, {
+        vendor_id: id,
+      });
+      await queryRunner.manager.delete(VendorTypeEntity, {
+        vendor_id: id,
       });
       await queryRunner.manager.insert(
-        CustomerDocumentsEntity,
-        updateCustomerDto.customer_documents,
+        VendorTypeEntity,
+        updateVendorDto.vendor_type,
+      );
+      await queryRunner.manager.insert(
+        VendorDocumentsEntity,
+        updateVendorDto.vendor_documents,
       );
       await queryRunner.commitTransaction();
-      return updateCustomerDto;
+      return updateVendorDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
@@ -177,72 +200,38 @@ export class CustomersService {
   }
 
   async remove(id: number, user_id) {
-    const customer = await this.customersRepository.findOne({
+    const vendor = await this.vendorsRepository.findOne({
       where: {
         id,
       },
-      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+      select: { id: true, deleted_at: true, deleted_by: true },
     });
-    if (!customer) {
+    if (!vendor) {
       throw new AppErrorNotFoundException('Not Found');
     }
-    if (customer.status === 'Validated') {
-      await this.rolePermissionGuard.canDeleteByRoles(user_id, [
-        Role.SUPERADMIN,
-        Role.FINANCE,
-      ]);
-    }
     try {
-      customer.deleted_at = new Date().toISOString();
-      customer.deleted_by = user_id;
-      this.customersRepository.save(customer);
+      vendor.deleted_at = new Date().toISOString();
+      vendor.deleted_by = user_id;
+      this.vendorsRepository.save(vendor);
       return true;
     } catch (error) {
       throw new AppErrorException(error);
     }
   }
-
-  async generateCodeCustomer() {
+  async generateCodeVendor() {
     const pad = '0000';
     try {
-      const customer = await this.customersRepository.find({
+      const vendor = await this.vendorsRepository.find({
         select: { id: true },
         order: {
           id: 'DESC',
         },
         take: 1,
       });
-      const id = customer[0] ? `${customer[0].id + 1}` : '1';
+      const id = vendor[0] ? `${vendor[0].id + 1}` : '1';
       return pad.substring(0, pad.length - id.length) + id;
     } catch (error) {
       throw new Error(error);
     }
-  }
-
-  async validateCustomer(
-    id: number,
-    validationCustomerDto: ValidationCustomerDto,
-    user_id: number,
-  ) {
-    const customer = await this.customersRepository.findOne({
-      select: {
-        id: true,
-        status: true,
-        updated_at: true,
-      },
-      where: {
-        id: id,
-        deleted_at: IsNull(),
-        deleted_by: IsNull(),
-      },
-    });
-    if (!customer) {
-      throw new AppErrorNotFoundException();
-    }
-    customer.updated_at = new Date().toISOString();
-    customer.updated_by = user_id;
-    customer.status = validationCustomerDto.status;
-    this.customersRepository.save(customer);
-    return { id, status: customer.status };
   }
 }
