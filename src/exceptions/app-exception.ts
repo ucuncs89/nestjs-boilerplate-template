@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -36,6 +37,15 @@ export class AppErrorOtpException extends BadRequestException {
       message: message || 'error',
       error_code: error_code || 'err',
       data: data || null,
+    });
+  }
+}
+
+export class AppErrorForbiddenException extends ForbiddenException {
+  constructor(message?: string, error_code?: string) {
+    super({
+      message: message || 'Forbidden',
+      error_code: error_code || 'Forbidden',
     });
   }
 }
