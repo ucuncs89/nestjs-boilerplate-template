@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,12 +15,17 @@ import { FilesModule } from './modules/files/files.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { VendorsModule } from './modules/vendors/vendors.module';
 import { ActivitiesModule } from './modules/activities/activities.module';
+import { RabbitMQModule } from './rabbitmq/rabbit-mq.module';
+import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
+import { ErrorLogEntity } from './entities/logging/error_log.entity';
 
 @Module({
   imports: [
+    RabbitMQModule,
     TypeOrmModule.forRootAsync({
       useClass: DatabaseConnectionService,
     }),
+    TypeOrmModule.forFeature([ErrorLogEntity]),
     ConfigModule.forRoot({ isGlobal: true }),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
@@ -50,4 +55,8 @@ import { ActivitiesModule } from './modules/activities/activities.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}
