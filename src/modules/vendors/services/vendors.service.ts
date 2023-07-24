@@ -10,6 +10,7 @@ import {
 } from 'src/exceptions/app-exception';
 import { VendorDocumentsEntity } from 'src/entities/vendors/vendor_documents.entity';
 import { VendorTypeEntity } from 'src/entities/vendors/vendor_type.entity';
+import { ValidationVendorDto } from '../dto/validation-vendor.dto';
 
 @Injectable()
 export class VendorsService {
@@ -233,5 +234,31 @@ export class VendorsService {
     } catch (error) {
       throw new Error(error);
     }
+  }
+  async validateVendor(
+    id: number,
+    validationVendorDto: ValidationVendorDto,
+    user_id: number,
+  ) {
+    const customer = await this.vendorsRepository.findOne({
+      select: {
+        id: true,
+        status: true,
+        updated_at: true,
+      },
+      where: {
+        id: id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    if (!customer) {
+      throw new AppErrorNotFoundException();
+    }
+    customer.updated_at = new Date().toISOString();
+    customer.updated_by = user_id;
+    customer.status = validationVendorDto.status;
+    this.vendorsRepository.save(customer);
+    return { id, status: customer.status };
   }
 }
