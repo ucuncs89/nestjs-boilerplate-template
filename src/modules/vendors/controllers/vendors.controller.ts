@@ -18,6 +18,10 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { GetListVendorsDto } from '../dto/get-list-vendor.dto';
 import { Pagination } from 'src/utils/pagination';
 import { I18n, I18nContext } from 'nestjs-i18n';
+import { RolesGuard } from 'src/modules/roles/roles.guard';
+import { Role } from 'src/modules/roles/enum/role.enum';
+import { HasRoles } from 'src/modules/roles/has-roles.decorator';
+import { ValidationVendorDto } from '../dto/validation-vendor.dto';
 
 @ApiBearerAuth()
 @ApiTags('vendors')
@@ -86,5 +90,21 @@ export class VendorsController {
   async remove(@Req() req, @Param('id') id: string) {
     const data = await this.vendorsService.remove(+id, req.user.id);
     return { message: 'Successfully', data };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @HasRoles(Role.SUPERADMIN, Role.FINANCE)
+  @Put(':id/validation')
+  async validateCustomer(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() validationVendorDto: ValidationVendorDto,
+  ) {
+    const data = await this.vendorsService.validateVendor(
+      +id,
+      validationVendorDto,
+      req.user.id,
+    );
+    return { data };
   }
 }
