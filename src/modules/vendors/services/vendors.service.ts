@@ -11,6 +11,8 @@ import {
 import { VendorDocumentsEntity } from 'src/entities/vendors/vendor_documents.entity';
 import { VendorTypeEntity } from 'src/entities/vendors/vendor_type.entity';
 import { ValidationVendorDto } from '../dto/validation-vendor.dto';
+import { RolesPermissionGuard } from 'src/modules/roles/roles-permission';
+import { Role } from 'src/modules/roles/enum/role.enum';
 
 @Injectable()
 export class VendorsService {
@@ -18,6 +20,8 @@ export class VendorsService {
     @InjectRepository(VendorsEntity)
     private vendorsRepository: Repository<VendorsEntity>,
     private connection: Connection,
+
+    private readonly rolePermissionGuard: RolesPermissionGuard,
   ) {}
   async create(createVendorDto: CreateVendorDto, user_id, i18n) {
     const code = await this.generateCodeVendor();
@@ -158,6 +162,21 @@ export class VendorsService {
   }
 
   async update(id: number, updateVendorDto: UpdateVendorDto, user_id) {
+    const vendor = await this.vendorsRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+    });
+    if (!vendor) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    if (vendor.status === 'Validated') {
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
+    }
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -209,10 +228,16 @@ export class VendorsService {
       where: {
         id,
       },
-      select: { id: true, deleted_at: true, deleted_by: true },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
     });
     if (!vendor) {
       throw new AppErrorNotFoundException('Not Found');
+    }
+    if (vendor.status === 'Validated') {
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
     }
     try {
       vendor.deleted_at = new Date().toISOString();
