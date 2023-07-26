@@ -12,7 +12,7 @@ export class RolesPermissionGuard {
     private usersRolesRepository: Repository<UsersRolesEntity>,
   ) {}
 
-  async canDeleteByRoles(user_id: number, arrRoles: Role[]) {
+  async canActionByRoles(user_id: number, arrRoles: Role[]) {
     const data = await this.usersRolesRepository.findOne({
       where: { user_id: user_id, role_id: In(arrRoles) },
       select: { role_id: true, user_id: true },
@@ -20,6 +20,6 @@ export class RolesPermissionGuard {
     if (!data) {
       throw new AppErrorForbiddenException();
     }
-    return false;
+    return true;
   }
 }

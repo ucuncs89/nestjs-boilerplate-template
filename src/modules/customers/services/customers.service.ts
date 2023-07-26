@@ -140,6 +140,21 @@ export class CustomersService {
   }
 
   async update(id: number, updateCustomerDto: UpdateCustomerDto, user_id) {
+    const customer = await this.customersRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+    });
+    if (!customer) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    if (customer.status === 'Validated') {
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
+    }
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -187,7 +202,7 @@ export class CustomersService {
       throw new AppErrorNotFoundException('Not Found');
     }
     if (customer.status === 'Validated') {
-      await this.rolePermissionGuard.canDeleteByRoles(user_id, [
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
         Role.SUPERADMIN,
         Role.FINANCE,
       ]);
