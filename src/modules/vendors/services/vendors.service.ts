@@ -133,6 +133,10 @@ export class VendorsService {
         pic_id_number: true,
         pic_phone_number: true,
         pic_email: true,
+        bank_account_holder_name: true,
+        bank_account_number: true,
+        bank_name: true,
+        npwp_number: true,
         vendor_type: { id: true, name: true },
         vendor_documents: {
           id: true,
