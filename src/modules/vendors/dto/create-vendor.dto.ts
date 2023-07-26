@@ -72,4 +72,16 @@ export class CreateVendorDto {
   })
   @ApiProperty()
   vendor_type?: VendorTypeDto[];
+
+  @ApiProperty()
+  npwp_number?: string;
+
+  @ApiProperty()
+  bank_name?: string;
+
+  @ApiProperty()
+  bank_account_number?: string;
+
+  @ApiProperty()
+  bank_account_holder_name?: string;
 }
