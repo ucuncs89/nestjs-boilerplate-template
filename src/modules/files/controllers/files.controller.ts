@@ -62,7 +62,6 @@ export class FilesController {
     return {
       message: 'Successfully upload file',
       data,
-      file_url: `${process.env.APP_URL_FILE}${file.filename}`,
     };
   }
 
