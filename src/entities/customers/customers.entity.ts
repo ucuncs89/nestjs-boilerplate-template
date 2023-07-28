@@ -42,6 +42,18 @@ export class CustomersEntity {
   @Column({ type: 'varchar', nullable: true })
   status: string;
 
+  @Column({ type: 'varchar', nullable: true, length: '50' })
+  npwp_number: string;
+
+  @Column({ type: 'varchar', nullable: true, length: 50 })
+  bank_name: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  bank_account_number: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  bank_account_holder_name: string;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
