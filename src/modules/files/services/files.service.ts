@@ -35,16 +35,12 @@ export class FilesService {
       payload;
     let data = {};
     try {
-      const fileBuffer = fs.readFileSync(`files/${filename}`);
-      const hashSum = crypto.createHash('sha256');
-      hashSum.update(fileBuffer);
-      const hash = hashSum.digest('hex');
       const destination = `media/${filename}`;
       this.storage
         .bucket(this.bucket)
         .upload(path, { destination })
         .then(() => {
-          fs.unlinkSync(`files/${filename}`);
+          fs.unlinkSync(`${path}`);
         });
 
       data = this.filesRepository.create({
@@ -54,7 +50,6 @@ export class FilesService {
         path: destination,
         size,
         created_by: user_id,
-        hash,
         base_url,
       });
       await this.filesRepository.save(data);
