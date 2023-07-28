@@ -192,6 +192,10 @@ export class VendorsService {
         taxable: updateVendorDto.taxable,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
+        bank_account_holder_name: updateVendorDto.bank_account_holder_name,
+        bank_account_number: updateVendorDto.bank_account_number,
+        npwp_number: updateVendorDto.npwp_number,
+        bank_name: updateVendorDto.bank_name,
       });
       for (const documents of updateVendorDto.vendor_documents) {
         documents.vendor_id = id;
