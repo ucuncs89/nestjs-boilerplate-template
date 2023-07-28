@@ -40,7 +40,12 @@ export class FilesService {
       hashSum.update(fileBuffer);
       const hash = hashSum.digest('hex');
       const destination = `media/${filename}`;
-      await this.storage.bucket(this.bucket).upload(path, { destination });
+      this.storage
+        .bucket(this.bucket)
+        .upload(path, { destination })
+        .then(() => {
+          fs.unlinkSync(`files/${filename}`);
+        });
 
       data = this.filesRepository.create({
         original_name: originalname,
@@ -53,9 +58,10 @@ export class FilesService {
         base_url,
       });
       await this.filesRepository.save(data);
-      fs.unlinkSync(`files/${filename}`);
+
       return { ...data, file_url: `${process.env.APP_URL_FILE}${destination}` };
     } catch (e) {
+      console.log(e);
       throw new AppErrorException(e.message);
     }
   }
