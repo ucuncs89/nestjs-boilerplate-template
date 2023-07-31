@@ -17,7 +17,11 @@ export class ActivitiesService {
   ) {}
 
   async create(CreateActivityDto: CreateActivityDto, user_id: number, i18n) {
-    const code = await this.generateCodeVendor();
+    const findByName = await this.findByName(CreateActivityDto.name);
+    if (findByName) {
+      throw new AppErrorException('Already Exist');
+    }
+    const code = await this.generateCodeActivity();
     try {
       const data = this.activitiesRepository.create({
         code,
@@ -100,6 +104,16 @@ export class ActivitiesService {
     if (!activity) {
       throw new AppErrorNotFoundException();
     }
+
+    if (
+      activity.name.toLocaleLowerCase() !==
+      updateActivityDto.name.toLocaleLowerCase()
+    ) {
+      const findByName = await this.findByName(updateActivityDto.name);
+      if (findByName) {
+        throw new AppErrorException('Already Exist');
+      }
+    }
     try {
       activity.updated_at = new Date().toISOString();
       activity.updated_by = user_id;
@@ -128,20 +142,27 @@ export class ActivitiesService {
     }
   }
 
-  async generateCodeVendor() {
+  async generateCodeActivity() {
     const pad = '0000';
     try {
-      const vendor = await this.activitiesRepository.find({
+      const activity = await this.activitiesRepository.find({
         select: { id: true },
         order: {
           id: 'DESC',
         },
         take: 1,
       });
-      const id = vendor[0] ? `${vendor[0].id + 1}` : '1';
+      const id = activity[0] ? `${activity[0].id + 1}` : '1';
       return pad.substring(0, pad.length - id.length) + id;
     } catch (error) {
       throw new Error(error);
     }
+  }
+  async findByName(name: string) {
+    const data = await this.activitiesRepository
+      .createQueryBuilder()
+      .where('LOWER(name) = LOWER(:name)', { name })
+      .getOne();
+    return data;
   }
 }
