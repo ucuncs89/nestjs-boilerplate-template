@@ -162,6 +162,7 @@ export class ActivitiesService {
     const data = await this.activitiesRepository
       .createQueryBuilder()
       .where('LOWER(name) = LOWER(:name)', { name })
+      .andWhere('deleted_at is null')
       .getOne();
     return data;
   }
