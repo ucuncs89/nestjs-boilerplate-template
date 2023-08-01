@@ -29,11 +29,7 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './files',
         filename: editFileName,
-        limits: {
-          fileSize: 8000000, // Compliant: 8MB
-        },
       }),
       limits: {
         fileSize: 8000000, // Compliant: 8MB
@@ -53,16 +49,22 @@ export class FilesController {
       },
     },
   })
-  async uploadedFile(@UploadedFile() file, @Request() req) {
+  async uploadedFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() req,
+  ) {
+    console.log(file);
+
     const data = await this.filesService.createUpload({
       user_id: req.user.id,
       ...file,
+      mimetype: file.mimetype,
+      file_buffer: file.buffer,
       base_url: process.env.APP_URL_FILE,
     });
     return {
       message: 'Successfully upload file',
       data,
-      file_url: `${process.env.APP_URL_FILE}${file.filename}`,
     };
   }
 

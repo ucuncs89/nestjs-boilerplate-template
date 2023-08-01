@@ -8,35 +8,55 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FilesEntity } from '../../../entities/master/files.entity';
+import { Storage } from '@google-cloud/storage';
+import { StorageConfig } from 'src/config/google-storage.config';
 
 @Injectable()
 export class FilesService {
+  private storage: Storage;
+  private bucket: string;
+
   constructor(
     @InjectRepository(FilesEntity)
     private filesRepository: Repository<FilesEntity>,
-  ) {}
+  ) {
+    this.storage = new Storage({
+      projectId: StorageConfig.projectId,
+      credentials: {
+        client_email: StorageConfig.client_email,
+        private_key: StorageConfig.private_key,
+      },
+    });
+
+    this.bucket = StorageConfig.mediaBucket;
+  }
   async createUpload(payload) {
     const { user_id, filename, originalname, mimetype, path, size, base_url } =
       payload;
     let data = {};
     try {
-      const fileBuffer = fs.readFileSync(`files/${filename}`);
-      const hashSum = crypto.createHash('sha256');
-      hashSum.update(fileBuffer);
-      const hash = hashSum.digest('hex');
+      const destination = `media/${filename}`;
+      this.storage
+        .bucket(this.bucket)
+        .upload(path, { destination })
+        .then(() => {
+          fs.unlinkSync(`${path}`);
+        });
+
       data = this.filesRepository.create({
         original_name: originalname,
         mimetype,
         file_name: filename,
-        path,
+        path: destination,
         size,
         created_by: user_id,
-        hash,
         base_url,
       });
       await this.filesRepository.save(data);
-      return data;
+
+      return { ...data, file_url: `${process.env.APP_URL_FILE}${destination}` };
     } catch (e) {
+      console.log(e);
       throw new AppErrorException(e.message);
     }
   }

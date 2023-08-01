@@ -58,4 +58,16 @@ export class CreateCustomerDto {
   })
   @ApiProperty()
   customer_documents?: CustomerDocumentsDto[];
+
+  @ApiProperty()
+  npwp_number?: string;
+
+  @ApiProperty()
+  bank_name?: string;
+
+  @ApiProperty()
+  bank_account_number?: string;
+
+  @ApiProperty()
+  bank_account_holder_name?: string;
 }

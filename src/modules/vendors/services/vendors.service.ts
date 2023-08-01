@@ -10,6 +10,9 @@ import {
 } from 'src/exceptions/app-exception';
 import { VendorDocumentsEntity } from 'src/entities/vendors/vendor_documents.entity';
 import { VendorTypeEntity } from 'src/entities/vendors/vendor_type.entity';
+import { ValidationVendorDto } from '../dto/validation-vendor.dto';
+import { RolesPermissionGuard } from 'src/modules/roles/roles-permission';
+import { Role } from 'src/modules/roles/enum/role.enum';
 
 @Injectable()
 export class VendorsService {
@@ -17,6 +20,8 @@ export class VendorsService {
     @InjectRepository(VendorsEntity)
     private vendorsRepository: Repository<VendorsEntity>,
     private connection: Connection,
+
+    private readonly rolePermissionGuard: RolesPermissionGuard,
   ) {}
   async create(createVendorDto: CreateVendorDto, user_id, i18n) {
     const code = await this.generateCodeVendor();
@@ -132,6 +137,10 @@ export class VendorsService {
         pic_id_number: true,
         pic_phone_number: true,
         pic_email: true,
+        bank_account_holder_name: true,
+        bank_account_number: true,
+        bank_name: true,
+        npwp_number: true,
         vendor_type: { id: true, name: true },
         vendor_documents: {
           id: true,
@@ -153,6 +162,21 @@ export class VendorsService {
   }
 
   async update(id: number, updateVendorDto: UpdateVendorDto, user_id) {
+    const vendor = await this.vendorsRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+    });
+    if (!vendor) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    if (vendor.status === 'Validated') {
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
+    }
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -168,6 +192,10 @@ export class VendorsService {
         taxable: updateVendorDto.taxable,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
+        bank_account_holder_name: updateVendorDto.bank_account_holder_name,
+        bank_account_number: updateVendorDto.bank_account_number,
+        npwp_number: updateVendorDto.npwp_number,
+        bank_name: updateVendorDto.bank_name,
       });
       for (const documents of updateVendorDto.vendor_documents) {
         documents.vendor_id = id;
@@ -204,10 +232,16 @@ export class VendorsService {
       where: {
         id,
       },
-      select: { id: true, deleted_at: true, deleted_by: true },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
     });
     if (!vendor) {
       throw new AppErrorNotFoundException('Not Found');
+    }
+    if (vendor.status === 'Validated') {
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
     }
     try {
       vendor.deleted_at = new Date().toISOString();
@@ -233,5 +267,31 @@ export class VendorsService {
     } catch (error) {
       throw new Error(error);
     }
+  }
+  async validateVendor(
+    id: number,
+    validationVendorDto: ValidationVendorDto,
+    user_id: number,
+  ) {
+    const customer = await this.vendorsRepository.findOne({
+      select: {
+        id: true,
+        status: true,
+        updated_at: true,
+      },
+      where: {
+        id: id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    if (!customer) {
+      throw new AppErrorNotFoundException();
+    }
+    customer.updated_at = new Date().toISOString();
+    customer.updated_by = user_id;
+    customer.status = validationVendorDto.status;
+    this.vendorsRepository.save(customer);
+    return { id, status: customer.status };
   }
 }

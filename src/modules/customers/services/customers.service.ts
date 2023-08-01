@@ -121,6 +121,10 @@ export class CustomersService {
         pic_id_number: true,
         pic_phone_number: true,
         pic_email: true,
+        bank_account_holder_name: true,
+        bank_account_number: true,
+        bank_name: true,
+        npwp_number: true,
         customer_documents: {
           id: true,
           type: true,
@@ -140,6 +144,21 @@ export class CustomersService {
   }
 
   async update(id: number, updateCustomerDto: UpdateCustomerDto, user_id) {
+    const customer = await this.customersRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+    });
+    if (!customer) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    if (customer.status === 'Validated') {
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
+    }
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -155,6 +174,10 @@ export class CustomersService {
         taxable: updateCustomerDto.taxable,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
+        bank_account_holder_name: updateCustomerDto.bank_account_holder_name,
+        bank_account_number: updateCustomerDto.bank_account_number,
+        npwp_number: updateCustomerDto.npwp_number,
+        bank_name: updateCustomerDto.bank_name,
       });
       for (const documents of updateCustomerDto.customer_documents) {
         documents.customer_id = id;
@@ -187,7 +210,7 @@ export class CustomersService {
       throw new AppErrorNotFoundException('Not Found');
     }
     if (customer.status === 'Validated') {
-      await this.rolePermissionGuard.canDeleteByRoles(user_id, [
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
         Role.SUPERADMIN,
         Role.FINANCE,
       ]);
