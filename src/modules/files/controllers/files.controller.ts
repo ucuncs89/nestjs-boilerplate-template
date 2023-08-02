@@ -12,12 +12,12 @@ import {
   Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { memoryStorage } from 'multer';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import 'dotenv/config';
 import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
 import { FilesService } from '../services/files.service';
-import { editFileName, imageFileFilter } from '../../../utils/file-upload';
+import { imageFileFilter } from '../../../utils/file-upload';
 
 @ApiTags('files')
 @ApiBearerAuth()
@@ -28,9 +28,7 @@ export class FilesController {
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        filename: editFileName,
-      }),
+      storage: memoryStorage(),
       limits: {
         fileSize: 8000000, // Compliant: 8MB
       },
@@ -53,8 +51,6 @@ export class FilesController {
     @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
-    console.log(file);
-
     const data = await this.filesService.createUpload({
       user_id: req.user.id,
       ...file,

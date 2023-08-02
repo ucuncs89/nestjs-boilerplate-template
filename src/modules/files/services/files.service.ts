@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
-import * as crypto from 'crypto';
 import {
   AppErrorException,
   AppErrorNotFoundException,
@@ -10,6 +9,7 @@ import { Repository } from 'typeorm';
 import { FilesEntity } from '../../../entities/master/files.entity';
 import { Storage } from '@google-cloud/storage';
 import { StorageConfig } from 'src/config/google-storage.config';
+import { parse } from 'path';
 
 @Injectable()
 export class FilesService {
@@ -30,33 +30,47 @@ export class FilesService {
 
     this.bucket = StorageConfig.mediaBucket;
   }
-  async createUpload(payload) {
-    const { user_id, filename, originalname, mimetype, path, size, base_url } =
-      payload;
-    let data = {};
-    try {
-      const destination = `media/${filename}`;
-      this.storage
-        .bucket(this.bucket)
-        .upload(path, { destination })
-        .then(() => {
-          fs.unlinkSync(`${path}`);
-        });
 
-      data = this.filesRepository.create({
+  private setDestination(destination: string): string {
+    let escDestination = '';
+    escDestination += destination
+      .replace(/^\.+/g, '')
+      .replace(/^\/+|\/+$/g, '');
+    if (escDestination !== '') escDestination = escDestination + '/';
+    return escDestination;
+  }
+
+  private setFilename(uploadedFile): string {
+    const fileName = parse(uploadedFile.originalname);
+    return `${fileName.name}-${Date.now()}${fileName.ext}`
+      .replace(/^\.+/g, '')
+      .replace(/^\/+/g, '')
+      .replace(/\r|\n/g, '_');
+  }
+  async createUpload(payload) {
+    const { user_id, mimetype, base_url, size, originalname } = payload;
+    try {
+      const destination = `media`;
+
+      const fileName =
+        this.setDestination(destination) + this.setFilename(payload);
+      const file = this.storage.bucket(this.bucket).file(fileName);
+      await file.save(payload.buffer, {
+        contentType: payload.mimetype,
+      });
+      const data = this.filesRepository.create({
         original_name: originalname,
         mimetype,
-        file_name: filename,
-        path: destination,
+        file_name: this.setFilename(payload),
+        path: fileName,
         size,
         created_by: user_id,
         base_url,
       });
       await this.filesRepository.save(data);
 
-      return { ...data, file_url: `${process.env.APP_URL_FILE}${destination}` };
+      return { ...data, file_url: `${process.env.APP_URL_FILE}${fileName}` };
     } catch (e) {
-      console.log(e);
       throw new AppErrorException(e.message);
     }
   }
