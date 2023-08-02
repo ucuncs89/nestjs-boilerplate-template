@@ -24,7 +24,7 @@ import { imageFileFilter } from '../../../utils/file-upload';
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
@@ -52,7 +52,7 @@ export class FilesController {
     @Request() req,
   ) {
     const data = await this.filesService.createUpload({
-      user_id: 1,
+      user_id: req.user.id,
       ...file,
       mimetype: file.mimetype,
       file_buffer: file.buffer,
