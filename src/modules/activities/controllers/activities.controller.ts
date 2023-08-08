@@ -86,5 +86,6 @@ export class ActivitiesController {
   @Delete(':id')
   async remove(@Req() req, @Param('id') id: string, @I18n() i18n: I18nContext) {
     const data = await this.activitiesService.remove(+id, req.user.id, i18n);
+    return { message: 'Successfully', data };
   }
 }
