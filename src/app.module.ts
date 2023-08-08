@@ -16,6 +16,7 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { VendorsModule } from './modules/vendors/vendors.module';
 import { ActivitiesModule } from './modules/activities/activities.module';
 import { DepartmentsModule } from './modules/departments/departments.module';
+import { FabricModule } from './modules/fabric/fabric.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { DepartmentsModule } from './modules/departments/departments.module';
     VendorsModule,
     ActivitiesModule,
     DepartmentsModule,
+    FabricModule,
   ],
   controllers: [AppController],
   providers: [AppService],
