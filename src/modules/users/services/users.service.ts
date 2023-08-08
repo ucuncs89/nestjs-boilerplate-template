@@ -43,7 +43,7 @@ export class UsersService {
       const insert = this.userRepository.create({
         email: createUserDto.email.toLowerCase(),
         full_name: createUserDto.full_name,
-        is_active: false,
+        is_active: true,
         need_verification: true,
         is_forgot_password: true,
         roles: arrRoles,
