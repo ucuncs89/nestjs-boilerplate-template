@@ -31,42 +31,45 @@ export class FilesService {
     this.bucket = StorageConfig.mediaBucket;
   }
 
-  private setDestination(destination: string): string {
-    let escDestination = '';
-    escDestination += destination
+  private sanitizeDestination(destination: string): string {
+    const sanitizedDestination = destination
       .replace(/^\.+/g, '')
       .replace(/^\/+|\/+$/g, '');
-    if (escDestination !== '') escDestination = escDestination + '/';
-    return escDestination;
+    return sanitizedDestination === '' ? '' : sanitizedDestination + '/';
   }
 
-  private setFilename(uploadedFile): string {
-    const fileName = parse(uploadedFile.originalname);
-    return `${fileName.name}-${Date.now()}${fileName.ext}`
+  private generateUniqueFileName(uploadedFile): string {
+    const { name, ext } = parse(uploadedFile.originalname);
+    const sanitizedFileName = `${name}-${Date.now()}${ext}`
       .replace(/^\.+/g, '')
       .replace(/^\/+/g, '')
       .replace(/\r|\n/g, '_');
+    return sanitizedFileName;
   }
+
   async createUpload(payload) {
     const { user_id, mimetype, base_url, size, originalname } = payload;
     try {
       const destination = `media`;
-
+      const sanitizedDestination = this.sanitizeDestination(destination);
       const fileName =
-        this.setDestination(destination) + this.setFilename(payload);
+        sanitizedDestination + this.generateUniqueFileName(payload);
       const file = this.storage.bucket(this.bucket).file(fileName);
+
       await file.save(payload.buffer, {
         contentType: payload.mimetype,
       });
+
       const data = this.filesRepository.create({
         original_name: originalname,
         mimetype,
-        file_name: this.setFilename(payload),
+        file_name: this.generateUniqueFileName(payload),
         path: fileName,
         size,
         created_by: user_id,
         base_url,
       });
+
       await this.filesRepository.save(data);
 
       return { ...data, file_url: `${process.env.APP_URL_FILE}${fileName}` };
@@ -74,6 +77,7 @@ export class FilesService {
       throw new AppErrorException(e.message);
     }
   }
+
   async findFileById(id: number) {
     return await this.filesRepository.findOne({ where: { id } });
   }

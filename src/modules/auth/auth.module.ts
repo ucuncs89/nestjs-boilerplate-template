@@ -12,6 +12,8 @@ import { UsersOtpEntity } from '../../entities/users/users_otp.entity';
 import { OtpRateLimiterEntity } from '../../entities/users/otp_rate_limiter.entity';
 import { UsersPasswordEntity } from '../../entities/users/users_password.entity';
 import { UsersTokenEntity } from '../../entities/users/users_token.entity';
+import { AuthGoogleController } from './controllers/auth-google.controller';
+import { AuthGoogleService } from './services/auth-google.service';
 
 @Module({
   imports: [
@@ -40,7 +42,7 @@ import { UsersTokenEntity } from '../../entities/users/users_token.entity';
       signOptions: { expiresIn: env.JWT_EXPIRED },
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, UsersService],
+  controllers: [AuthController, AuthGoogleController],
+  providers: [AuthService, JwtStrategy, UsersService, AuthGoogleService],
 })
 export class AuthModule {}
