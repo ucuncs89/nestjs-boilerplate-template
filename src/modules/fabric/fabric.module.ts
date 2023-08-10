@@ -3,10 +3,13 @@ import { FabricService } from './services/fabric.service';
 import { FabricController } from './controllers/fabric.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FabricEntity } from 'src/entities/fabric/fabric.entity';
+import { FabricVendorEntity } from 'src/entities/fabric/fabric_vendor.entity';
+import { FabricVendorController } from './controllers/fabric-vendor.controller';
+import { FabricVendorService } from './services/fabric-vendor.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FabricEntity])],
-  controllers: [FabricController],
-  providers: [FabricService],
+  imports: [TypeOrmModule.forFeature([FabricEntity, FabricVendorEntity])],
+  controllers: [FabricController, FabricVendorController],
+  providers: [FabricService, FabricVendorService],
 })
 export class FabricModule {}
