@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { VendorDocumentsEntity } from './vendor_documents.entity';
 import { VendorTypeEntity } from './vendor_type.entity';
+import { FabricVendorEntity } from '../fabric/fabric_vendor.entity';
 
 @Entity('vendors')
 export class VendorsEntity {
@@ -92,4 +93,11 @@ export class VendorsEntity {
   )
   @JoinColumn({ name: 'vendor_id' })
   vendor_type: VendorTypeEntity[];
+
+  @OneToMany(
+    () => FabricVendorEntity,
+    (vendor_fabric: FabricVendorEntity) => vendor_fabric.vendor,
+  )
+  @JoinColumn({ name: 'vendor_id' })
+  vendor_fabric: FabricVendorEntity[];
 }

@@ -16,6 +16,7 @@ export type I18nTranslations = {
         "password_already_exist": string;
         "otp_expired_date": string;
         "password_wrong": string;
+        "inactive": string;
     };
     "file": {
         "file_not_found": string;
