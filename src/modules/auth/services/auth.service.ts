@@ -77,9 +77,9 @@ export class AuthService {
         );
       }
       if (findUser.deleted_at) {
-        throw new AppErrorNotFoundException(
-          i18n.t('auth.error_not_found'),
-          'auth_error_not_found',
+        throw new AppErrorException(
+          i18n.t('auth.user_deleted'),
+          'auth_user_deleted',
         );
       }
     }
