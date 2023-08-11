@@ -30,4 +30,7 @@ export class GetListVendorsDto {
 
   @ApiProperty({ required: false })
   keyword?: string;
+
+  @ApiProperty({ required: false })
+  type?: string;
 }
