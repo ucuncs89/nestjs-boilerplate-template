@@ -17,6 +17,7 @@ export type I18nTranslations = {
         "otp_expired_date": string;
         "password_wrong": string;
         "inactive": string;
+        "user_deleted": string;
     };
     "file": {
         "file_not_found": string;
