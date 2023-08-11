@@ -56,6 +56,7 @@ export class VendorsController {
       status: query.status,
       taxable: query.taxable,
       keyword: query.keyword,
+      type: query.type,
     });
     const pagination = await Pagination.pagination(
       data.total_data,

@@ -3,7 +3,7 @@ import { CreateVendorDto } from '../dto/create-vendor.dto';
 import { UpdateVendorDto } from '../dto/update-vendor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VendorsEntity } from 'src/entities/vendors/vendors.entity';
-import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
+import { Connection, ILike, IsNull, Not, Raw, Repository } from 'typeorm';
 import {
   AppErrorException,
   AppErrorNotFoundException,
@@ -62,8 +62,16 @@ export class VendorsService {
   }
 
   async findAll(query) {
-    const { page, page_size, sort_by, order_by, status, taxable, keyword } =
-      query;
+    const {
+      page,
+      page_size,
+      sort_by,
+      order_by,
+      status,
+      taxable,
+      keyword,
+      type,
+    } = query;
     let orderObj = {};
     switch (sort_by) {
       case 'company_name':
@@ -102,12 +110,26 @@ export class VendorsService {
           status: status ? status : Not(IsNull()),
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
+          vendor_type: type
+            ? {
+                name: Raw(
+                  (alias) => `LOWER(${alias}) = '${type.toLowerCase()}'`,
+                ),
+              }
+            : {},
         },
         {
           pic_full_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
           status: status ? status : Not(IsNull()),
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
+          vendor_type: type
+            ? {
+                name: Raw(
+                  (alias) => `LOWER(${alias}) = '${type.toLowerCase()}'`,
+                ),
+              }
+            : {},
         },
       ],
       relations: {
