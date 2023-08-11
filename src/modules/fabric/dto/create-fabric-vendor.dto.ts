@@ -23,8 +23,8 @@ export class FabricFilesColorDto {
   fabric_vendor_id?: number;
 }
 export enum StockAvailableFabricVendorEnum {
-  not_avaliable = 'Not available',
-  avaliable = 'Avaliable',
+  not_available = 'Not available',
+  available = 'Available',
 }
 export class CreateFabricVendorDto {
   @ApiProperty()
