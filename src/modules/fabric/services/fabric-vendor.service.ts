@@ -104,6 +104,7 @@ export class FabricVendorService {
           color_code: true,
         },
         vendor: { id: true, company_name: true },
+        files: { id: true, base_url: true, file_url: true },
       },
       where: [
         {
@@ -117,6 +118,7 @@ export class FabricVendorService {
       relations: {
         color: true,
         vendor: true,
+        files: true,
       },
       order: orderObj,
       take: page_size,
