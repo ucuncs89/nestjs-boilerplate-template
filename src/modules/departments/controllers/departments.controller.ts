@@ -15,13 +15,13 @@ import { DepartmentsService } from '../services/departments.service';
 import { CreateDepartmentDto } from '../dto/create-department.dto';
 import { UpdateDepartmentDto } from '../dto/update-department.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/roles/roles.guard';
-import { HasRoles } from 'src/modules/roles/has-roles.decorator';
-import { Role } from 'src/modules/roles/enum/role.enum';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
+import { RolesGuard } from '../../../modules/roles/roles.guard';
+import { HasRoles } from '../../../modules/roles/has-roles.decorator';
+import { Role } from '../../../modules/roles/enum/role.enum';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { GetListDepartmentDto } from '../dto/get-list-department.dto';
-import { Pagination } from 'src/utils/pagination';
+import { Pagination } from '../../../utils/pagination';
 
 @ApiBearerAuth()
 @ApiTags('Departments')

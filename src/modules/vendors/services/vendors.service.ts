@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { CreateVendorDto } from '../dto/create-vendor.dto';
 import { UpdateVendorDto } from '../dto/update-vendor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { VendorsEntity } from 'src/entities/vendors/vendors.entity';
+import { VendorsEntity } from '../../../entities/vendors/vendors.entity';
 import { Connection, ILike, IsNull, Not, Raw, Repository } from 'typeorm';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
-import { VendorDocumentsEntity } from 'src/entities/vendors/vendor_documents.entity';
-import { VendorTypeEntity } from 'src/entities/vendors/vendor_type.entity';
+} from '../../../exceptions/app-exception';
+import { VendorDocumentsEntity } from '../../../entities/vendors/vendor_documents.entity';
+import { VendorTypeEntity } from '../../../entities/vendors/vendor_type.entity';
 import { ValidationVendorDto } from '../dto/validation-vendor.dto';
-import { RolesPermissionGuard } from 'src/modules/roles/roles-permission';
-import { Role } from 'src/modules/roles/enum/role.enum';
+import { RolesPermissionGuard } from '../../../modules/roles/roles-permission';
+import { Role } from '../../../modules/roles/enum/role.enum';
 
 @Injectable()
 export class VendorsService {

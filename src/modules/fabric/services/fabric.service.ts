@@ -4,8 +4,8 @@ import { UpdateFabricDto } from '../dto/update-fabric.dto';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
-import { FabricEntity } from 'src/entities/fabric/fabric.entity';
+} from '../../../exceptions/app-exception';
+import { FabricEntity } from '../../../entities/fabric/fabric.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, IsNull, Not, Raw, Repository } from 'typeorm';
 

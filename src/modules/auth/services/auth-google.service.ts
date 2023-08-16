@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/entities/users/users.entity';
+import { UsersEntity } from '../../../entities/users/users.entity';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 import { Repository } from 'typeorm';
 
 @Injectable()
