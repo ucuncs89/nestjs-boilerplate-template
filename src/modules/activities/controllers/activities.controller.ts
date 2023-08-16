@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Req,
@@ -16,9 +15,9 @@ import { CreateActivityDto } from '../dto/create-activity.dto';
 import { UpdateActivityDto } from '../dto/update-activity.dto';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
 import { GetListActivitiesDto } from '../dto/get-list-activity.dto';
-import { Pagination } from 'src/utils/pagination';
+import { Pagination } from '../../../utils/pagination';
 
 @ApiBearerAuth()
 @ApiTags('Activities')

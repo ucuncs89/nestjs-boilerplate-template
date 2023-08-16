@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FilesEntity } from '../../../entities/master/files.entity';
 import { Storage } from '@google-cloud/storage';
-import { StorageConfig } from 'src/config/google-storage.config';
+import { StorageConfig } from '../../../config/google-storage.config';
 import { parse } from 'path';
 
 @Injectable()

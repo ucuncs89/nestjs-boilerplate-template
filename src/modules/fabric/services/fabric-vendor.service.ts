@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { FabricEntity } from 'src/entities/fabric/fabric.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, ILike, IsNull, Not, Raw, Repository } from 'typeorm';
-import { FabricVendorEntity } from 'src/entities/fabric/fabric_vendor.entity';
+import { FabricVendorEntity } from '../../../entities/fabric/fabric_vendor.entity';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 import { CreateFabricVendorDto } from '../dto/create-fabric-vendor.dto';
-import { FabricVendorColorEntity } from 'src/entities/fabric/fabric_vendor_color.entity';
-import { FabricVendorDocumentEntity } from 'src/entities/fabric/fabric_vendor_document.entity';
+import { FabricVendorColorEntity } from '../../../entities/fabric/fabric_vendor_color.entity';
+import { FabricVendorDocumentEntity } from '../../../entities/fabric/fabric_vendor_document.entity';
 import { UpdateFabricVendorDto } from '../dto/update-fabric-vendor.dto';
 
 @Injectable()
