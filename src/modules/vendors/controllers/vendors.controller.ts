@@ -14,13 +14,13 @@ import { CreateVendorDto } from '../dto/create-vendor.dto';
 import { UpdateVendorDto } from '../dto/update-vendor.dto';
 import { VendorsService } from '../services/vendors.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
 import { GetListVendorsDto } from '../dto/get-list-vendor.dto';
-import { Pagination } from 'src/utils/pagination';
+import { Pagination } from '../../../utils/pagination';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { RolesGuard } from 'src/modules/roles/roles.guard';
-import { Role } from 'src/modules/roles/enum/role.enum';
-import { HasRoles } from 'src/modules/roles/has-roles.decorator';
+import { RolesGuard } from '../../../modules/roles/roles.guard';
+import { Role } from '../../../modules/roles/enum/role.enum';
+import { HasRoles } from '../../../modules/roles/has-roles.decorator';
 import { ValidationVendorDto } from '../dto/validation-vendor.dto';
 
 @ApiBearerAuth()

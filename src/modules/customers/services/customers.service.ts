@@ -10,8 +10,8 @@ import {
 } from '../../../exceptions/app-exception';
 import { CustomerDocumentsEntity } from '../../../entities/customers/customer_documents.entity';
 import { ValidationCustomerDto } from '../dto/validation-customer.dto';
-import { RolesPermissionGuard } from 'src/modules/roles/roles-permission';
-import { Role } from 'src/modules/roles/enum/role.enum';
+import { RolesPermissionGuard } from '../../../modules/roles/roles-permission';
+import { Role } from '../../../modules/roles/enum/role.enum';
 
 @Injectable()
 export class CustomersService {

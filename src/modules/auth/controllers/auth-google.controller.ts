@@ -4,7 +4,7 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { AuthGoogleService } from '../services/auth-google.service';
 import { AuthGoogleDTO } from '../dto/auth-google.dto';
 import { OAuth2Client } from 'google-auth-library';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import { AppErrorException } from '../../../exceptions/app-exception';
 
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_SSO_CLIENT_ID,

@@ -11,16 +11,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/roles/roles.guard';
-import { Role } from 'src/modules/roles/enum/role.enum';
-import { HasRoles } from 'src/modules/roles/has-roles.decorator';
+import { JwtAuthGuard } from '../../../modules/auth/jwt-auth.guard';
+import { RolesGuard } from '../../../modules/roles/roles.guard';
+import { Role } from '../../../modules/roles/enum/role.enum';
+import { HasRoles } from '../../../modules/roles/has-roles.decorator';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { GetListFabricDto } from '../dto/get-list-fabric.dto';
-import { Pagination } from 'src/utils/pagination';
+import { Pagination } from '../../../utils/pagination';
 import { FabricVendorService } from '../services/fabric-vendor.service';
 import { CreateFabricVendorDto } from '../dto/create-fabric-vendor.dto';
-import { UpdateFabricDto } from '../dto/update-fabric.dto';
 import { UpdateFabricVendorDto } from '../dto/update-fabric-vendor.dto';
 
 @ApiTags('Fabric Vendor')

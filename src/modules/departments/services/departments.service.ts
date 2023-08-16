@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDepartmentDto } from '../dto/create-department.dto';
 import { UpdateDepartmentDto } from '../dto/update-department.dto';
-import { DepartmentsEntity } from 'src/entities/departments/departments.entity';
+import { DepartmentsEntity } from '../../../entities/departments/departments.entity';
 import { ILike, IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 
 @Injectable()
 export class DepartmentsService {
