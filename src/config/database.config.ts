@@ -17,7 +17,7 @@ export class DatabaseConnectionService implements TypeOrmOptionsFactory {
       synchronize: false,
       dropSchema: false,
       logging: process.env.IS_DEVELOPMENT ? true : false,
-      entities: ['dist/**/**/*.entity.ts'],
+      entities: ['dist/**/**/*.entity.{js,ts}'],
       namingStrategy: new SnakeNamingStrategy(),
     };
   }

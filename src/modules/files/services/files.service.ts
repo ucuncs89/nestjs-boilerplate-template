@@ -98,7 +98,11 @@ export class FilesService {
     }
   }
   async deleteFileByFileName(file_name, user_id) {
-    this.storage.bucket(this.bucket).file(file_name).delete();
-    return true;
+    try {
+      await this.storage.bucket(this.bucket).file(file_name).delete();
+      return true;
+    } catch (error) {
+      return true;
+    }
   }
 }
