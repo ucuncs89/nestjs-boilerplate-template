@@ -28,15 +28,15 @@ export class AuthGoogleService {
       );
     }
     if (findUser !== null) {
-      if (!findUser.is_active) {
-        throw new AppErrorException(
-          'Your account is inactive. please contact admin to change your account status.',
-        );
-      }
       if (findUser.deleted_at) {
         throw new AppErrorNotFoundException(
           i18n.t('auth.error_not_found'),
           'auth_error_not_found',
+        );
+      }
+      if (!findUser.is_active) {
+        throw new AppErrorException(
+          'Your account is inactive. please contact admin to change your account status.',
         );
       }
     }
