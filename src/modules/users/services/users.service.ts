@@ -95,6 +95,11 @@ export class UsersService {
           id: order_by,
         };
         break;
+      case 'status':
+        orderObj = {
+          is_active: order_by,
+        };
+        break;
       default:
         orderObj = {
           id: order_by,

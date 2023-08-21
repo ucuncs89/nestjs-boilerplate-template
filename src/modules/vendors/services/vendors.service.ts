@@ -84,6 +84,11 @@ export class VendorsService {
           pic_full_name: order_by,
         };
         break;
+      case 'status':
+        orderObj = {
+          status: order_by,
+        };
+        break;
       case 'created_at':
         orderObj = {
           id: order_by,
