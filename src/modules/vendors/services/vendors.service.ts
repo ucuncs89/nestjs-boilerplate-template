@@ -89,6 +89,11 @@ export class VendorsService {
           status: order_by,
         };
         break;
+      case 'code':
+        orderObj = {
+          code: order_by,
+        };
+        break;
       case 'created_at':
         orderObj = {
           id: order_by,
