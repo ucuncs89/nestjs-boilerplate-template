@@ -62,10 +62,7 @@ export class AuthService {
     }
     if (findUser !== null) {
       if (!findUser.is_active) {
-        throw new AppErrorException(
-          i18n.t('auth.need_verify'),
-          'auth_need_verify',
-        );
+        throw new AppErrorException(i18n.t('auth.inactive'), 'auth_inactive');
       }
       if (findUser.need_verification) {
         throw new AppErrorException(
@@ -75,14 +72,14 @@ export class AuthService {
       }
       if (!findUser.password) {
         throw new AppErrorException(
-          i18n.t('auth.need_verify'),
-          'auth_need_verify',
+          i18n.t('auth.not_set_password'),
+          'auth_not_set_password',
         );
       }
       if (findUser.deleted_at) {
-        throw new AppErrorNotFoundException(
-          i18n.t('auth.error_not_found'),
-          'auth_error_not_found',
+        throw new AppErrorException(
+          i18n.t('auth.user_deleted'),
+          'auth_user_deleted',
         );
       }
     }

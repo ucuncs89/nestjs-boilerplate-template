@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersRolesEntity } from 'src/entities/users/users_roles.entity';
-import { AppErrorForbiddenException } from 'src/exceptions/app-exception';
+import { UsersRolesEntity } from '../../entities/users/users_roles.entity';
+import { AppErrorForbiddenException } from '../../exceptions/app-exception';
 import { In, Repository } from 'typeorm';
 import { Role } from './enum/role.enum';
 

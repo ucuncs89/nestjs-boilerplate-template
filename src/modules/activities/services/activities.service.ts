@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateActivityDto } from '../dto/create-activity.dto';
 import { UpdateActivityDto } from '../dto/update-activity.dto';
-import { ActivitiesEntity } from 'src/entities/activities/activities.entity';
+import { ActivitiesEntity } from '../../../entities/activities/activities.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, IsNull, Not, Repository } from 'typeorm';
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 
 @Injectable()
 export class ActivitiesService {

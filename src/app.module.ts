@@ -18,6 +18,11 @@ import { ActivitiesModule } from './modules/activities/activities.module';
 import { RabbitMQModule } from './rabbitmq/rabbit-mq.module';
 import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
 import { ErrorLogEntity } from './entities/logging/error_log.entity';
+import { DepartmentsModule } from './modules/departments/departments.module';
+import { FabricModule } from './modules/fabric/fabric.module';
+import { AccessoriesModule } from './modules/accessories/accessories.module';
+import { CategoryModule } from './modules/category/category.module';
+import { ColorModule } from './modules/color/color.module';
 
 @Module({
   imports: [
@@ -51,6 +56,11 @@ import { ErrorLogEntity } from './entities/logging/error_log.entity';
     CustomersModule,
     VendorsModule,
     ActivitiesModule,
+    DepartmentsModule,
+    FabricModule,
+    AccessoriesModule,
+    CategoryModule,
+    ColorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
