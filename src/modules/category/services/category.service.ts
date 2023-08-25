@@ -100,7 +100,7 @@ export class CategoryService {
         {
           sub_category: keyword
             ? { name: ILike(`%${keyword}%`), deleted_at: IsNull() }
-            : { name: Not(IsNull()), deleted_at: IsNull() },
+            : { deleted_at: IsNull() },
           deleted_at: IsNull(),
           parent_id: IsNull(),
         },
@@ -170,6 +170,14 @@ export class CategoryService {
         id: id,
         name: updateCategoryDto.name,
       });
+      await this.categoriesRepository.update(
+        { parent_id: id },
+        { deleted_by: user_id, deleted_at: new Date().toISOString() },
+      );
+      for (const sub_category of updateCategoryDto.sub_category) {
+        sub_category.deleted_at = null;
+        sub_category.deleted_by = null;
+      }
       const sub_category = await this.categoriesRepository.save(
         updateCategoryDto.sub_category,
       );

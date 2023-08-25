@@ -9,6 +9,9 @@ export class SubCategoryDto {
   name: string;
 
   parent_id?: number;
+
+  deleted_at?: string;
+  deleted_by?: number;
 }
 export class CreateCategoryDto {
   @ApiProperty()
