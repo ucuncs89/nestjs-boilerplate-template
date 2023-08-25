@@ -9,12 +9,7 @@ export class RequestLoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     res.on('finish', () => {
       const statusCode = res.statusCode;
-      if (
-        statusCode === 400 ||
-        statusCode === 401 ||
-        statusCode === 403 ||
-        statusCode === 405
-      ) {
+      if (statusCode === 400 || statusCode === 403) {
         this.rabbitMQService.send('cloami-error-log', {
           path: req.url,
           status_code: statusCode,
