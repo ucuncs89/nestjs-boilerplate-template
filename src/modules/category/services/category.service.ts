@@ -95,11 +95,12 @@ export class CategoryService {
           name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
           deleted_at: IsNull(),
           parent_id: IsNull(),
+          sub_category: { deleted_at: IsNull() },
         },
         {
           sub_category: keyword
-            ? { name: ILike(`%${keyword}%`) }
-            : { name: Not(IsNull()) },
+            ? { name: ILike(`%${keyword}%`), deleted_at: IsNull() }
+            : { name: Not(IsNull()), deleted_at: IsNull() },
           deleted_at: IsNull(),
           parent_id: IsNull(),
         },
@@ -119,7 +120,11 @@ export class CategoryService {
 
   async findOne(id: number, i18n) {
     const data = await this.categoriesRepository.findOne({
-      where: { id, deleted_at: IsNull() },
+      where: {
+        id,
+        deleted_at: IsNull(),
+        sub_category: { deleted_at: IsNull() },
+      },
       select: {
         id: true,
         name: true,
