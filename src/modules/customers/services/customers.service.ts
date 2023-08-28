@@ -3,7 +3,7 @@ import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CustomersEntity } from '../../../entities/customers/customers.entity';
-import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
+import { Connection, ILike, In, IsNull, Not, Repository } from 'typeorm';
 import {
   AppErrorException,
   AppErrorNotFoundException,
@@ -12,6 +12,7 @@ import { CustomerDocumentsEntity } from '../../../entities/customers/customer_do
 import { ValidationCustomerDto } from '../dto/validation-customer.dto';
 import { RolesPermissionGuard } from '../../../modules/roles/roles-permission';
 import { Role } from '../../../modules/roles/enum/role.enum';
+import { ActivationCustomerDto } from '../dto/activation-customer.dto';
 
 @Injectable()
 export class CustomersService {
@@ -52,9 +53,29 @@ export class CustomersService {
   }
 
   async findAll(query) {
-    const { page, page_size, sort_by, order_by, status, taxable, keyword } =
-      query;
+    const {
+      page,
+      page_size,
+      sort_by,
+      order_by,
+      status,
+      taxable,
+      keyword,
+      is_active,
+    } = query;
     let orderObj = {};
+    let active: any;
+    switch (is_active) {
+      case 'true':
+        active = true;
+        break;
+      case 'false':
+        active = false;
+        break;
+      default:
+        active = [];
+        break;
+    }
     switch (sort_by) {
       case 'company_name':
         orderObj = {
@@ -87,6 +108,7 @@ export class CustomersService {
         pic_phone_number: true,
         status: true,
         last_order: true,
+        is_active: true,
       },
       where: [
         {
@@ -94,12 +116,14 @@ export class CustomersService {
           status: status ? status : Not(IsNull()),
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
+          is_active: is_active ? active : Not(In(active)),
         },
         {
           pic_full_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
           status: status ? status : Not(IsNull()),
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
+          is_active: is_active ? active : Not(In(active)),
         },
       ],
       order: orderObj,
@@ -130,6 +154,7 @@ export class CustomersService {
         bank_account_number: true,
         bank_name: true,
         npwp_number: true,
+        is_active: true,
         customer_documents: {
           id: true,
           type: true,
@@ -270,6 +295,32 @@ export class CustomersService {
     customer.updated_at = new Date().toISOString();
     customer.updated_by = user_id;
     customer.status = validationCustomerDto.status;
+    this.customersRepository.save(customer);
+    return { id, status: customer.status };
+  }
+  async activationCustomer(
+    id: number,
+    activationCustomerDto: ActivationCustomerDto,
+    user_id,
+  ) {
+    const customer = await this.customersRepository.findOne({
+      select: {
+        id: true,
+        status: true,
+        updated_at: true,
+      },
+      where: {
+        id: id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    if (!customer) {
+      throw new AppErrorNotFoundException();
+    }
+    customer.updated_at = new Date().toISOString();
+    customer.updated_by = user_id;
+    customer.is_active = activationCustomerDto.is_active;
     this.customersRepository.save(customer);
     return { id, status: customer.status };
   }
