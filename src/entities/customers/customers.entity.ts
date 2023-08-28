@@ -54,6 +54,9 @@ export class CustomersEntity {
   @Column({ type: 'varchar', nullable: true })
   bank_account_holder_name: string;
 
+  @Column({ type: 'boolean', nullable: true, default: false })
+  is_active: boolean;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
