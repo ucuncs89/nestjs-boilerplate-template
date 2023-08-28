@@ -9,6 +9,11 @@ export enum TaxableCustomerEnum {
   nonpkp = 'Non PKP',
 }
 
+export enum StatusActiveEnum {
+  true = 'true',
+  false = 'false',
+}
+
 export class GetListCustomersDto {
   @ApiProperty({ required: false })
   page: number;
@@ -30,4 +35,7 @@ export class GetListCustomersDto {
 
   @ApiProperty({ required: false })
   keyword?: string;
+
+  @ApiProperty({ required: false, enum: StatusActiveEnum })
+  is_active?: StatusActiveEnum;
 }
