@@ -19,11 +19,11 @@ export class CategoryService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto, user_id, i18n) {
-    const findByName = await this.findByName(CreateCategoryDto.name);
+    const findByName = await this.findByName(createCategoryDto.name);
     if (findByName) {
       throw new AppErrorException('Already Exist');
     }
-    const code = await this.generateCodeAccessroiesSewing();
+    const code = await this.generateCodeCategory();
     createCategoryDto.sub_category = createCategoryDto.sub_category.filter(
       (obj, index, self) =>
         index === self.findIndex((item) => item.name === obj.name),
@@ -204,7 +204,7 @@ export class CategoryService {
     }
   }
 
-  async generateCodeAccessroiesSewing() {
+  async generateCodeCategory() {
     const pad = '0000';
     try {
       const category = await this.categoriesRepository.find({
@@ -224,6 +224,7 @@ export class CategoryService {
     const data = await this.categoriesRepository
       .createQueryBuilder()
       .where('LOWER(name) = LOWER(:name)', { name })
+      .andWhere('parent_id is null')
       .andWhere('deleted_at is null')
       .getOne();
     return data;
