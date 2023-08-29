@@ -109,6 +109,8 @@ export class CustomersService {
         status: true,
         last_order: true,
         is_active: true,
+        city_id: true,
+        province_id: true,
       },
       where: [
         {
@@ -155,6 +157,19 @@ export class CustomersService {
         bank_name: true,
         npwp_number: true,
         is_active: true,
+        province_id: true,
+        city_id: true,
+        city: {
+          id: true,
+          name: true,
+          code: true,
+          province_id: true,
+        },
+        province: {
+          id: true,
+          name: true,
+          code: true,
+        },
         customer_documents: {
           id: true,
           type: true,
@@ -164,6 +179,8 @@ export class CustomersService {
       },
       relations: {
         customer_documents: true,
+        province: true,
+        city: true,
       },
       where: { id, deleted_at: IsNull() },
     });
@@ -208,6 +225,8 @@ export class CustomersService {
         bank_account_number: updateCustomerDto.bank_account_number,
         npwp_number: updateCustomerDto.npwp_number,
         bank_name: updateCustomerDto.bank_name,
+        province_id: updateCustomerDto.province_id,
+        city_id: updateCustomerDto.city_id,
       });
       for (const documents of updateCustomerDto.customer_documents) {
         documents.customer_id = id;

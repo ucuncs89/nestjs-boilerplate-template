@@ -2,10 +2,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CustomerDocumentsEntity } from './customer_documents.entity';
+import { ProvinceEntity } from '../master/province.entity';
+import { CityEntity } from '../master/city.entity';
 
 @Entity('customers')
 export class CustomersEntity {
@@ -81,6 +84,12 @@ export class CustomersEntity {
   @Column({ type: 'timestamp with time zone', nullable: true })
   last_order?: string;
 
+  @Column({ type: 'integer', nullable: true })
+  city_id?: number;
+
+  @Column({ type: 'integer', nullable: true })
+  province_id?: number;
+
   @OneToMany(
     () => CustomerDocumentsEntity,
     (customer_documents: CustomerDocumentsEntity) =>
@@ -88,4 +97,20 @@ export class CustomersEntity {
   )
   @JoinColumn({ name: 'customer_id' })
   customer_documents: CustomerDocumentsEntity[];
+
+  @ManyToOne(
+    () => ProvinceEntity,
+    (province: ProvinceEntity) => province.customer,
+    {
+      cascade: true,
+    },
+  )
+  @JoinColumn({ name: 'province_id' })
+  public province: ProvinceEntity;
+
+  @ManyToOne(() => CityEntity, (city: CityEntity) => city.customer, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'city_id' })
+  public city: CityEntity;
 }
