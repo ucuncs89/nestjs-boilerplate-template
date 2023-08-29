@@ -20,6 +20,7 @@ import { FabricModule } from './modules/fabric/fabric.module';
 import { AccessoriesModule } from './modules/accessories/accessories.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ColorModule } from './modules/color/color.module';
+import { RegionModule } from './modules/region/region.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { ColorModule } from './modules/color/color.module';
     AccessoriesModule,
     CategoryModule,
     ColorModule,
+    RegionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

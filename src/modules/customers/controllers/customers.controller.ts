@@ -111,7 +111,7 @@ export class CustomersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @HasRoles(Role.SUPERADMIN, Role.FINANCE)
+  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
   @Put(':id/activation')
   async activaition(
     @Req() req,
