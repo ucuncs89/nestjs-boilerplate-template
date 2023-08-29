@@ -8,7 +8,6 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { error } from 'console';
 
 @Injectable()
 export class CategoryService {

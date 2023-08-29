@@ -17,3 +17,10 @@ export const editFileName = (req, file, callback) => {
   const randomName = randomBytes(8).toString('hex');
   callback(null, `${randomName}${fileExtName}`);
 };
+
+export const excelFileFilter = (req, file, callback) => {
+  if (!file.originalname.match(/\.(xlsx|XLSX|xls|XLS)$/)) {
+    return callback(new BadRequestException('Type not allowed'), false);
+  }
+  callback(null, true);
+};
