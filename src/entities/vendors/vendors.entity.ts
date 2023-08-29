@@ -2,12 +2,15 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { VendorDocumentsEntity } from './vendor_documents.entity';
 import { VendorTypeEntity } from './vendor_type.entity';
 import { FabricVendorEntity } from '../fabric/fabric_vendor.entity';
+import { ProvinceEntity } from '../master/province.entity';
+import { CityEntity } from '../master/city.entity';
 
 @Entity('vendors')
 export class VendorsEntity {
@@ -100,4 +103,26 @@ export class VendorsEntity {
   )
   @JoinColumn({ name: 'vendor_id' })
   vendor_fabric: FabricVendorEntity[];
+
+  @Column({ type: 'integer', nullable: true })
+  city_id?: number;
+
+  @Column({ type: 'integer', nullable: true })
+  province_id?: number;
+
+  @ManyToOne(
+    () => ProvinceEntity,
+    (province: ProvinceEntity) => province.vendor,
+    {
+      cascade: true,
+    },
+  )
+  @JoinColumn({ name: 'province_id' })
+  public province: ProvinceEntity;
+
+  @ManyToOne(() => CityEntity, (city: CityEntity) => city.vendor, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'city_id' })
+  public city: CityEntity;
 }

@@ -6,7 +6,7 @@ export class VillageEntity {
   @PrimaryColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'integer' })
   district_id: number;
 
   @Column({ type: 'varchar', nullable: true })

@@ -14,7 +14,7 @@ export class DistrictEntity {
   @PrimaryColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'integer' })
   city_id: number;
 
   @Column({ type: 'varchar', nullable: true })
