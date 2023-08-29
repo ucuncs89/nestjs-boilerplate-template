@@ -70,4 +70,10 @@ export class CreateCustomerDto {
 
   @ApiProperty()
   bank_account_holder_name?: string;
+
+  @ApiProperty()
+  city_id?: number;
+
+  @ApiProperty()
+  province_id?: number;
 }

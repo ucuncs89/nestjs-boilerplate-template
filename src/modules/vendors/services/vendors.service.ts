@@ -109,6 +109,8 @@ export class VendorsService {
         pic_full_name: true,
         pic_phone_number: true,
         status: true,
+        province_id: true,
+        city_id: true,
         vendor_type: {
           id: true,
           name: true,
@@ -173,6 +175,19 @@ export class VendorsService {
         bank_account_number: true,
         bank_name: true,
         npwp_number: true,
+        province_id: true,
+        city_id: true,
+        city: {
+          id: true,
+          name: true,
+          code: true,
+          province_id: true,
+        },
+        province: {
+          id: true,
+          name: true,
+          code: true,
+        },
         vendor_type: { id: true, name: true },
         vendor_documents: {
           id: true,
@@ -184,6 +199,8 @@ export class VendorsService {
       relations: {
         vendor_type: true,
         vendor_documents: true,
+        province: true,
+        city: true,
       },
       where: { id, deleted_at: IsNull() },
     });
@@ -228,6 +245,8 @@ export class VendorsService {
         bank_account_number: updateVendorDto.bank_account_number,
         npwp_number: updateVendorDto.npwp_number,
         bank_name: updateVendorDto.bank_name,
+        province_id: updateVendorDto.province_id,
+        city_id: updateVendorDto.city_id,
       });
       for (const documents of updateVendorDto.vendor_documents) {
         documents.vendor_id = id;
