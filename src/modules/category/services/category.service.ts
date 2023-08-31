@@ -8,7 +8,6 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { error } from 'console';
 
 @Injectable()
 export class CategoryService {
@@ -19,11 +18,11 @@ export class CategoryService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto, user_id, i18n) {
-    const findByName = await this.findByName(CreateCategoryDto.name);
+    const findByName = await this.findByName(createCategoryDto.name);
     if (findByName) {
       throw new AppErrorException('Already Exist');
     }
-    const code = await this.generateCodeAccessroiesSewing();
+    const code = await this.generateCodeCategory();
     createCategoryDto.sub_category = createCategoryDto.sub_category.filter(
       (obj, index, self) =>
         index === self.findIndex((item) => item.name === obj.name),
@@ -95,11 +94,12 @@ export class CategoryService {
           name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
           deleted_at: IsNull(),
           parent_id: IsNull(),
+          sub_category: { deleted_at: IsNull() },
         },
         {
           sub_category: keyword
-            ? { name: ILike(`%${keyword}%`) }
-            : { name: Not(IsNull()) },
+            ? { name: ILike(`%${keyword}%`), deleted_at: IsNull() }
+            : { deleted_at: IsNull() },
           deleted_at: IsNull(),
           parent_id: IsNull(),
         },
@@ -119,7 +119,11 @@ export class CategoryService {
 
   async findOne(id: number, i18n) {
     const data = await this.categoriesRepository.findOne({
-      where: { id, deleted_at: IsNull() },
+      where: {
+        id,
+        deleted_at: IsNull(),
+        sub_category: { deleted_at: IsNull() },
+      },
       select: {
         id: true,
         name: true,
@@ -165,6 +169,14 @@ export class CategoryService {
         id: id,
         name: updateCategoryDto.name,
       });
+      await this.categoriesRepository.update(
+        { parent_id: id },
+        { deleted_by: user_id, deleted_at: new Date().toISOString() },
+      );
+      for (const sub_category of updateCategoryDto.sub_category) {
+        sub_category.deleted_at = null;
+        sub_category.deleted_by = null;
+      }
       const sub_category = await this.categoriesRepository.save(
         updateCategoryDto.sub_category,
       );
@@ -191,7 +203,7 @@ export class CategoryService {
     }
   }
 
-  async generateCodeAccessroiesSewing() {
+  async generateCodeCategory() {
     const pad = '0000';
     try {
       const category = await this.categoriesRepository.find({
@@ -211,6 +223,7 @@ export class CategoryService {
     const data = await this.categoriesRepository
       .createQueryBuilder()
       .where('LOWER(name) = LOWER(:name)', { name })
+      .andWhere('parent_id is null')
       .andWhere('deleted_at is null')
       .getOne();
     return data;

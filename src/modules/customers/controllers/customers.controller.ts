@@ -22,6 +22,7 @@ import { RolesGuard } from '../../../modules/roles/roles.guard';
 import { HasRoles } from '../../../modules/roles/has-roles.decorator';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ValidationCustomerDto } from '../dto/validation-customer.dto';
+import { ActivationCustomerDto } from '../dto/activation-customer.dto';
 
 @ApiBearerAuth()
 @ApiTags('Customers')
@@ -56,6 +57,7 @@ export class CustomersController {
       status: query.status,
       taxable: query.taxable,
       keyword: query.keyword,
+      is_active: query.is_active,
     });
     const pagination = await Pagination.pagination(
       data.total_data,
@@ -103,6 +105,22 @@ export class CustomersController {
     const data = await this.customersService.validateCustomer(
       +id,
       validationCustomerDto,
+      req.user.id,
+    );
+    return { data };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+  @Put(':id/activation')
+  async activaition(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() activationCustomerDto: ActivationCustomerDto,
+  ) {
+    const data = await this.customersService.activationCustomer(
+      +id,
+      activationCustomerDto,
       req.user.id,
     );
     return { data };
