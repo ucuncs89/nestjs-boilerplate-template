@@ -22,6 +22,7 @@ import { RolesGuard } from '../../../modules/roles/roles.guard';
 import { Role } from '../../../modules/roles/enum/role.enum';
 import { HasRoles } from '../../../modules/roles/has-roles.decorator';
 import { ValidationVendorDto } from '../dto/validation-vendor.dto';
+import { ActivationVendorDto } from '../dto/activation-vendor.dto';
 
 @ApiBearerAuth()
 @ApiTags('vendors')
@@ -57,6 +58,7 @@ export class VendorsController {
       taxable: query.taxable,
       keyword: query.keyword,
       type: query.type,
+      is_active: query.is_active,
     });
     const pagination = await Pagination.pagination(
       data.total_data,
@@ -104,6 +106,22 @@ export class VendorsController {
     const data = await this.vendorsService.validateVendor(
       +id,
       validationVendorDto,
+      req.user.id,
+    );
+    return { data };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+  @Put(':id/activation')
+  async activaition(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() activationVendorDto: ActivationVendorDto,
+  ) {
+    const data = await this.vendorsService.activationVendor(
+      +id,
+      activationVendorDto,
       req.user.id,
     );
     return { data };

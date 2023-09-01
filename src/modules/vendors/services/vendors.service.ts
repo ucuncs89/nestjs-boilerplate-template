@@ -3,7 +3,7 @@ import { CreateVendorDto } from '../dto/create-vendor.dto';
 import { UpdateVendorDto } from '../dto/update-vendor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VendorsEntity } from '../../../entities/vendors/vendors.entity';
-import { Connection, ILike, IsNull, Not, Raw, Repository } from 'typeorm';
+import { Connection, ILike, In, IsNull, Not, Raw, Repository } from 'typeorm';
 import {
   AppErrorException,
   AppErrorNotFoundException,
@@ -13,6 +13,7 @@ import { VendorTypeEntity } from '../../../entities/vendors/vendor_type.entity';
 import { ValidationVendorDto } from '../dto/validation-vendor.dto';
 import { RolesPermissionGuard } from '../../../modules/roles/roles-permission';
 import { Role } from '../../../modules/roles/enum/role.enum';
+import { ActivationVendorDto } from '../dto/activation-vendor.dto';
 
 @Injectable()
 export class VendorsService {
@@ -71,7 +72,20 @@ export class VendorsService {
       taxable,
       keyword,
       type,
+      is_active,
     } = query;
+    let active: any;
+    switch (is_active) {
+      case 'true':
+        active = true;
+        break;
+      case 'false':
+        active = false;
+        break;
+      default:
+        active = [];
+        break;
+    }
     let orderObj = {};
     switch (sort_by) {
       case 'company_name':
@@ -111,6 +125,7 @@ export class VendorsService {
         status: true,
         province_id: true,
         city_id: true,
+        is_active: true,
         vendor_type: {
           id: true,
           name: true,
@@ -122,6 +137,7 @@ export class VendorsService {
           status: status ? status : Not(IsNull()),
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
+          is_active: is_active ? active : Not(In(active)),
           vendor_type: type
             ? {
                 name: Raw(
@@ -135,6 +151,7 @@ export class VendorsService {
           status: status ? status : Not(IsNull()),
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
+          is_active: is_active ? active : Not(In(active)),
           vendor_type: type
             ? {
                 name: Raw(
@@ -176,6 +193,7 @@ export class VendorsService {
         bank_name: true,
         npwp_number: true,
         province_id: true,
+        is_active: true,
         city_id: true,
         city: {
           id: true,
@@ -344,5 +362,31 @@ export class VendorsService {
     customer.status = validationVendorDto.status;
     this.vendorsRepository.save(customer);
     return { id, status: customer.status };
+  }
+  async activationVendor(
+    id: number,
+    activationVendorDto: ActivationVendorDto,
+    user_id,
+  ) {
+    const vendor = await this.vendorsRepository.findOne({
+      select: {
+        id: true,
+        status: true,
+        updated_at: true,
+      },
+      where: {
+        id: id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    if (!vendor) {
+      throw new AppErrorNotFoundException();
+    }
+    vendor.updated_at = new Date().toISOString();
+    vendor.updated_by = user_id;
+    vendor.is_active = activationVendorDto.is_active;
+    this.vendorsRepository.save(vendor);
+    return { id, status: vendor.is_active };
   }
 }

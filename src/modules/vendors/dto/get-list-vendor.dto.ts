@@ -9,6 +9,11 @@ export enum TaxableVendorEnum {
   nonpkp = 'Non PKP',
 }
 
+export enum StatusActiveEnum {
+  true = 'true',
+  false = 'false',
+}
+
 export class GetListVendorsDto {
   @ApiProperty({ required: false })
   page: number;
@@ -33,4 +38,7 @@ export class GetListVendorsDto {
 
   @ApiProperty({ required: false })
   type?: string;
+
+  @ApiProperty({ required: false, enum: StatusActiveEnum })
+  is_active?: StatusActiveEnum;
 }

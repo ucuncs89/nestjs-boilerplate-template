@@ -125,4 +125,7 @@ export class VendorsEntity {
   })
   @JoinColumn({ name: 'city_id' })
   public city: CityEntity;
+
+  @Column({ type: 'boolean', nullable: true, default: false })
+  is_active: boolean;
 }
