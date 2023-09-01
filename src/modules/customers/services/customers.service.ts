@@ -341,6 +341,6 @@ export class CustomersService {
     customer.updated_by = user_id;
     customer.is_active = activationCustomerDto.is_active;
     this.customersRepository.save(customer);
-    return { id, status: customer.status };
+    return { id, status: customer.is_active };
   }
 }
