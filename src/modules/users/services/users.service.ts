@@ -238,4 +238,10 @@ export class UsersService {
       need_verification: user.need_verification,
     };
   }
+
+  async updateStatusActiveUser(email: string) {
+    const user = await this.findUserByEmail(email);
+    user.is_active = false;
+    return await this.userRepository.save(user);
+  }
 }
