@@ -14,6 +14,7 @@ import { UsersPasswordEntity } from '../../entities/users/users_password.entity'
 import { UsersTokenEntity } from '../../entities/users/users_token.entity';
 import { AuthGoogleController } from './controllers/auth-google.controller';
 import { AuthGoogleService } from './services/auth-google.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { AuthGoogleService } from './services/auth-google.service';
       secret: env.JWT_SECRET_KEY,
       signOptions: { expiresIn: env.JWT_EXPIRED },
     }),
+    HttpModule,
   ],
   controllers: [AuthController, AuthGoogleController],
   providers: [AuthService, JwtStrategy, UsersService, AuthGoogleService],
