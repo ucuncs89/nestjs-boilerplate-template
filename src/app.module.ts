@@ -24,6 +24,7 @@ import { AccessoriesModule } from './modules/accessories/accessories.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ColorModule } from './modules/color/color.module';
 import { RegionModule } from './modules/region/region.module';
+import { ProjectModule } from './modules/project/project.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { RegionModule } from './modules/region/region.module';
     CategoryModule,
     ColorModule,
     RegionModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],
