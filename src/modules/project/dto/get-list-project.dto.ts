@@ -1,0 +1,36 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { OrderTypeProjectEnum } from './create-project.dto';
+
+export enum StatusProjectEnum {
+  Planning = 'Planning',
+  Sampling = 'Sampling',
+  Production = 'Production',
+  Delivery = 'Delivery',
+  Penagihan = 'Penagihan',
+  Complete = 'Complete',
+  Canceled = 'Canceled',
+  Hold = 'Hold',
+}
+
+export class GetListProjectDto {
+  @ApiProperty({ required: false })
+  page: number;
+
+  @ApiProperty({ required: false })
+  page_size: number;
+
+  @ApiProperty({ required: false })
+  order_by: string;
+
+  @ApiProperty({ required: false })
+  sort_by?: string;
+
+  @ApiProperty({ required: false })
+  keyword?: string;
+
+  @ApiProperty({ required: false, enum: StatusProjectEnum })
+  status?: StatusProjectEnum;
+
+  @ApiProperty({ required: false, enum: OrderTypeProjectEnum })
+  order_type?: OrderTypeProjectEnum;
+}
