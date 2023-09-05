@@ -2,11 +2,15 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectDocumentEntity } from './project_document.entity';
 import { ProjectSizeEntity } from './project_size.entity';
+import { UsersEntity } from '../users/users.entity';
+import { DepartmentsEntity } from '../departments/departments.entity';
+import { CategoriesEntity } from '../categories/categories.entity';
 
 @Entity('project')
 export class ProjectEntity {
@@ -86,4 +90,30 @@ export class ProjectEntity {
   )
   @JoinColumn({ name: 'project_id' })
   size: ProjectSizeEntity[];
+
+  @ManyToOne(() => UsersEntity, (users: UsersEntity) => users.id, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'user_id' })
+  public users: UsersEntity;
+
+  @ManyToOne(
+    () => DepartmentsEntity,
+    (departements: DepartmentsEntity) => departements.id,
+    {
+      cascade: true,
+    },
+  )
+  @JoinColumn({ name: 'department_id' })
+  public departements: DepartmentsEntity;
+
+  @ManyToOne(
+    () => CategoriesEntity,
+    (categories: CategoriesEntity) => categories.id,
+    {
+      cascade: true,
+    },
+  )
+  @JoinColumn({ name: 'category_id' })
+  public categories: CategoriesEntity;
 }

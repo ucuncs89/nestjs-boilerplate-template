@@ -84,6 +84,21 @@ export class ProjectService {
         user_id: true,
         created_at: true,
         updated_at: true,
+        users: {
+          id: true,
+          full_name: true,
+          base_path: true,
+          path_picture: true,
+        },
+        departements: {
+          id: true,
+          code: true,
+          name: true,
+        },
+        categories: {
+          id: true,
+          name: true,
+        },
       },
       where: [
         {
@@ -99,7 +114,7 @@ export class ProjectService {
           deleted_at: IsNull(),
         },
       ],
-
+      relations: { users: true, departements: true, categories: true },
       order: orderObj,
       take: page_size,
       skip: page,
