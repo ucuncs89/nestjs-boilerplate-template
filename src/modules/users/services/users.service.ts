@@ -289,10 +289,12 @@ export class UsersService {
       where: [
         {
           full_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
+          is_active: true,
           deleted_at: IsNull(),
         },
         {
           email: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
+          is_active: true,
           deleted_at: IsNull(),
         },
       ],
