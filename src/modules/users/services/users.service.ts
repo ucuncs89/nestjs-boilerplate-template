@@ -11,6 +11,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
 import { env } from 'process';
 import { UsersRolesEntity } from '../../../entities/users/users_roles.entity';
+import { GetUserListDto } from '../dto/get-user-list.dto';
 
 @Injectable()
 export class UsersService {
@@ -243,5 +244,65 @@ export class UsersService {
     const user = await this.findUserByEmail(email);
     user.is_active = false;
     return await this.userRepository.save(user);
+  }
+
+  async findUserList(query: GetUserListDto) {
+    const { keyword, page_size, page, order_by, sort_by } = query;
+    let orderObj = {};
+    switch (sort_by) {
+      case 'full_name':
+        orderObj = {
+          full_name: order_by,
+        };
+        break;
+      case 'email':
+        orderObj = {
+          email: order_by,
+        };
+        break;
+      case 'created_at':
+        orderObj = {
+          id: order_by,
+        };
+        break;
+      case 'status':
+        orderObj = {
+          is_active: order_by,
+        };
+        break;
+      default:
+        orderObj = {
+          id: order_by,
+        };
+        break;
+    }
+    const [result, total] = await this.userRepository.findAndCount({
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        is_active: true,
+        need_verification: true,
+        base_path: true,
+        path_picture: true,
+      },
+      where: [
+        {
+          full_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
+          deleted_at: IsNull(),
+        },
+        {
+          email: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
+          deleted_at: IsNull(),
+        },
+      ],
+      order: orderObj,
+      take: page_size,
+      skip: page,
+    });
+    return {
+      data: result,
+      total_data: total,
+    };
   }
 }

@@ -10,6 +10,7 @@ import { UsersActivationService } from './services/users-activation.service';
 import { UsersPasswordEntity } from '../../entities/users/users_password.entity';
 import { UsersManageController } from './controllers/users-manage.controller';
 import { PermissionsEntity } from '../../entities/permission/permission.entity';
+import { UsersController } from './controllers/users.controller';
 
 @Module({
   imports: [
@@ -36,7 +37,11 @@ import { PermissionsEntity } from '../../entities/permission/permission.entity';
       signOptions: { expiresIn: env.JWT_EXPIRED },
     }),
   ],
-  controllers: [UsersManageController, UsersActivationController],
+  controllers: [
+    UsersManageController,
+    UsersController,
+    UsersActivationController,
+  ],
   providers: [UsersService, JwtService, UsersActivationService],
 })
 export class UsersModule {}
