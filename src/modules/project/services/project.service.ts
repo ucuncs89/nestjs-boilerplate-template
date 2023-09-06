@@ -30,6 +30,7 @@ export class ProjectService {
         created_by: user_id,
         code,
         status: 'Planning',
+        target_price_for_customer: createProjectDto.target_price_for_buyer,
       });
       for (const documents of createProjectDto.project_document) {
         documents.project_id = project.raw[0].id;
@@ -84,6 +85,7 @@ export class ProjectService {
         user_id: true,
         created_at: true,
         updated_at: true,
+        customers: { id: true, pic_full_name: true, code: true },
         users: {
           id: true,
           full_name: true,
@@ -114,7 +116,12 @@ export class ProjectService {
           deleted_at: IsNull(),
         },
       ],
-      relations: { users: true, departements: true, categories: true },
+      relations: {
+        users: true,
+        departements: true,
+        categories: true,
+        customers: true,
+      },
       order: orderObj,
       take: page_size,
       skip: page,
