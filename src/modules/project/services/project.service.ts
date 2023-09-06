@@ -87,7 +87,12 @@ export class ProjectService {
         user_id: true,
         created_at: true,
         updated_at: true,
-        customers: { id: true, pic_full_name: true, code: true },
+        customers: {
+          id: true,
+          pic_full_name: true,
+          code: true,
+          company_name: true,
+        },
         users: {
           id: true,
           full_name: true,
