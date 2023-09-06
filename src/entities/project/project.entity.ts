@@ -11,6 +11,7 @@ import { ProjectSizeEntity } from './project_size.entity';
 import { UsersEntity } from '../users/users.entity';
 import { DepartmentsEntity } from '../departments/departments.entity';
 import { CategoriesEntity } from '../categories/categories.entity';
+import { CustomersEntity } from '../customers/customers.entity';
 
 @Entity('project')
 export class ProjectEntity {
@@ -116,4 +117,14 @@ export class ProjectEntity {
   )
   @JoinColumn({ name: 'category_id' })
   public categories: CategoriesEntity;
+
+  @ManyToOne(
+    () => CustomersEntity,
+    (customers: CustomersEntity) => customers.id,
+    {
+      cascade: true,
+    },
+  )
+  @JoinColumn({ name: 'customer_id' })
+  public customers: CustomersEntity;
 }
