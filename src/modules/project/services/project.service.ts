@@ -30,6 +30,7 @@ export class ProjectService {
         created_by: user_id,
         code,
         status: 'Planning',
+        department_id: createProjectDto.departement_id,
         target_price_for_customer: createProjectDto.target_price_for_buyer,
       });
       for (const documents of createProjectDto.project_document) {
@@ -82,6 +83,7 @@ export class ProjectService {
         deadline: true,
         order_type: true,
         target_price_for_customer: true,
+        department_id: true,
         user_id: true,
         created_at: true,
         updated_at: true,
