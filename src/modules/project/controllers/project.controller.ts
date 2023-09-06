@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Req,
   Query,
+  Put,
 } from '@nestjs/common';
 import { ProjectService } from '../services/project.service';
 import { CreateProjectDto } from '../dto/create-project.dto';
@@ -63,13 +63,23 @@ export class ProjectController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.projectService.findOne(+id);
+  async findOne(@Param('id') id: string, @I18n() i18n: I18nContext) {
+    const data = await this.projectService.findOne(+id, i18n);
+    return { message: 'Successfully', data };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectService.update(+id, updateProjectDto);
+  @Put(':id')
+  async update(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updateProjectDto: UpdateProjectDto,
+  ) {
+    const data = await this.projectService.update(
+      +id,
+      updateProjectDto,
+      req.user.id,
+    );
+    return { message: 'Successfully', data };
   }
 
   @Delete(':id')

@@ -77,7 +77,7 @@ export class CreateProjectDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  sub_Category_id: number;
+  sub_category_id: number;
 
   @ApiProperty({
     isArray: true,

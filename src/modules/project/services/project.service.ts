@@ -139,12 +139,135 @@ export class ProjectService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
+  async findOne(id: number, i18n) {
+    const data = await this.projectRepository.findOne({
+      select: {
+        id: true,
+        code: true,
+        company: true,
+        status: true,
+        style_name: true,
+        deadline: true,
+        order_type: true,
+        target_price_for_customer: true,
+        department_id: true,
+        user_id: true,
+        created_at: true,
+        updated_at: true,
+        customer_id: true,
+        category_id: true,
+        sub_category_id: true,
+        description: true,
+        size: {
+          project_id: true,
+          size_ratio: true,
+          number_of_item: true,
+        },
+        project_document: {
+          project_id: true,
+          type: true,
+          base_url: true,
+          file_url: true,
+        },
+        customers: {
+          id: true,
+          pic_full_name: true,
+          code: true,
+          company_name: true,
+        },
+        users: {
+          id: true,
+          full_name: true,
+          base_path: true,
+          path_picture: true,
+        },
+        departements: {
+          id: true,
+          code: true,
+          name: true,
+        },
+        categories: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: {
+        customers: true,
+        users: true,
+        departements: true,
+        categories: true,
+        size: true,
+        project_document: true,
+      },
+      where: {
+        id,
+      },
+    });
+    if (!data) {
+      throw new AppErrorNotFoundException();
+    }
+    return data;
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(id: number, updateProjectDto: UpdateProjectDto, user_id) {
+    const project = await this.projectRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+    });
+    if (!project) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.update(ProjectEntity, id, {
+        style_name: updateProjectDto.style_name,
+        customer_id: updateProjectDto.customer_id,
+        deadline: updateProjectDto.deadline,
+        order_type: updateProjectDto.order_type,
+        description: updateProjectDto.description,
+        company: updateProjectDto.company,
+        user_id: updateProjectDto.user_id,
+        target_price_for_customer: updateProjectDto.target_price_for_buyer,
+        department_id: updateProjectDto.departement_id,
+        category_id: updateProjectDto.category_id,
+        sub_category_id: updateProjectDto.sub_category_id,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      });
+      for (const documents of updateProjectDto.project_document) {
+        documents.project_id = id;
+      }
+      for (const size of updateProjectDto.size) {
+        size.project_id = id;
+      }
+      await queryRunner.manager.delete(ProjectDocumentEntity, {
+        project_id: id,
+      });
+
+      await queryRunner.manager.delete(ProjectSizeEntity, {
+        project_id: id,
+      });
+
+      await queryRunner.manager.insert(
+        ProjectDocumentEntity,
+        updateProjectDto.project_document,
+      );
+      await queryRunner.manager.insert(
+        ProjectSizeEntity,
+        updateProjectDto.size,
+      );
+      await queryRunner.commitTransaction();
+      return { id, ...updateProjectDto };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async remove(id: number, user_id) {
