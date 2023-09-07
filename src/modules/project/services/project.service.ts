@@ -28,6 +28,8 @@ export class ProjectService {
       const project = await queryRunner.manager.insert(ProjectEntity, {
         ...createProjectDto,
         created_by: user_id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         code,
         status: 'Planning',
         department_id: createProjectDto.departement_id,

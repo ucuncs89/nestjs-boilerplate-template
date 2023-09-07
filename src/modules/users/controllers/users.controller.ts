@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -30,5 +30,10 @@ export class UsersController {
       `users`,
     );
     return { message: 'Successfully', ...data, pagination };
+  }
+
+  @Post('sync')
+  async syncUsersWorkspace() {
+    return 'on going';
   }
 }
