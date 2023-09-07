@@ -164,6 +164,7 @@ export class ProjectService {
           number_of_item: true,
         },
         project_document: {
+          id: true,
           project_id: true,
           type: true,
           base_url: true,
