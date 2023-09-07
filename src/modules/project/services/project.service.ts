@@ -159,6 +159,7 @@ export class ProjectService {
         sub_category_id: true,
         description: true,
         size: {
+          id: true,
           project_id: true,
           size_ratio: true,
           number_of_item: true,
