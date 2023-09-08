@@ -11,6 +11,7 @@ import { UsersPasswordEntity } from '../../entities/users/users_password.entity'
 import { UsersManageController } from './controllers/users-manage.controller';
 import { PermissionsEntity } from '../../entities/permission/permission.entity';
 import { UsersController } from './controllers/users.controller';
+import { UsersWorkspaceService } from './services/users-workspace.service';
 
 @Module({
   imports: [
@@ -42,6 +43,11 @@ import { UsersController } from './controllers/users.controller';
     UsersController,
     UsersActivationController,
   ],
-  providers: [UsersService, JwtService, UsersActivationService],
+  providers: [
+    UsersService,
+    JwtService,
+    UsersActivationService,
+    UsersWorkspaceService,
+  ],
 })
 export class UsersModule {}
