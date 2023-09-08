@@ -4,14 +4,18 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Pagination } from '../../../utils/pagination';
 import { GetUserListDto } from '../dto/get-user-list.dto';
+import { UsersWorkspaceService } from '../services/users-workspace.service';
 
 @ApiBearerAuth()
 @ApiTags('Users')
-@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly usersWorkspaceService: UsersWorkspaceService,
+  ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Query() query: GetUserListDto) {
     const _page = query.page || 1;
@@ -34,6 +38,11 @@ export class UsersController {
 
   @Post('sync')
   async syncUsersWorkspace() {
-    return 'on going';
+    const arrUsersWorkspace =
+      await this.usersWorkspaceService.findUsersWorkspace();
+    const syncData = await this.usersWorkspaceService.syncData(
+      arrUsersWorkspace,
+    );
+    return { message: 'Successfully please refetch users', data: syncData };
   }
 }
