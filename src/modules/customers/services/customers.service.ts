@@ -62,6 +62,8 @@ export class CustomersService {
       taxable,
       keyword,
       is_active,
+      province_id,
+      city_id,
     } = query;
     let orderObj = {};
     let active: any;
@@ -98,6 +100,7 @@ export class CustomersService {
         };
         break;
     }
+
     const [result, total] = await this.customersRepository.findAndCount({
       select: {
         id: true,
@@ -111,6 +114,16 @@ export class CustomersService {
         is_active: true,
         city_id: true,
         province_id: true,
+        city: {
+          id: true,
+          code: true,
+          name: true,
+        },
+        province: {
+          id: true,
+          code: true,
+          name: true,
+        },
       },
       where: [
         {
@@ -119,6 +132,8 @@ export class CustomersService {
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
           is_active: is_active ? active : Not(In(active)),
+          province_id: province_id ? province_id : Not(In([])),
+          city_id: city_id ? city_id : Not(In([])),
         },
         {
           pic_full_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
@@ -126,8 +141,14 @@ export class CustomersService {
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
           is_active: is_active ? active : Not(In(active)),
+          province_id: province_id ? province_id : Not(In([])),
+          city_id: city_id ? city_id : Not(In([])),
         },
       ],
+      relations: {
+        province: true,
+        city: true,
+      },
       order: orderObj,
       take: page_size,
       skip: page,
