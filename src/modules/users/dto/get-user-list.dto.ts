@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export enum StatusActiveEnum {
+  true = 'true',
+  false = 'false',
+}
+
 export class GetUserListDto {
   @ApiProperty({ required: false })
   page: number;
@@ -18,4 +23,7 @@ export class GetUserListDto {
 
   @ApiProperty({ required: false })
   sort_by?: string;
+
+  @ApiProperty({ required: false, enum: StatusActiveEnum })
+  is_active?: StatusActiveEnum;
 }

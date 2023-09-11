@@ -58,6 +58,8 @@ export class CustomersController {
       taxable: query.taxable,
       keyword: query.keyword,
       is_active: query.is_active,
+      province_id: query.province_id,
+      city_id: query.city_id,
     });
     const pagination = await Pagination.pagination(
       data.total_data,
