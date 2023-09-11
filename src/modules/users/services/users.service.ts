@@ -5,7 +5,7 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from '../../../exceptions/app-exception';
-import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
+import { Connection, ILike, In, IsNull, Not, Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
@@ -78,8 +78,21 @@ export class UsersService {
   }
 
   async findAll(query) {
-    const { keywoard, page_size, page, roles, order_by, sort_by } = query;
+    const { keywoard, page_size, page, roles, order_by, sort_by, is_active } =
+      query;
     let orderObj = {};
+    let active: any;
+    switch (is_active) {
+      case 'true':
+        active = true;
+        break;
+      case 'false':
+        active = false;
+        break;
+      default:
+        active = [];
+        break;
+    }
     switch (sort_by) {
       case 'full_name':
         orderObj = {
@@ -121,11 +134,13 @@ export class UsersService {
           full_name: keywoard ? ILike(`%${keywoard}%`) : Not(IsNull()),
           roles: { id: roles ? roles : Not(IsNull()) },
           deleted_at: IsNull(),
+          is_active: is_active ? active : Not(In(active)),
         },
         {
           email: keywoard ? ILike(`%${keywoard}%`) : Not(IsNull()),
           roles: { id: roles ? roles : Not(IsNull()) },
           deleted_at: IsNull(),
+          is_active: is_active ? active : Not(In(active)),
         },
       ],
       order: orderObj,

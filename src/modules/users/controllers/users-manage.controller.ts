@@ -56,6 +56,7 @@ export class UsersManageController {
       roles: query.roles,
       order_by: query.order_by || 'DESC',
       sort_by: query.sort_by || 'created_at',
+      is_active: query.is_active,
     });
     const pagination = await Pagination.pagination(
       data.total_data,

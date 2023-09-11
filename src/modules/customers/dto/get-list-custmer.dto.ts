@@ -38,4 +38,10 @@ export class GetListCustomersDto {
 
   @ApiProperty({ required: false, enum: StatusActiveEnum })
   is_active?: StatusActiveEnum;
+
+  @ApiProperty({ required: false })
+  province_id?: number;
+
+  @ApiProperty({ required: false })
+  city_id?: number;
 }
