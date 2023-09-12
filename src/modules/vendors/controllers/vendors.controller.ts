@@ -59,6 +59,8 @@ export class VendorsController {
       keyword: query.keyword,
       type: query.type,
       is_active: query.is_active,
+      province_id: query.province_id,
+      city_id: query.city_id,
     });
     const pagination = await Pagination.pagination(
       data.total_data,

@@ -73,6 +73,8 @@ export class VendorsService {
       keyword,
       type,
       is_active,
+      city_id,
+      province_id,
     } = query;
     let active: any;
     switch (is_active) {
@@ -130,6 +132,17 @@ export class VendorsService {
           id: true,
           name: true,
         },
+        province: {
+          id: true,
+          name: true,
+          code: true,
+        },
+        city: {
+          id: true,
+          name: true,
+          code: true,
+          province_id: true,
+        },
       },
       where: [
         {
@@ -138,6 +151,8 @@ export class VendorsService {
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
           is_active: is_active ? active : Not(In(active)),
+          province_id: province_id ? province_id : Not(In([])),
+          city_id: city_id ? city_id : Not(In([])),
           vendor_type: type
             ? {
                 name: Raw(
@@ -152,6 +167,8 @@ export class VendorsService {
           taxable: taxable ? taxable : Not(IsNull()),
           deleted_at: IsNull(),
           is_active: is_active ? active : Not(In(active)),
+          province_id: province_id ? province_id : Not(In([])),
+          city_id: city_id ? city_id : Not(In([])),
           vendor_type: type
             ? {
                 name: Raw(
@@ -163,6 +180,8 @@ export class VendorsService {
       ],
       relations: {
         vendor_type: true,
+        province: true,
+        city: true,
       },
       order: orderObj,
       take: page_size,
