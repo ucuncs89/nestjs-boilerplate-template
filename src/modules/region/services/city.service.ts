@@ -115,4 +115,11 @@ export class CityService {
     await this.cityRepository.save(city);
     return city;
   }
+  async findByName(name: string) {
+    const data = await this.cityRepository
+      .createQueryBuilder()
+      .where('LOWER(name) = LOWER(:name)', { name })
+      .getOne();
+    return data;
+  }
 }
