@@ -115,4 +115,12 @@ export class ProvinceService {
     await this.provinceRepository.save(province);
     return province;
   }
+
+  async findByName(name: string) {
+    const data = await this.provinceRepository
+      .createQueryBuilder()
+      .where('LOWER(name) = LOWER(:name)', { name })
+      .getOne();
+    return data;
+  }
 }
