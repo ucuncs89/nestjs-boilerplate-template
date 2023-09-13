@@ -8,6 +8,12 @@ import { UsersRolesEntity } from '../../entities/users/users_roles.entity';
 import { VendorsNoteController } from './controllers/vendors-note.controller';
 import { VendorsNoteService } from './services/vendors-note.service';
 import { VendorNotesEntity } from 'src/entities/vendors/vendor_notes.entity';
+import { VendorsExcelController } from './controllers/vendors-excel.controller';
+import { VendorsExcelService } from './services/vendors-excel.service';
+import { ProvinceService } from '../region/services/province.service';
+import { CityService } from '../region/services/city.service';
+import { ProvinceEntity } from 'src/entities/master/province.entity';
+import { CityEntity } from 'src/entities/master/city.entity';
 
 @Module({
   imports: [
@@ -15,9 +21,22 @@ import { VendorNotesEntity } from 'src/entities/vendors/vendor_notes.entity';
       VendorsEntity,
       UsersRolesEntity,
       VendorNotesEntity,
+      ProvinceEntity,
+      CityEntity,
     ]),
   ],
-  controllers: [VendorsController, VendorsNoteController],
-  providers: [VendorsService, RolesPermissionGuard, VendorsNoteService],
+  controllers: [
+    VendorsController,
+    VendorsNoteController,
+    VendorsExcelController,
+  ],
+  providers: [
+    VendorsService,
+    RolesPermissionGuard,
+    VendorsNoteService,
+    VendorsExcelService,
+    ProvinceService,
+    CityService,
+  ],
 })
 export class VendorsModule {}

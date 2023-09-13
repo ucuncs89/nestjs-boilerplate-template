@@ -36,25 +36,30 @@ export class VendorsService {
         code,
         status: 'Not yet validated',
       });
-      for (const documents of createVendorDto.vendor_documents) {
-        documents.vendor_id = vendor.raw[0].id;
+      if (createVendorDto.vendor_documents) {
+        for (const documents of createVendorDto.vendor_documents) {
+          documents.vendor_id = vendor.raw[0].id;
+        }
+        await queryRunner.manager.insert(
+          VendorDocumentsEntity,
+          createVendorDto.vendor_documents,
+        );
       }
-      for (const type of createVendorDto.vendor_type) {
-        type.vendor_id = vendor.raw[0].id;
+      if (createVendorDto.vendor_type) {
+        for (const type of createVendorDto.vendor_type) {
+          type.vendor_id = vendor.raw[0].id;
+        }
+        await queryRunner.manager.insert(
+          VendorTypeEntity,
+          createVendorDto.vendor_type,
+        );
       }
 
-      await queryRunner.manager.insert(
-        VendorDocumentsEntity,
-        createVendorDto.vendor_documents,
-      );
-
-      await queryRunner.manager.insert(
-        VendorTypeEntity,
-        createVendorDto.vendor_type,
-      );
       await queryRunner.commitTransaction();
       return createVendorDto;
     } catch (error) {
+      console.log(error);
+
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
     } finally {
