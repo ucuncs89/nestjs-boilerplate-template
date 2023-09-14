@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Post,
   Req,
@@ -10,17 +9,18 @@ import {
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { VendorsExcelService } from '../services/vendors-excel.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { excelFileFilter } from 'src/utils/file-upload';
-
+import { AccessoriesSewingExcelService } from '../services/accessories-sewing-excel.service';
 @ApiBearerAuth()
-@ApiTags('vendors')
+@ApiTags('Accessories Sewing')
 @UseGuards(JwtAuthGuard)
-@Controller('vendors')
-export class VendorsExcelController {
-  constructor(private readonly vendorsExcelService: VendorsExcelService) {}
+@Controller('accessories/sewing')
+export class AccessoriesSewingExcelController {
+  constructor(
+    private readonly accessoriesSewingExcelService: AccessoriesSewingExcelService,
+  ) {}
 
   @Post('upload')
   @UseInterceptors(
@@ -49,15 +49,16 @@ export class VendorsExcelController {
     @Req() req,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.vendorsExcelService.createVendorExcel(
-      {
-        ...file,
-        mimetype: file.mimetype,
-        file_buffer: file.buffer,
-      },
-      req.user.id,
-      i18n,
-    );
+    const data =
+      await this.accessoriesSewingExcelService.createAccessoriesSewingExcel(
+        {
+          ...file,
+          mimetype: file.mimetype,
+          file_buffer: file.buffer,
+        },
+        req.user.id,
+        i18n,
+      );
     return {
       message: 'Successfully upload file',
       data,
