@@ -8,6 +8,12 @@ import { UsersRolesEntity } from '../../entities/users/users_roles.entity';
 import { CustomerNotesEntity } from 'src/entities/customers/customer_notes.entity';
 import { CustomersNoteController } from './controllers/customers-note.controller';
 import { CustomersNoteService } from './services/customers-note.service';
+import { CustomersExcelService } from './services/customers-excel.service';
+import { ProvinceEntity } from 'src/entities/master/province.entity';
+import { CityEntity } from 'src/entities/master/city.entity';
+import { CityService } from '../region/services/city.service';
+import { ProvinceService } from '../region/services/province.service';
+import { CustomersExcelController } from './controllers/customers-excel.controller';
 
 @Module({
   imports: [
@@ -15,9 +21,22 @@ import { CustomersNoteService } from './services/customers-note.service';
       CustomersEntity,
       UsersRolesEntity,
       CustomerNotesEntity,
+      ProvinceEntity,
+      CityEntity,
     ]),
   ],
-  controllers: [CustomersController, CustomersNoteController],
-  providers: [CustomersService, RolesPermissionGuard, CustomersNoteService],
+  controllers: [
+    CustomersController,
+    CustomersNoteController,
+    CustomersExcelController,
+  ],
+  providers: [
+    CustomersService,
+    RolesPermissionGuard,
+    CustomersNoteService,
+    CustomersExcelService,
+    CityService,
+    ProvinceService,
+  ],
 })
 export class CustomersModule {}

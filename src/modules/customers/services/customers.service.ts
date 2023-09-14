@@ -35,13 +35,15 @@ export class CustomersService {
         code,
         status: 'Not yet validated',
       });
-      for (const documents of createCustomerDto.customer_documents) {
-        documents.customer_id = customer.raw[0].id;
+      if (createCustomerDto.customer_documents) {
+        for (const documents of createCustomerDto.customer_documents) {
+          documents.customer_id = customer.raw[0].id;
+        }
+        await queryRunner.manager.insert(
+          CustomerDocumentsEntity,
+          createCustomerDto.customer_documents,
+        );
       }
-      await queryRunner.manager.insert(
-        CustomerDocumentsEntity,
-        createCustomerDto.customer_documents,
-      );
       await queryRunner.commitTransaction();
       return createCustomerDto;
     } catch (error) {

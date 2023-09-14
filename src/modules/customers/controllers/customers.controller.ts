@@ -25,7 +25,7 @@ import { ValidationCustomerDto } from '../dto/validation-customer.dto';
 import { ActivationCustomerDto } from '../dto/activation-customer.dto';
 
 @ApiBearerAuth()
-@ApiTags('Customers')
+@ApiTags('customers')
 @UseGuards(JwtAuthGuard)
 @Controller('customers')
 export class CustomersController {
