@@ -35,7 +35,7 @@ export class VendorsExcelService {
         findIdProvince = await this.provinceService.findByName(data.province);
       }
       if (data.city !== null) {
-        findIdCity = await this.cityService.findByName(data.province);
+        findIdCity = await this.cityService.findByName(data.city);
       }
       const payloadVendor = {
         province_id: findIdProvince ? findIdProvince.id : null,
