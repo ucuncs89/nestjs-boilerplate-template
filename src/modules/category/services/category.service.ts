@@ -23,10 +23,7 @@ export class CategoryService {
       throw new AppErrorException('Already Exist');
     }
     const code = await this.generateCodeCategory();
-    createCategoryDto.sub_category = createCategoryDto.sub_category.filter(
-      (obj, index, self) =>
-        index === self.findIndex((item) => item.name === obj.name),
-    );
+
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -36,14 +33,20 @@ export class CategoryService {
         created_by: user_id,
         code,
       });
-      for (const sub_category of createCategoryDto.sub_category) {
-        sub_category.parent_id = category.raw[0].id;
-      }
+      if (createCategoryDto.sub_category) {
+        createCategoryDto.sub_category = createCategoryDto.sub_category.filter(
+          (obj, index, self) =>
+            index === self.findIndex((item) => item.name === obj.name),
+        );
+        for (const sub_category of createCategoryDto.sub_category) {
+          sub_category.parent_id = category.raw[0].id;
+        }
 
-      await queryRunner.manager.insert(
-        CategoriesEntity,
-        createCategoryDto.sub_category,
-      );
+        await queryRunner.manager.insert(
+          CategoriesEntity,
+          createCategoryDto.sub_category,
+        );
+      }
       await queryRunner.commitTransaction();
       return createCategoryDto;
     } catch (error) {

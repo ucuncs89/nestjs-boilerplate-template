@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Post,
   Req,
@@ -10,17 +9,17 @@ import {
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { VendorsExcelService } from '../services/vendors-excel.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { excelFileFilter } from 'src/utils/file-upload';
+import { CategoryExcelService } from '../services/category-excel.service';
 
 @ApiBearerAuth()
-@ApiTags('vendors')
+@ApiTags('Category')
 @UseGuards(JwtAuthGuard)
-@Controller('vendors')
-export class VendorsExcelController {
-  constructor(private readonly vendorsExcelService: VendorsExcelService) {}
+@Controller('category')
+export class CategoryExcelController {
+  constructor(private readonly categoryExcelService: CategoryExcelService) {}
 
   @Post('upload')
   @UseInterceptors(
@@ -49,7 +48,7 @@ export class VendorsExcelController {
     @Req() req,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.vendorsExcelService.createVendorExcel(
+    const data = await this.categoryExcelService.createCategoryExcel(
       {
         ...file,
         mimetype: file.mimetype,
