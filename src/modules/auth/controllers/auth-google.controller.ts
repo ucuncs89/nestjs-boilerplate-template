@@ -45,6 +45,7 @@ export class AuthGoogleController {
     );
     const findUserCloamiWorkspace =
       await this.authGoogleService.findUserCloamiWorkspace(googlePayload.email);
+
     if (!findUserCloamiWorkspace.is_found_and_active && !findUser) {
       throw new AppErrorNotFoundException(
         'email not found or not active please contact admin',
@@ -53,7 +54,7 @@ export class AuthGoogleController {
     if (!findUserCloamiWorkspace.is_found_and_active && findUser) {
       await this.usersServices.updateStatusActiveUser(googlePayload.email);
       throw new AppErrorNotFoundException(
-        'Email not found or not active please contact admin',
+        'Email not found or not active please contact admin ##',
       );
     }
     if (!findUser && findUserCloamiWorkspace.is_found_and_active) {

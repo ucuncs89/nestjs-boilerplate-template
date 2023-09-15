@@ -22,25 +22,25 @@ export class AuthGoogleService {
       where: [{ email: googlePayload.email.toLowerCase() }],
       relations: { roles: true },
     });
-    if (!findUser) {
-      throw new AppErrorNotFoundException(
-        'Your email is not registered',
-        'auth_error_not_found',
-      );
-    }
-    if (findUser !== null) {
-      if (findUser.deleted_at) {
-        throw new AppErrorNotFoundException(
-          i18n.t('auth.error_not_found'),
-          'auth_error_not_found',
-        );
-      }
-      if (!findUser.is_active) {
-        throw new AppErrorException(
-          'Your account is inactive. please contact admin to change your account status.',
-        );
-      }
-    }
+    // if (!findUser) {
+    //   throw new AppErrorNotFoundException(
+    //     'Your email is not registered',
+    //     'auth_error_not_found',
+    //   );
+    // }
+    // if (findUser !== null) {
+    //   if (findUser.deleted_at) {
+    //     throw new AppErrorNotFoundException(
+    //       i18n.t('auth.error_not_found'),
+    //       'auth_error_not_found',
+    //     );
+    //   }
+    //   if (!findUser.is_active) {
+    //     throw new AppErrorException(
+    //       'Your account is inactive. please contact admin to change your account status.',
+    //     );
+    //   }
+    // }
     const roles = findUser.roles.map((v) => v.id);
 
     const payloadJwt = {
