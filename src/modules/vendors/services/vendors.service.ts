@@ -413,4 +413,13 @@ export class VendorsService {
     this.vendorsRepository.save(vendor);
     return { id, status: vendor.is_active };
   }
+
+  async findByName(company_name: string) {
+    const data = await this.vendorsRepository
+      .createQueryBuilder()
+      .where('LOWER(company_name) = LOWER(:company_name)', { company_name })
+      .andWhere('deleted_at is null')
+      .getOne();
+    return data;
+  }
 }
