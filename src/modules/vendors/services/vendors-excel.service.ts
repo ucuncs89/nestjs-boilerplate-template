@@ -37,33 +37,38 @@ export class VendorsExcelService {
       if (data.city !== null) {
         findIdCity = await this.cityService.findByName(data.city);
       }
-      const payloadVendor = {
-        province_id: findIdProvince ? findIdProvince.id : null,
-        city_id: findIdCity ? findIdCity.id : null,
-        company_name: data.company_business_name.toString(),
-        company_phone_number: data.company_phone_number || null,
-        company_address: data.office_address,
-        taxable: data.pkp_or_non_pkp,
-        pic_full_name: data.full_name,
-        pic_id_number: data.nik,
-        pic_phone_number: data.phone_number,
-        pic_email: data.pic_email,
-        status: data.validation || 'Not yet validated',
-        npwp_number: data.npwp,
-        bank_name: data.bank_name,
-        bank_account_holder_name: data.account_holders_name,
-        is_active: data.status_active
-          ? data.status_active === 'Active'
-            ? true
-            : false
-          : null,
-        vendor_type: data.vendor_type
-          ? data.vendor_type.split('&').map((item) => ({
-              name: item.trim(),
-            }))
-          : null,
-      };
-      await this.vendorsService.create(payloadVendor, user_id, i18n);
+      const findByName = await this.vendorsService.findByName(
+        data.company_business_name.toString(),
+      );
+      if (!findByName) {
+        const payloadVendor = {
+          province_id: findIdProvince ? findIdProvince.id : null,
+          city_id: findIdCity ? findIdCity.id : null,
+          company_name: data.company_business_name.toString(),
+          company_phone_number: data.company_phone_number || null,
+          company_address: data.office_address,
+          taxable: data.pkp_or_non_pkp,
+          pic_full_name: data.full_name,
+          pic_id_number: data.nik,
+          pic_phone_number: data.phone_number,
+          pic_email: data.pic_email,
+          status: data.validation || 'Not yet validated',
+          npwp_number: data.npwp,
+          bank_name: data.bank_name,
+          bank_account_holder_name: data.account_holders_name,
+          is_active: data.status_active
+            ? data.status_active === 'Active'
+              ? true
+              : false
+            : null,
+          vendor_type: data.vendor_type
+            ? data.vendor_type.split('&').map((item) => ({
+                name: item.trim(),
+              }))
+            : null,
+        };
+        await this.vendorsService.create(payloadVendor, user_id, i18n);
+      }
     }
   }
 }
