@@ -30,6 +30,7 @@ export class VendorsNoteService {
         notes: createVendorNoteDto.note,
         vendor_id,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.vendorNotesRepository.save(note);
       return note;

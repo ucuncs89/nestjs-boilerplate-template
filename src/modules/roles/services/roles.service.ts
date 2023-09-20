@@ -20,6 +20,7 @@ export class RolesService {
         title: payload.title,
         description: payload.description,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.rolesRepository.save(insert);
       return insert;

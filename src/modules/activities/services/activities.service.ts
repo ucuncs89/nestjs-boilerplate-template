@@ -27,6 +27,7 @@ export class ActivitiesService {
         code,
         name: CreateActivityDto.name,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.activitiesRepository.save(data);
       return data;

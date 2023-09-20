@@ -33,6 +33,7 @@ export class AccessoriesSewingService {
         name: createAccessorySewingDto.name,
         category: arrCategory,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.accessoriesSewingRepository.save(data);
       return data;

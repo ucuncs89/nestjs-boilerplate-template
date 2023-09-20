@@ -28,6 +28,7 @@ export class ColorService {
         name: createColorDto.name,
         color_code: createColorDto.color_code,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.colorRepository.save(data);
       return data;

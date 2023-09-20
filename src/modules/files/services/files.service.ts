@@ -68,6 +68,7 @@ export class FilesService {
         size,
         created_by: user_id,
         base_url,
+        created_at: new Date().toISOString(),
       });
 
       await this.filesRepository.save(data);

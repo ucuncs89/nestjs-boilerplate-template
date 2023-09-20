@@ -30,6 +30,7 @@ export class CustomersNoteService {
         notes: createCustomerNoteDto.note,
         customer_id,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.customerNotesRepository.save(note);
       return note;

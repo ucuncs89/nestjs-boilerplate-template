@@ -32,6 +32,7 @@ export class CategoryService {
         name: createCategoryDto.name,
         created_by: user_id,
         code,
+        created_at: new Date().toISOString(),
       });
       if (createCategoryDto.sub_category) {
         createCategoryDto.sub_category = createCategoryDto.sub_category.filter(
