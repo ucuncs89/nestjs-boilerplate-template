@@ -23,13 +23,17 @@ import { HasRoles } from '../../../modules/roles/has-roles.decorator';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ValidationCustomerDto } from '../dto/validation-customer.dto';
 import { ActivationCustomerDto } from '../dto/activation-customer.dto';
+import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';
 
 @ApiBearerAuth()
 @ApiTags('customers')
 @UseGuards(JwtAuthGuard)
 @Controller('customers')
 export class CustomersController {
-  constructor(private readonly customersService: CustomersService) {}
+  constructor(
+    private readonly customersService: CustomersService,
+    private readonly rabbitMQService: RabbitMQService,
+  ) {}
 
   @Post()
   async create(
@@ -42,6 +46,11 @@ export class CustomersController {
       req.user.id,
       i18n,
     );
+    this.rabbitMQService.send('send-notification-buyer-new', {
+      from_user_id: req.user.id,
+      from_user_fullname: req.user.full_name,
+      message: `${req.user.full_name} added a new buyer named "${data.company_name}"`,
+    });
     return { data };
   }
 
@@ -109,6 +118,19 @@ export class CustomersController {
       validationCustomerDto,
       req.user.id,
     );
+    if (data.status === 'Validated') {
+      this.rabbitMQService.send('send-notification-buyer-validation', {
+        from_user_id: req.user.id,
+        from_user_fullname: req.user.full_name,
+        message: `${req.user.full_name} has validated buyer  "${data.company_name}"`,
+      });
+    } else {
+      this.rabbitMQService.send('send-notification-buyer-cancel-validation', {
+        from_user_id: req.user.id,
+        from_user_fullname: req.user.full_name,
+        message: `${req.user.full_name} has canceled the buyer validation of "${data.company_name}"`,
+      });
+    }
     return { data };
   }
 
@@ -125,6 +147,19 @@ export class CustomersController {
       activationCustomerDto,
       req.user.id,
     );
+    if (data.status === true) {
+      this.rabbitMQService.send('send-notification-buyer-activation', {
+        from_user_id: req.user.id,
+        from_user_fullname: req.user.full_name,
+        message: `${req.user.full_name} has changed the buyer status of "${data.company_name} to active"`,
+      });
+    } else {
+      this.rabbitMQService.send('send-notification-buyer-cancel-activation', {
+        from_user_id: req.user.id,
+        from_user_fullname: req.user.full_name,
+        message: `${req.user.full_name} has changed the buyer status of "${data.company_name} to inactive"`,
+      });
+    }
     return { data };
   }
 }
