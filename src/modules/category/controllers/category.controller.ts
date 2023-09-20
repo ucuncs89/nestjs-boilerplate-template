@@ -24,8 +24,7 @@ import { Pagination } from 'src/utils/pagination';
 
 @ApiTags('Category')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
-@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+@UseGuards(JwtAuthGuard)
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}

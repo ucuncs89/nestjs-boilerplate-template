@@ -194,6 +194,10 @@ export class ProjectService {
           id: true,
           name: true,
         },
+        sub_category: {
+          id: true,
+          name: true,
+        },
       },
       relations: {
         customers: true,
@@ -202,6 +206,7 @@ export class ProjectService {
         categories: true,
         size: true,
         project_document: true,
+        sub_category: true,
       },
       where: {
         id,
