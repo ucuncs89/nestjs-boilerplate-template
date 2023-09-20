@@ -127,4 +127,14 @@ export class ProjectEntity {
   )
   @JoinColumn({ name: 'customer_id' })
   public customers: CustomersEntity;
+
+  @ManyToOne(
+    () => CategoriesEntity,
+    (categories: CategoriesEntity) => categories.id,
+    {
+      cascade: true,
+    },
+  )
+  @JoinColumn({ name: 'sub_category_id' })
+  public sub_category: CategoriesEntity;
 }
