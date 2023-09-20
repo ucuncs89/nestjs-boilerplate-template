@@ -14,6 +14,7 @@ import { CityEntity } from 'src/entities/master/city.entity';
 import { CityService } from '../region/services/city.service';
 import { ProvinceService } from '../region/services/province.service';
 import { CustomersExcelController } from './controllers/customers-excel.controller';
+import { RabbitMQModule } from 'src/rabbitmq/rabbit-mq.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CustomersExcelController } from './controllers/customers-excel.controll
       ProvinceEntity,
       CityEntity,
     ]),
+    RabbitMQModule,
   ],
   controllers: [
     CustomersController,
