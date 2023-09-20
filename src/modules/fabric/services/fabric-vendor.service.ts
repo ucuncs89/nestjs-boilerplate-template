@@ -38,6 +38,7 @@ export class FabricVendorService {
           created_by: user_id,
           code,
           fabric_id,
+          created_at: new Date().toISOString(),
         },
       );
       for (const color of createFabricVendorDto.color) {

@@ -28,6 +28,7 @@ export class FabricService {
         name: createFabricDto.name,
         category: arrCategory,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.fabricRepository.save(data);
       return data;

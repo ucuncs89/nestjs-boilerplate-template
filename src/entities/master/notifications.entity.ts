@@ -37,4 +37,10 @@ export class NotificationsEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  from_user_fullname?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  module_type?: string;
 }

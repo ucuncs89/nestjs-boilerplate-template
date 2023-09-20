@@ -34,6 +34,7 @@ export class CustomersService {
         created_by: user_id,
         code,
         status: 'Not yet validated',
+        created_at: new Date().toISOString(),
       });
       if (createCustomerDto.customer_documents) {
         for (const documents of createCustomerDto.customer_documents) {

@@ -33,6 +33,7 @@ export class AccessoriesPackagingService {
         name: createAccessoryPackagingDto.name,
         category: arrCategory,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.accessoriesPackagingRepository.save(data);
       return data;

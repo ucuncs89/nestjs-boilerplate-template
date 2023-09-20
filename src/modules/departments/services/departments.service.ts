@@ -27,6 +27,7 @@ export class DepartmentsService {
         code,
         name: createDepartmentDto.name,
         created_by: user_id,
+        created_at: new Date().toISOString(),
       });
       await this.departmentsRepository.save(data);
       return data;
