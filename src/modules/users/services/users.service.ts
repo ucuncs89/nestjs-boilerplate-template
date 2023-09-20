@@ -50,6 +50,7 @@ export class UsersService {
         roles: arrRoles,
         created_by: user_id,
         password: '',
+        created_at: new Date().toISOString(),
       });
       await this.userRepository.save(insert);
       const payloadJwt = {
@@ -132,13 +133,13 @@ export class UsersService {
       where: [
         {
           full_name: keywoard ? ILike(`%${keywoard}%`) : Not(IsNull()),
-          roles: { id: roles ? roles : Not(IsNull()) },
+          roles: { id: roles ? roles : Not(In([])) },
           deleted_at: IsNull(),
           is_active: is_active ? active : Not(In(active)),
         },
         {
           email: keywoard ? ILike(`%${keywoard}%`) : Not(IsNull()),
-          roles: { id: roles ? roles : Not(IsNull()) },
+          roles: { id: roles ? roles : Not(In([])) },
           deleted_at: IsNull(),
           is_active: is_active ? active : Not(In(active)),
         },

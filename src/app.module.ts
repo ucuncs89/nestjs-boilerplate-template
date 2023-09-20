@@ -25,6 +25,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { ColorModule } from './modules/color/color.module';
 import { RegionModule } from './modules/region/region.module';
 import { ProjectModule } from './modules/project/project.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { ProjectModule } from './modules/project/project.module';
     ColorModule,
     RegionModule,
     ProjectModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

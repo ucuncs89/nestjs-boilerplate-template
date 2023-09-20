@@ -35,6 +35,7 @@ export class VendorsService {
         created_by: user_id,
         code,
         status: 'Not yet validated',
+        created_at: new Date().toISOString(),
       });
       if (createVendorDto.vendor_documents) {
         for (const documents of createVendorDto.vendor_documents) {
@@ -58,8 +59,6 @@ export class VendorsService {
       await queryRunner.commitTransaction();
       return createVendorDto;
     } catch (error) {
-      console.log(error);
-
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
     } finally {
