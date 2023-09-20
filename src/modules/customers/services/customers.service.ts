@@ -325,6 +325,7 @@ export class CustomersService {
         id: true,
         status: true,
         updated_at: true,
+        company_name: true,
       },
       where: {
         id: id,
@@ -339,7 +340,7 @@ export class CustomersService {
     customer.updated_by = user_id;
     customer.status = validationCustomerDto.status;
     this.customersRepository.save(customer);
-    return { id, status: customer.status };
+    return { id, status: customer.status, company_name: customer.company_name };
   }
   async activationCustomer(
     id: number,
@@ -351,6 +352,7 @@ export class CustomersService {
         id: true,
         status: true,
         updated_at: true,
+        company_name: true,
       },
       where: {
         id: id,
@@ -365,6 +367,10 @@ export class CustomersService {
     customer.updated_by = user_id;
     customer.is_active = activationCustomerDto.is_active;
     this.customersRepository.save(customer);
-    return { id, status: customer.is_active };
+    return {
+      id,
+      status: customer.is_active,
+      company_name: customer.company_name,
+    };
   }
 }
