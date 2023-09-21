@@ -17,6 +17,9 @@ export class NotificationsEntity {
   @Column({ type: 'boolean' })
   is_read: boolean;
 
+  @Column({ type: 'boolean', default: false, nullable: true })
+  is_view: boolean;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

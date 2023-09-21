@@ -21,6 +21,9 @@ export class NotificationsService {
         };
         break;
     }
+    const count_view = await this.notificationsRepository.count({
+      where: { deleted_at: IsNull(), to_user_id: user_id, is_view: false },
+    });
     const [result, total] = await this.notificationsRepository.findAndCount({
       select: {
         id: true,
@@ -32,6 +35,7 @@ export class NotificationsService {
         created_by: true,
         from_user_fullname: true,
         module_type: true,
+        is_view: true,
       },
       where: {
         deleted_at: IsNull(),
@@ -44,6 +48,7 @@ export class NotificationsService {
     return {
       data: result,
       total_data: total,
+      count_view,
     };
   }
 }
