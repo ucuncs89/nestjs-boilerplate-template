@@ -18,13 +18,17 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { GetListProjectDto } from '../dto/get-list-project.dto';
 import { Pagination } from 'src/utils/pagination';
+import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(
+    private readonly projectService: ProjectService,
+    private readonly rabbitMQService: RabbitMQService,
+  ) {}
 
   @Post()
   async create(
@@ -37,6 +41,11 @@ export class ProjectController {
       req.user.id,
       i18n,
     );
+    this.rabbitMQService.send('send-notification-project-new', {
+      from_user_id: req.user.id,
+      from_user_fullname: req.user.full_name,
+      message: `${req.user.full_name} added a new project`,
+    });
     return { data };
   }
 
