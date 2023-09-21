@@ -114,6 +114,11 @@ export class VendorsService {
           code: order_by,
         };
         break;
+      case 'is_active':
+        orderObj = {
+          is_active: order_by,
+        };
+        break;
       case 'created_at':
         orderObj = {
           id: order_by,
