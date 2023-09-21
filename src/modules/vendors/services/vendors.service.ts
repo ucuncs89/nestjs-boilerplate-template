@@ -365,11 +365,12 @@ export class VendorsService {
     validationVendorDto: ValidationVendorDto,
     user_id: number,
   ) {
-    const customer = await this.vendorsRepository.findOne({
+    const vendor = await this.vendorsRepository.findOne({
       select: {
         id: true,
         status: true,
         updated_at: true,
+        company_name: true,
       },
       where: {
         id: id,
@@ -377,14 +378,14 @@ export class VendorsService {
         deleted_by: IsNull(),
       },
     });
-    if (!customer) {
+    if (!vendor) {
       throw new AppErrorNotFoundException();
     }
-    customer.updated_at = new Date().toISOString();
-    customer.updated_by = user_id;
-    customer.status = validationVendorDto.status;
-    this.vendorsRepository.save(customer);
-    return { id, status: customer.status };
+    vendor.updated_at = new Date().toISOString();
+    vendor.updated_by = user_id;
+    vendor.status = validationVendorDto.status;
+    this.vendorsRepository.save(vendor);
+    return { id, status: vendor.status, company_name: vendor.company_name };
   }
   async activationVendor(
     id: number,
@@ -396,6 +397,7 @@ export class VendorsService {
         id: true,
         status: true,
         updated_at: true,
+        company_name: true,
       },
       where: {
         id: id,
@@ -410,7 +412,7 @@ export class VendorsService {
     vendor.updated_by = user_id;
     vendor.is_active = activationVendorDto.is_active;
     this.vendorsRepository.save(vendor);
-    return { id, status: vendor.is_active };
+    return { id, status: vendor.is_active, company_name: vendor.company_name };
   }
 
   async findByName(company_name: string) {

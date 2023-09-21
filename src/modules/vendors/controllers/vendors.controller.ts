@@ -23,13 +23,17 @@ import { Role } from '../../../modules/roles/enum/role.enum';
 import { HasRoles } from '../../../modules/roles/has-roles.decorator';
 import { ValidationVendorDto } from '../dto/validation-vendor.dto';
 import { ActivationVendorDto } from '../dto/activation-vendor.dto';
+import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';
 
 @ApiBearerAuth()
 @ApiTags('vendors')
 @UseGuards(JwtAuthGuard)
 @Controller('vendors')
 export class VendorsController {
-  constructor(private readonly vendorsService: VendorsService) {}
+  constructor(
+    private readonly vendorsService: VendorsService,
+    private readonly rabbitMQService: RabbitMQService,
+  ) {}
 
   @Post()
   async create(
@@ -42,6 +46,11 @@ export class VendorsController {
       req.user.id,
       i18n,
     );
+    this.rabbitMQService.send('send-notification-vendor-new', {
+      from_user_id: req.user.id,
+      from_user_fullname: req.user.full_name,
+      message: `${req.user.full_name} added a new vendor named "${data.company_name}"`,
+    });
     return { data };
   }
 
@@ -110,6 +119,19 @@ export class VendorsController {
       validationVendorDto,
       req.user.id,
     );
+    if (data.status === 'Validated') {
+      this.rabbitMQService.send('send-notification-buyer-validation', {
+        from_user_id: req.user.id,
+        from_user_fullname: req.user.full_name,
+        message: `${req.user.full_name} has validated vendor"${data.company_name}"`,
+      });
+    } else {
+      this.rabbitMQService.send('send-notification-buyer-cancel-validation', {
+        from_user_id: req.user.id,
+        from_user_fullname: req.user.full_name,
+        message: `${req.user.full_name} has canceled the vendor validation of "${data.company_name}"`,
+      });
+    }
     return { data };
   }
 
@@ -126,6 +148,19 @@ export class VendorsController {
       activationVendorDto,
       req.user.id,
     );
+    if (data.status === true) {
+      this.rabbitMQService.send('send-notification-buyer-activation', {
+        from_user_id: req.user.id,
+        from_user_fullname: req.user.full_name,
+        message: `${req.user.full_name} has changed the vendor status of "${data.company_name} to active"`,
+      });
+    } else {
+      this.rabbitMQService.send('send-notification-buyer-cancel-activation', {
+        from_user_id: req.user.id,
+        from_user_fullname: req.user.full_name,
+        message: `${req.user.full_name} has changed the vendor status of "${data.company_name} to inactive"`,
+      });
+    }
     return { data };
   }
 }

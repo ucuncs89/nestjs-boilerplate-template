@@ -14,6 +14,7 @@ import { ProvinceService } from '../region/services/province.service';
 import { CityService } from '../region/services/city.service';
 import { ProvinceEntity } from 'src/entities/master/province.entity';
 import { CityEntity } from 'src/entities/master/city.entity';
+import { RabbitMQModule } from 'src/rabbitmq/rabbit-mq.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CityEntity } from 'src/entities/master/city.entity';
       ProvinceEntity,
       CityEntity,
     ]),
+    RabbitMQModule,
   ],
   controllers: [
     VendorsController,
