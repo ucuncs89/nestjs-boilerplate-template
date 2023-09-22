@@ -120,13 +120,13 @@ export class VendorsController {
       req.user.id,
     );
     if (data.status === 'Validated') {
-      this.rabbitMQService.send('send-notification-buyer-validation', {
+      this.rabbitMQService.send('send-notification-vendor-validation', {
         from_user_id: req.user.id,
         from_user_fullname: req.user.full_name,
         message: `${req.user.full_name} has validated vendor"${data.company_name}"`,
       });
     } else {
-      this.rabbitMQService.send('send-notification-buyer-cancel-validation', {
+      this.rabbitMQService.send('send-notification-vendor-cancel-validation', {
         from_user_id: req.user.id,
         from_user_fullname: req.user.full_name,
         message: `${req.user.full_name} has canceled the vendor validation of "${data.company_name}"`,
@@ -149,13 +149,13 @@ export class VendorsController {
       req.user.id,
     );
     if (data.status === true) {
-      this.rabbitMQService.send('send-notification-buyer-activation', {
+      this.rabbitMQService.send('send-notification-vendor-activation', {
         from_user_id: req.user.id,
         from_user_fullname: req.user.full_name,
         message: `${req.user.full_name} has changed the vendor status of "${data.company_name} to active"`,
       });
     } else {
-      this.rabbitMQService.send('send-notification-buyer-cancel-activation', {
+      this.rabbitMQService.send('send-notification-vendor-cancel-activation', {
         from_user_id: req.user.id,
         from_user_fullname: req.user.full_name,
         message: `${req.user.full_name} has changed the vendor status of "${data.company_name} to inactive"`,
