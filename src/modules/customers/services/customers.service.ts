@@ -378,4 +378,12 @@ export class CustomersService {
       company_name: customer.company_name,
     };
   }
+  async findByName(company_name: string) {
+    const data = await this.customersRepository
+      .createQueryBuilder()
+      .where('LOWER(company_name) = LOWER(:company_name)', { company_name })
+      .andWhere('deleted_at is null')
+      .getOne();
+    return data;
+  }
 }
