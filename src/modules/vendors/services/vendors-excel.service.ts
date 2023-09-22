@@ -56,6 +56,7 @@ export class VendorsExcelService {
           npwp_number: data.npwp,
           bank_name: data.bank_name,
           bank_account_holder_name: data.account_holders_name,
+          bank_account_number: data.account_number,
           is_active: data.status_active
             ? data.status_active === 'Active'
               ? true
