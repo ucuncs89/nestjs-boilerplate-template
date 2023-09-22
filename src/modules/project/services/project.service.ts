@@ -11,6 +11,8 @@ import {
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import { GetListProjectDto } from '../dto/get-list-project.dto';
+import { ProjectHistoryService } from './project_history.service';
+import { StatusProjectHistoryEnum } from '../dto/create-project-history.dto';
 
 @Injectable()
 export class ProjectService {
@@ -18,6 +20,7 @@ export class ProjectService {
     @InjectRepository(ProjectEntity)
     private projectRepository: Repository<ProjectEntity>,
     private connection: Connection,
+    private projectHistoryService: ProjectHistoryService,
   ) {}
   async create(createProjectDto: CreateProjectDto, user_id, i18n) {
     const code = await this.generateCodeProject();
@@ -52,6 +55,14 @@ export class ProjectService {
         createProjectDto.size,
       );
       await queryRunner.commitTransaction();
+      this.projectHistoryService.create(
+        {
+          status: StatusProjectHistoryEnum.Project_Created,
+        },
+        project.raw[0].id,
+        user_id,
+        i18n,
+      );
       return { ...createProjectDto, id: project.raw[0].id };
     } catch (error) {
       await queryRunner.rollbackTransaction();

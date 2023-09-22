@@ -12,6 +12,7 @@ import { UsersEntity } from '../users/users.entity';
 import { DepartmentsEntity } from '../departments/departments.entity';
 import { CategoriesEntity } from '../categories/categories.entity';
 import { CustomersEntity } from '../customers/customers.entity';
+import { ProjectHistoryEntity } from './project_history.entity';
 
 @Entity('project')
 export class ProjectEntity {
@@ -137,4 +138,11 @@ export class ProjectEntity {
   )
   @JoinColumn({ name: 'sub_category_id' })
   public sub_category: CategoriesEntity;
+
+  @OneToMany(
+    () => ProjectHistoryEntity,
+    (project_history: ProjectHistoryEntity) => project_history.project,
+  )
+  @JoinColumn({ name: 'project_id' })
+  project_history: ProjectHistoryEntity[];
 }
