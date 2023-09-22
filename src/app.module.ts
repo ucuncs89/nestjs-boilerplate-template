@@ -26,6 +26,7 @@ import { ColorModule } from './modules/color/color.module';
 import { RegionModule } from './modules/region/region.module';
 import { ProjectModule } from './modules/project/project.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { MasterModule } from './modules/master/master.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     RegionModule,
     ProjectModule,
     NotificationsModule,
+    MasterModule,
   ],
   controllers: [AppController],
   providers: [AppService],
