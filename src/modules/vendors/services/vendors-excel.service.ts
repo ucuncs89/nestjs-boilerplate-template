@@ -51,8 +51,8 @@ export class VendorsExcelService {
           pic_full_name: data.full_name,
           pic_id_number: data.nik,
           pic_phone_number: data.phone_number,
-          pic_email: data.pic_email,
-          status: data.validation || 'Not yet validated',
+          pic_email: data.email,
+          status: data.validation ? data.validation : 'Not yet validated',
           npwp_number: data.npwp,
           bank_name: data.bank_name,
           bank_account_holder_name: data.account_holders_name,
@@ -67,6 +67,8 @@ export class VendorsExcelService {
               }))
             : null,
         };
+        // console.log(payloadVendor);
+
         await this.vendorsService.create(payloadVendor, user_id, i18n);
       }
     }
