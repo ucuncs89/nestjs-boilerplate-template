@@ -31,6 +31,7 @@ import {
   CreatePlanningPackagingDto,
   UpdatePlanningPackagingDto,
 } from '../dto/planning-packaging.dto';
+import { UpdateProjectPlanningDto } from '../dto/update-project-planning.dto';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -42,6 +43,19 @@ export class ProjectPlanningController {
     private readonly projectHistoryService: ProjectHistoryService,
     private readonly projectPlanningService: ProjectPlanningService,
   ) {}
+
+  @Post(':project_id/generate-planning')
+  async postGeneratePlanning(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectPlanningService.generatePlanningId(
+      project_id,
+      req.user.id,
+    );
+    return { message: 'Successfully', data };
+  }
 
   @Post(':project_id/planning')
   async postPlanning(
@@ -55,6 +69,23 @@ export class ProjectPlanningController {
       project_id,
       req.user.id,
       i18n,
+    );
+    return { message: 'Successfully', data };
+  }
+
+  @Put(':project_id/planning/:planning_id')
+  async putPlanning(
+    @Req() req,
+    @Body() updateProjectPlanningDto: UpdateProjectPlanningDto,
+    @Param('project_id') project_id: number,
+    @Param('planning_id') planning_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectPlanningService.updatePlanning(
+      updateProjectPlanningDto,
+      planning_id,
+      project_id,
+      req.user.id,
     );
     return { message: 'Successfully', data };
   }
