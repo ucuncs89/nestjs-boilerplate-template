@@ -1,22 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Query,
-  Put,
-} from '@nestjs/common';
-import { ProjectService } from '../services/project.service';
-import { CreateProjectDto } from '../dto/create-project.dto';
-import { UpdateProjectDto } from '../dto/update-project.dto';
+import { Controller, Get, Param, UseGuards, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { GetListProjectDto } from '../dto/get-list-project.dto';
 import { Pagination } from 'src/utils/pagination';
 import { GetListProjectHistoryDto } from '../dto/get-list-project-history.dto';
 import { ProjectHistoryService } from '../services/project_history.service';
