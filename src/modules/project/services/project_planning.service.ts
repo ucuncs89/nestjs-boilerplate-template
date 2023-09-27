@@ -22,6 +22,7 @@ import {
   CreatePlanningPackagingDto,
   UpdatePlanningPackagingDto,
 } from '../dto/planning-packaging.dto';
+import { UpdateProjectPlanningDto } from '../dto/update-project-planning.dto';
 
 @Injectable()
 export class ProjectPlanningService {
@@ -40,6 +41,31 @@ export class ProjectPlanningService {
 
     private connection: Connection,
   ) {}
+  async generatePlanningId(project_id, user_id) {
+    const projectPlanning = await this.projectPlanningRepository.findOne({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    if (!projectPlanning) {
+      const data = this.projectPlanningRepository.create({
+        project_id,
+        status: 'Draft',
+        created_at: new Date().toISOString(),
+        created_by: user_id,
+        material_source: '',
+      });
+      await this.projectPlanningRepository.save(data);
+      return { planning_id: data.id, status: data.status, material_source: '' };
+    }
+    return {
+      planning_id: projectPlanning.id,
+      status: projectPlanning.status,
+      material_source: projectPlanning.material_source,
+    };
+  }
   async create(
     createProjectPlanningDto: CreateProjectPlanningDto,
     project_id: number,
@@ -58,6 +84,21 @@ export class ProjectPlanningService {
     } catch (error) {
       throw new AppErrorException(error);
     }
+  }
+  async updatePlanning(
+    updateProjectPlanningDto: UpdateProjectPlanningDto,
+    planning_id: number,
+    project_id: number,
+    user_id: number,
+  ) {
+    return await this.projectPlanningRepository.update(
+      { id: planning_id, project_id },
+      {
+        ...updateProjectPlanningDto,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
   }
   async createPlanningFabric(
     createPlanningFabricDto: CreatePlanningFabricDto,
