@@ -13,6 +13,7 @@ import { ProjectPlanningService } from './services/project_planning.service';
 import { ProjectPlanningFabricEntity } from 'src/entities/project/project_planning_fabric.entity';
 import { ProjectPlanningAccessoriesSewingEntity } from 'src/entities/project/project_planning_accessories_sewing.entity';
 import { ProjectPlanningAccessoriesPackagingEntity } from 'src/entities/project/project_planning_accessories_packaging.entity';
+import { ProjectPlanningVariantEntity } from 'src/entities/project/project_planning_variant.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ProjectPlanningAccessoriesPackagingEntity } from 'src/entities/project/
       ProjectPlanningFabricEntity,
       ProjectPlanningAccessoriesSewingEntity,
       ProjectPlanningAccessoriesPackagingEntity,
+      ProjectPlanningVariantEntity,
     ]),
     RabbitMQModule,
   ],

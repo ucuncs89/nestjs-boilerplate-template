@@ -3,16 +3,16 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
 
 export class PlanningVariantFabricColorDto {
-  @IsNotEmpty()
-  @ApiProperty()
-  project_planning_fabric_id: number;
+  project_planning_variant_id?: number;
 
-  @IsNotEmpty()
   @ApiProperty()
   color_id: number;
 
   @ApiProperty({ required: false })
   color_name?: string;
+
+  @ApiProperty()
+  project_planning_fabric_id: number;
 }
 export class PlanningVariantSizeDto {
   @IsNotEmpty()
@@ -25,6 +25,8 @@ export class PlanningVariantSizeDto {
 
   @ApiProperty({ required: false })
   size_unit?: string;
+
+  project_planning_variant_id?: number;
 }
 export class PlanningVariantDto {
   @IsNotEmpty()
