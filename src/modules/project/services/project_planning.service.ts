@@ -25,8 +25,12 @@ import {
 import { UpdateProjectPlanningDto } from '../dto/update-project-planning.dto';
 import {
   CreatePlanningVariantDto,
+  PlanningVariantDto,
   UpdatePlanningVariantDtoDto,
 } from '../dto/planning-variant.dto';
+import { ProjectPlanningVariantEntity } from 'src/entities/project/project_planning_variant.entity';
+import { ProjectPlanningVariantFabricColorEntity } from 'src/entities/project/project_planning_variant_fabric_color.entity';
+import { ProjectPlanningVariantSizeEntity } from 'src/entities/project/project_planning_variant_size.entity';
 
 @Injectable()
 export class ProjectPlanningService {
@@ -42,6 +46,9 @@ export class ProjectPlanningService {
 
     @InjectRepository(ProjectPlanningAccessoriesPackagingEntity)
     private projectPlanningAccessoriesPackagingRepository: Repository<ProjectPlanningAccessoriesPackagingEntity>,
+
+    @InjectRepository(ProjectPlanningVariantEntity)
+    private projectPlanningVariantRepository: Repository<ProjectPlanningVariantEntity>,
 
     private connection: Connection,
   ) {}
@@ -433,101 +440,168 @@ export class ProjectPlanningService {
 
   //variant
   async createPlanningVariant(
-    createPlanningVariantDto: CreatePlanningVariantDto,
+    planningVariantDto: PlanningVariantDto,
     planning_id,
     user_id,
   ) {
-    // const queryRunner = this.connection.createQueryRunner();
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
-    // try {
-    //   for (const packaging of createPlanningPackagingDto.accessories_packaging) {
-    //     packaging.project_planning_id = planning_id;
-    //     packaging.created_at = new Date().toISOString();
-    //     packaging.created_by = user_id;
-    //   }
-    //   await queryRunner.manager.insert(
-    //     ProjectPlanningAccessoriesPackagingEntity,
-    //     createPlanningPackagingDto.accessories_packaging,
-    //   );
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const variant = await queryRunner.manager.insert(
+        ProjectPlanningVariantEntity,
+        {
+          ...planningVariantDto,
+          created_at: new Date().toISOString(),
+          created_by: user_id,
+          project_planning_id: planning_id,
+        },
+      );
+      for (const fabric of planningVariantDto.project_fabric) {
+        fabric.project_planning_variant_id = variant.raw[0].id;
+      }
+      for (const size of planningVariantDto.size) {
+        size.project_planning_variant_id = variant.raw[0].id;
+      }
 
-    //   await queryRunner.commitTransaction();
-    //   return createPlanningPackagingDto;
-    // } catch (error) {
-    //   await queryRunner.rollbackTransaction();
-    //   throw new AppErrorException(error.message);
-    // } finally {
-    //   await queryRunner.release();
-    // }
-    return { data: 'belum beres' };
+      await queryRunner.manager.insert(
+        ProjectPlanningVariantFabricColorEntity,
+        planningVariantDto.project_fabric,
+      );
+
+      await queryRunner.manager.insert(
+        ProjectPlanningVariantSizeEntity,
+        planningVariantDto.size,
+      );
+      await queryRunner.commitTransaction();
+      return { id: variant.raw[0].id, ...planningVariantDto };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
   async updatePlanningVariant(
-    updatePlanningVariantDtoDto: UpdatePlanningVariantDtoDto,
+    updatePlanningVariantDto: UpdatePlanningVariantDtoDto,
     planning_variant_id,
     user_id,
   ) {
-    // const planning =
-    //   await this.projectPlanningAccessoriesPackagingRepository.save({
-    //     id: planning_accessories_packaging_id,
-    //     updated_at: new Date().toISOString(),
-    //     updated_by: user_id,
-    //     ...updatePlanningPackagingDto,
-    //   });
-    return { data: 'belum beres' };
+    const variant = await this.projectPlanningVariantRepository.findOne({
+      where: {
+        id: planning_variant_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: { id: true, deleted_at: true, deleted_by: true },
+    });
+    if (!variant) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.update(
+        ProjectPlanningVariantEntity,
+        planning_variant_id,
+        {
+          name: updatePlanningVariantDto.name,
+          total_item: updatePlanningVariantDto.total_item,
+          item_unit: updatePlanningVariantDto.item_unit,
+          updated_at: new Date().toISOString(),
+          updated_by: user_id,
+        },
+      );
+      for (const size of updatePlanningVariantDto.size) {
+        size.project_planning_variant_id = planning_variant_id;
+      }
+      for (const fabric of updatePlanningVariantDto.project_fabric) {
+        fabric.project_planning_variant_id = planning_variant_id;
+      }
+      await queryRunner.manager.delete(ProjectPlanningVariantSizeEntity, {
+        project_planning_variant_id: planning_variant_id,
+      });
+      await queryRunner.manager.delete(
+        ProjectPlanningVariantFabricColorEntity,
+        {
+          project_planning_variant_id: planning_variant_id,
+        },
+      );
+      await queryRunner.manager.insert(
+        ProjectPlanningVariantSizeEntity,
+        updatePlanningVariantDto.size,
+      );
+
+      await queryRunner.manager.insert(
+        ProjectPlanningVariantFabricColorEntity,
+        updatePlanningVariantDto.project_fabric,
+      );
+      await queryRunner.commitTransaction();
+      return updatePlanningVariantDto;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
   async findPlanningVariant(project_planning_id: number) {
-    // const data = await this.projectPlanningAccessoriesPackagingRepository.find({
-    //   select: {
-    //     id: true,
-    //     project_planning_id: true,
-    //     accessories_packaging_id: true,
-    //     name: true,
-    //     category: true,
-    //     consumption: true,
-    //     consumption_unit: true,
-    //   },
-    //   where: {
-    //     project_planning_id,
-    //     deleted_at: IsNull(),
-    //     deleted_by: IsNull(),
-    //   },
-    // });
-    return { data: 'belum beres' };
+    const data = await this.projectPlanningVariantRepository.find({
+      where: {
+        project_planning_id: project_planning_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        name: true,
+        total_item: true,
+        item_unit: true,
+      },
+    });
+    return data;
   }
   async findDetailPlanningVariant(planning_id, planning_variant_id) {
-    // const data =
-    //   await this.projectPlanningAccessoriesPackagingRepository.findOne({
-    //     where: {
-    //       project_planning_id: planning_id,
-    //       id: planning_accessories_packaging_id,
-    //       deleted_at: IsNull(),
-    //       deleted_by: IsNull(),
-    //     },
-    //     select: {
-    //       id: true,
-    //       accessories_packaging_id: true,
-    //       name: true,
-    //       category: true,
-    //       consumption: true,
-    //       consumption_unit: true,
-    //     },
-    //   });
-    return { data: 'belum beres' };
+    const data = await this.projectPlanningVariantRepository.findOne({
+      where: {
+        project_planning_id: planning_id,
+        id: planning_variant_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        name: true,
+        total_item: true,
+        item_unit: true,
+        size: {
+          number_of_item: true,
+          project_planning_variant_id: true,
+          size_ratio: true,
+          size_unit: true,
+        },
+      },
+      relations: {
+        size: true,
+        project_fabric: true,
+      },
+    });
+    return data;
   }
   async removePlanningVariant(planning_id, planning_variant_id, user_id) {
-    // const packaging =
-    //   await this.projectPlanningAccessoriesPackagingRepository.findOne({
-    //     where: {
-    //       project_planning_id: planning_id,
-    //       id: planning_accessories_packaging_id,
-    //     },
-    //   });
-    // if (!packaging) {
-    //   throw new AppErrorNotFoundException();
-    // }
-    // packaging.deleted_at = new Date().toISOString();
-    // packaging.deleted_by = user_id;
-    // await this.projectPlanningAccessoriesPackagingRepository.save(packaging);
-    return { data: 'belum beres' };
+    const variant = await this.projectPlanningVariantRepository.findOne({
+      where: {
+        project_planning_id: planning_id,
+        id: planning_variant_id,
+      },
+    });
+    if (!variant) {
+      throw new AppErrorNotFoundException();
+    }
+    variant.deleted_at = new Date().toISOString();
+    variant.deleted_by = user_id;
+    await this.projectPlanningVariantRepository.save(variant);
+    return true;
   }
 }
