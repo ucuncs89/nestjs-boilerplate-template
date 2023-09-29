@@ -60,5 +60,5 @@ export class ProjectPlanningVariantEntity {
       fabric_color.planning_variant,
   )
   @JoinColumn({ name: 'project_planning_variant_id' })
-  project_fabric: ProjectPlanningVariantSizeEntity[];
+  project_fabric: ProjectPlanningVariantFabricColorEntity[];
 }

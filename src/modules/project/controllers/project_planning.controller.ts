@@ -34,6 +34,7 @@ import {
 import { UpdateProjectPlanningDto } from '../dto/update-project-planning.dto';
 import {
   CreatePlanningVariantDto,
+  PlanningVariantDto,
   UpdatePlanningVariantDtoDto,
 } from '../dto/planning-variant.dto';
 
@@ -344,12 +345,12 @@ export class ProjectPlanningController {
   @Post(':project_id/planning/:planning_id/variant')
   async postPlanningVariant(
     @Req() req,
-    @Body() createPlanningVariantDto: CreatePlanningVariantDto,
+    @Body() planningVariantDto: PlanningVariantDto,
     @Param('project_id') project_id: number,
     @Param('planning_id') planning_id: number,
   ) {
     const data = await this.projectPlanningService.createPlanningVariant(
-      createPlanningVariantDto,
+      planningVariantDto,
       planning_id,
       req.user.id,
     );
