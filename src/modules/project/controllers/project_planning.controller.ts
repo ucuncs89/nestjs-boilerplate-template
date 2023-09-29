@@ -32,6 +32,10 @@ import {
   UpdatePlanningPackagingDto,
 } from '../dto/planning-packaging.dto';
 import { UpdateProjectPlanningDto } from '../dto/update-project-planning.dto';
+import {
+  CreatePlanningVariantDto,
+  UpdatePlanningVariantDtoDto,
+} from '../dto/planning-variant.dto';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -86,6 +90,18 @@ export class ProjectPlanningController {
       planning_id,
       project_id,
       req.user.id,
+    );
+    return { message: 'Successfully', data };
+  }
+
+  @Get(':project_id/planning/:planning_id')
+  async detailPlanning(
+    @Param('project_id') project_id: number,
+    @Param('planning_id') planning_id: number,
+  ) {
+    const data = await this.projectPlanningService.detailPlanning(
+      project_id,
+      planning_id,
     );
     return { message: 'Successfully', data };
   }
@@ -319,6 +335,80 @@ export class ProjectPlanningController {
     const data = await this.projectPlanningService.removePlanningPackaging(
       planning_id,
       planning_accessories_packaging_id,
+      req.user.id,
+    );
+    return { message: 'Successfully', data };
+  }
+
+  //planing variant post
+  @Post(':project_id/planning/:planning_id/variant')
+  async postPlanningVariant(
+    @Req() req,
+    @Body() createPlanningVariantDto: CreatePlanningVariantDto,
+    @Param('project_id') project_id: number,
+    @Param('planning_id') planning_id: number,
+  ) {
+    const data = await this.projectPlanningService.createPlanningVariant(
+      createPlanningVariantDto,
+      planning_id,
+      req.user.id,
+    );
+    return { message: 'Successfully', data };
+  }
+  @Put(':project_id/planning/:planning_id/variant/:planning_variant_id')
+  async putPlanningVariant(
+    @Req() req,
+    @Body() updatePlanningVariantDtoDto: UpdatePlanningVariantDtoDto,
+    @Param('project_id') project_id: number,
+    @Param('planning_id') planning_id: number,
+    @Param('planning_variant_id')
+    planning_variant_id: number,
+  ) {
+    const data = await this.projectPlanningService.updatePlanningVariant(
+      updatePlanningVariantDtoDto,
+      planning_variant_id,
+      req.user.id,
+    );
+    return { message: 'Successfully', data };
+  }
+  @Get(':project_id/planning/:planning_id/variant')
+  async getPlanningVariant(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('planning_id') planning_id: number,
+  ) {
+    const data = await this.projectPlanningService.findPlanningVariant(
+      planning_id,
+    );
+    return { message: 'Successfully', data };
+  }
+
+  @Get(':project_id/planning/:planning_id/variant/:planning_variant_id')
+  async detailPlanningVariant(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('planning_id') planning_id: number,
+    @Param('planning_variant_id')
+    planning_variant_id: number,
+  ) {
+    const data = await this.projectPlanningService.findDetailPlanningVariant(
+      planning_id,
+      planning_variant_id,
+    );
+    return { message: 'Successfully', data };
+  }
+
+  @Delete(':project_id/planning/:planning_id/variant/:planning_variant_id')
+  async removePlanningVariant(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('planning_id') planning_id: number,
+    @Param('planning_variant_id')
+    planning_variant_id: number,
+  ) {
+    const data = await this.projectPlanningService.removePlanningVariant(
+      planning_id,
+      planning_variant_id,
       req.user.id,
     );
     return { message: 'Successfully', data };
