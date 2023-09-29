@@ -23,6 +23,10 @@ import {
   UpdatePlanningPackagingDto,
 } from '../dto/planning-packaging.dto';
 import { UpdateProjectPlanningDto } from '../dto/update-project-planning.dto';
+import {
+  CreatePlanningVariantDto,
+  UpdatePlanningVariantDtoDto,
+} from '../dto/planning-variant.dto';
 
 @Injectable()
 export class ProjectPlanningService {
@@ -41,7 +45,7 @@ export class ProjectPlanningService {
 
     private connection: Connection,
   ) {}
-  async generatePlanningId(project_id, user_id) {
+  async generatePlanningId(project_id: number, user_id: number) {
     const projectPlanning = await this.projectPlanningRepository.findOne({
       where: {
         project_id,
@@ -128,6 +132,17 @@ export class ProjectPlanningService {
     } finally {
       await queryRunner.release();
     }
+  }
+  async detailPlanning(project_id: number, planning_id: number) {
+    const projectPlanning = await this.projectPlanningRepository.findOne({
+      where: {
+        project_id,
+        id: planning_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    return projectPlanning;
   }
   async updatePlanningFabric(
     updatePlanningFabricDto: UpdatePlanningFabricDto,
@@ -306,7 +321,7 @@ export class ProjectPlanningService {
     }
     sewing.deleted_at = new Date().toISOString();
     sewing.deleted_by = user_id;
-    await this.projectPlanningFabricRepository.save(sewing);
+    await this.projectPlanningAccessoriesSewingRepository.save(sewing);
     return true;
   }
 
@@ -414,5 +429,105 @@ export class ProjectPlanningService {
     packaging.deleted_by = user_id;
     await this.projectPlanningAccessoriesPackagingRepository.save(packaging);
     return true;
+  }
+
+  //variant
+  async createPlanningVariant(
+    createPlanningVariantDto: CreatePlanningVariantDto,
+    planning_id,
+    user_id,
+  ) {
+    // const queryRunner = this.connection.createQueryRunner();
+    // await queryRunner.connect();
+    // await queryRunner.startTransaction();
+    // try {
+    //   for (const packaging of createPlanningPackagingDto.accessories_packaging) {
+    //     packaging.project_planning_id = planning_id;
+    //     packaging.created_at = new Date().toISOString();
+    //     packaging.created_by = user_id;
+    //   }
+    //   await queryRunner.manager.insert(
+    //     ProjectPlanningAccessoriesPackagingEntity,
+    //     createPlanningPackagingDto.accessories_packaging,
+    //   );
+
+    //   await queryRunner.commitTransaction();
+    //   return createPlanningPackagingDto;
+    // } catch (error) {
+    //   await queryRunner.rollbackTransaction();
+    //   throw new AppErrorException(error.message);
+    // } finally {
+    //   await queryRunner.release();
+    // }
+    return { data: 'belum beres' };
+  }
+  async updatePlanningVariant(
+    updatePlanningVariantDtoDto: UpdatePlanningVariantDtoDto,
+    planning_variant_id,
+    user_id,
+  ) {
+    // const planning =
+    //   await this.projectPlanningAccessoriesPackagingRepository.save({
+    //     id: planning_accessories_packaging_id,
+    //     updated_at: new Date().toISOString(),
+    //     updated_by: user_id,
+    //     ...updatePlanningPackagingDto,
+    //   });
+    return { data: 'belum beres' };
+  }
+  async findPlanningVariant(project_planning_id: number) {
+    // const data = await this.projectPlanningAccessoriesPackagingRepository.find({
+    //   select: {
+    //     id: true,
+    //     project_planning_id: true,
+    //     accessories_packaging_id: true,
+    //     name: true,
+    //     category: true,
+    //     consumption: true,
+    //     consumption_unit: true,
+    //   },
+    //   where: {
+    //     project_planning_id,
+    //     deleted_at: IsNull(),
+    //     deleted_by: IsNull(),
+    //   },
+    // });
+    return { data: 'belum beres' };
+  }
+  async findDetailPlanningVariant(planning_id, planning_variant_id) {
+    // const data =
+    //   await this.projectPlanningAccessoriesPackagingRepository.findOne({
+    //     where: {
+    //       project_planning_id: planning_id,
+    //       id: planning_accessories_packaging_id,
+    //       deleted_at: IsNull(),
+    //       deleted_by: IsNull(),
+    //     },
+    //     select: {
+    //       id: true,
+    //       accessories_packaging_id: true,
+    //       name: true,
+    //       category: true,
+    //       consumption: true,
+    //       consumption_unit: true,
+    //     },
+    //   });
+    return { data: 'belum beres' };
+  }
+  async removePlanningVariant(planning_id, planning_variant_id, user_id) {
+    // const packaging =
+    //   await this.projectPlanningAccessoriesPackagingRepository.findOne({
+    //     where: {
+    //       project_planning_id: planning_id,
+    //       id: planning_accessories_packaging_id,
+    //     },
+    //   });
+    // if (!packaging) {
+    //   throw new AppErrorNotFoundException();
+    // }
+    // packaging.deleted_at = new Date().toISOString();
+    // packaging.deleted_by = user_id;
+    // await this.projectPlanningAccessoriesPackagingRepository.save(packaging);
+    return { data: 'belum beres' };
   }
 }
