@@ -575,12 +575,6 @@ export class ProjectPlanningService {
         name: true,
         total_item: true,
         item_unit: true,
-        size: {
-          number_of_item: true,
-          project_planning_variant_id: true,
-          size_ratio: true,
-          size_unit: true,
-        },
       },
       relations: {
         size: true,
