@@ -1,12 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ProjectMaterialEntity } from './project_material.entity';
 
-@Entity('project_planning_accessories_packaging')
-export class ProjectPlanningAccessoriesPackagingEntity {
+@Entity('project_accessories_packaging')
+export class ProjectAccessoriesPackagingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'int' })
-  project_planning_id: number;
+  project_material_id: number;
 
   @Column({ type: 'int' })
   accessories_packaging_id: number;
@@ -43,4 +50,11 @@ export class ProjectPlanningAccessoriesPackagingEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @ManyToOne(
+    () => ProjectMaterialEntity,
+    (project_material: ProjectMaterialEntity) => project_material.fabric,
+  )
+  @JoinColumn({ name: 'project_material_id' })
+  public project_material: ProjectMaterialEntity;
 }

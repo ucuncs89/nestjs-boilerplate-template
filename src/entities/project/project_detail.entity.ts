@@ -1,27 +1,19 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ProjectEntity } from './project.entity';
 
-@Entity('project_planning_accessories_sewing')
-export class ProjectPlanningAccessoriesSewingEntity {
+@Entity('project_detail')
+export class ProjectDetailEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'int' })
-  project_planning_id: number;
-
-  @Column({ type: 'int' })
-  accessories_sewing_id: number;
+  project_id: number;
 
   @Column({ type: 'varchar' })
-  name: string;
+  status: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  category: string;
-
-  @Column({ type: 'double precision', nullable: true })
-  consumption: number;
-
-  @Column({ type: 'varchar', nullable: true })
-  consumption_unit: string;
+  @Column({ type: 'varchar' })
+  type: string;
 
   @Column({
     type: 'timestamp with time zone',
