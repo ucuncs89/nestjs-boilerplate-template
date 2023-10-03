@@ -2,10 +2,10 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
 
-export class PlanningFabricDto {
+export class ProjectAccessoriesSewingDTO {
   @ApiProperty()
   @IsNotEmpty()
-  fabric_id: number;
+  accessories_sewing_id: number;
 
   @IsNotEmpty()
   @ApiProperty()
@@ -15,12 +15,6 @@ export class PlanningFabricDto {
   @ApiProperty()
   category: string;
 
-  @ApiProperty()
-  used_for: string;
-
-  @ApiProperty()
-  cut_shape: string;
-
   @IsNotEmpty()
   @ApiProperty()
   consumption: number;
@@ -29,49 +23,27 @@ export class PlanningFabricDto {
   @ApiProperty()
   consumption_unit: string;
 
-  @ApiProperty()
-  heavy: number;
-
-  @ApiProperty()
-  heavy_unit: string;
-
-  @ApiProperty()
-  long: number;
-
-  @ApiProperty()
-  long_unit: string;
-
-  @ApiProperty()
-  wide: number;
-
-  @ApiProperty()
-  wide_unit: string;
-
-  @ApiProperty()
-  diameter: number;
-
-  @ApiProperty()
-  diameter_unit: string;
-
-  project_planning_id?: number;
+  project_material_id?: number;
   created_by?: number;
   created_at?: string;
 }
 
-export class CreatePlanningFabricDto {
+export class CreateProjectAccessoriesSewingDto {
   @ApiProperty({
     isArray: true,
-    type: PlanningFabricDto,
+    type: ProjectAccessoriesSewingDTO,
   })
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => PlanningFabricDto)
-  fabric?: PlanningFabricDto[];
+  @Type(() => ProjectAccessoriesSewingDTO)
+  accessories_sewing?: ProjectAccessoriesSewingDTO[];
 }
 
-export class UpdatePlanningFabricDto extends PartialType(PlanningFabricDto) {}
+export class UpdateProjectAccessoriesSewingDto extends PartialType(
+  ProjectAccessoriesSewingDTO,
+) {}
 
-export class GetListPlanningFabricDto {
+export class GetListProjectAccessoriesSewingDto {
   @ApiProperty({ required: false })
   page: number;
 

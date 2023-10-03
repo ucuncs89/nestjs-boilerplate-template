@@ -7,32 +7,34 @@ import { RabbitMQModule } from 'src/rabbitmq/rabbit-mq.module';
 import { ProjectHistoryEntity } from 'src/entities/project/project_history.entity';
 import { ProjectHistoryController } from './controllers/project_history.controller';
 import { ProjectHistoryService } from './services/project_history.service';
-import { ProjectPlanningEntity } from 'src/entities/project/project_planning.entity';
-import { ProjectPlanningController } from './controllers/project_planning.controller';
-import { ProjectPlanningService } from './services/project_planning.service';
-import { ProjectPlanningFabricEntity } from 'src/entities/project/project_planning_fabric.entity';
-import { ProjectPlanningAccessoriesSewingEntity } from 'src/entities/project/project_planning_accessories_sewing.entity';
-import { ProjectPlanningAccessoriesPackagingEntity } from 'src/entities/project/project_planning_accessories_packaging.entity';
-import { ProjectPlanningVariantEntity } from 'src/entities/project/project_planning_variant.entity';
+import { ProjectDetailController } from './controllers/project_detail.controller';
+import { ProjectDetailService } from './services/project_detail.service';
+import { ProjectDetailEntity } from 'src/entities/project/project_detail.entity';
+import { ProjectMaterialController } from './controllers/project_material.controller';
+import { ProjectMaterialService } from './services/project_material.service';
+import { ProjectMaterialEntity } from 'src/entities/project/project_material.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       ProjectEntity,
       ProjectHistoryEntity,
-      ProjectPlanningEntity,
-      ProjectPlanningFabricEntity,
-      ProjectPlanningAccessoriesSewingEntity,
-      ProjectPlanningAccessoriesPackagingEntity,
-      ProjectPlanningVariantEntity,
+      ProjectDetailEntity,
+      ProjectMaterialEntity,
     ]),
     RabbitMQModule,
   ],
   controllers: [
     ProjectController,
     ProjectHistoryController,
-    ProjectPlanningController,
+    ProjectDetailController,
+    ProjectMaterialController,
   ],
-  providers: [ProjectService, ProjectHistoryService, ProjectPlanningService],
+  providers: [
+    ProjectService,
+    ProjectHistoryService,
+    ProjectDetailService,
+    ProjectMaterialService,
+  ],
 })
 export class ProjectModule {}

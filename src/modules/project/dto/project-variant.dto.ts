@@ -2,8 +2,8 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
 
-export class PlanningVariantFabricColorDto {
-  project_planning_variant_id?: number;
+export class ProjectVariantFabricColorDto {
+  project_variant_id?: number;
 
   @ApiProperty()
   color_id: number;
@@ -12,9 +12,9 @@ export class PlanningVariantFabricColorDto {
   color_name?: string;
 
   @ApiProperty()
-  project_planning_fabric_id: number;
+  project_fabric_id: number;
 }
-export class PlanningVariantSizeDto {
+export class ProjectVariantSizeDto {
   @IsNotEmpty()
   @ApiProperty()
   size_ratio: string;
@@ -26,9 +26,9 @@ export class PlanningVariantSizeDto {
   @ApiProperty({ required: false })
   size_unit?: string;
 
-  project_planning_variant_id?: number;
+  project_variant_id?: number;
 }
-export class PlanningVariantDto {
+export class ProjectVariantDto {
   @IsNotEmpty()
   @ApiProperty()
   name: string;
@@ -43,43 +43,41 @@ export class PlanningVariantDto {
 
   @ApiProperty({
     isArray: true,
-    type: PlanningVariantFabricColorDto,
+    type: ProjectVariantFabricColorDto,
   })
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => PlanningVariantFabricColorDto)
-  project_fabric?: PlanningVariantFabricColorDto[];
+  @Type(() => ProjectVariantFabricColorDto)
+  project_fabric?: ProjectVariantFabricColorDto[];
 
   @ApiProperty({
     isArray: true,
-    type: PlanningVariantSizeDto,
+    type: ProjectVariantSizeDto,
   })
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => PlanningVariantSizeDto)
-  size?: PlanningVariantSizeDto[];
+  @Type(() => ProjectVariantSizeDto)
+  size?: ProjectVariantSizeDto[];
 
-  project_planning_id?: number;
+  project_detail_id?: number;
   created_by?: number;
   created_at?: string;
 }
 
-export class CreatePlanningVariantDto {
+export class CreateProjectVariantDto {
   @ApiProperty({
     isArray: true,
-    type: PlanningVariantDto,
+    type: ProjectVariantDto,
   })
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => PlanningVariantDto)
-  variant?: PlanningVariantDto[];
+  @Type(() => ProjectVariantDto)
+  variant?: ProjectVariantDto[];
 }
 
-export class UpdatePlanningVariantDtoDto extends PartialType(
-  PlanningVariantDto,
-) {}
+export class UpdateProjectVariantDto extends PartialType(ProjectVariantDto) {}
 
-export class GetListPlanningVariantDto {
+export class GetListProjectVariantDto {
   @ApiProperty({ required: false })
   page: number;
 

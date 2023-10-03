@@ -5,16 +5,16 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ProjectPlanningVariantSizeEntity } from './project_planning_variant_size.entity';
-import { ProjectPlanningVariantFabricColorEntity } from './project_planning_variant_fabric_color.entity';
+import { ProjectVariantSizeEntity } from './project_variant_size.entity';
+import { ProjectVariantFabricColorEntity } from './project_variant_fabric_color.entity';
 
-@Entity('project_planning_variant')
-export class ProjectPlanningVariantEntity {
+@Entity('project_variant')
+export class ProjectVariantEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'int' })
-  project_planning_id: number;
+  project_detail_id: number;
 
   @Column({ type: 'varchar' })
   name: string;
@@ -47,18 +47,17 @@ export class ProjectPlanningVariantEntity {
   deleted_by: number;
 
   @OneToMany(
-    () => ProjectPlanningVariantSizeEntity,
-    (variant_size: ProjectPlanningVariantSizeEntity) =>
-      variant_size.planning_variant,
+    () => ProjectVariantSizeEntity,
+    (variant_size: ProjectVariantSizeEntity) => variant_size.project_variant,
   )
-  @JoinColumn({ name: 'project_planning_variant_id' })
-  size: ProjectPlanningVariantSizeEntity[];
+  @JoinColumn({ name: 'project_variant_id' })
+  size: ProjectVariantSizeEntity[];
 
   @OneToMany(
-    () => ProjectPlanningVariantFabricColorEntity,
-    (fabric_color: ProjectPlanningVariantFabricColorEntity) =>
-      fabric_color.planning_variant,
+    () => ProjectVariantFabricColorEntity,
+    (fabric_color: ProjectVariantFabricColorEntity) =>
+      fabric_color.project_variant,
   )
-  @JoinColumn({ name: 'project_planning_variant_id' })
-  project_fabric: ProjectPlanningVariantFabricColorEntity[];
+  @JoinColumn({ name: 'project_variant_id' })
+  project_fabric: ProjectVariantFabricColorEntity[];
 }

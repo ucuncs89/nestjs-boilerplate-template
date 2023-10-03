@@ -2,7 +2,7 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
 
-export class PlanningPackagingDto {
+export class ProjectAccessoriesPackagingDto {
   @ApiProperty()
   @IsNotEmpty()
   accessories_packaging_id: number;
@@ -23,27 +23,27 @@ export class PlanningPackagingDto {
   @ApiProperty()
   consumption_unit: string;
 
-  project_planning_id?: number;
+  project_material_id?: number;
   created_by?: number;
   created_at?: string;
 }
 
-export class CreatePlanningPackagingDto {
+export class CreateProjectAccessoriesPackagingDto {
   @ApiProperty({
     isArray: true,
-    type: PlanningPackagingDto,
+    type: ProjectAccessoriesPackagingDto,
   })
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => PlanningPackagingDto)
-  accessories_packaging?: PlanningPackagingDto[];
+  @Type(() => ProjectAccessoriesPackagingDto)
+  accessories_packaging?: ProjectAccessoriesPackagingDto[];
 }
 
-export class UpdatePlanningPackagingDto extends PartialType(
-  PlanningPackagingDto,
+export class UpdateProjectAccessoriesPackagingDto extends PartialType(
+  ProjectAccessoriesPackagingDto,
 ) {}
 
-export class GetListPlanningPackagingDto {
+export class GetListPProjectAccessoriesPackagingDto {
   @ApiProperty({ required: false })
   page: number;
 
