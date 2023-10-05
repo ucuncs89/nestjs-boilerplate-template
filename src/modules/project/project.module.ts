@@ -20,6 +20,8 @@ import { ProjectVendorMaterialController } from './controllers/project-vendor-ma
 import { ProjectVendorMaterialService } from './services/project-vendor-material.service';
 import { ProjectVendorProductionController } from './controllers/project-vendor-production.controller';
 import { ProjectVendorProductionService } from './services/project-vendor-production.service';
+import { ProjectShippingController } from './controllers/project-shipping.controller';
+import { ProjectShippingService } from './services/project-shipping.service';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { ProjectVendorProductionService } from './services/project-vendor-produc
     ProjectVariantController,
     ProjectVendorMaterialController,
     ProjectVendorProductionController,
+    ProjectShippingController,
   ],
   providers: [
     ProjectService,
@@ -49,6 +52,7 @@ import { ProjectVendorProductionService } from './services/project-vendor-produc
     ProjectVariantService,
     ProjectVendorMaterialService,
     ProjectVendorProductionService,
+    ProjectShippingService,
   ],
 })
 export class ProjectModule {}
