@@ -14,9 +14,6 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { CreateProjectMaterialDto } from '../dto/create-project-material.dto';
-import { ProjectMaterialService } from '../services/project_material.service';
-import { UpdateProjectMaterialDto } from '../dto/update-project-material.dto';
 import { ProjectVariantService } from '../services/project_variant.service';
 import { CreateProjectVariantDto } from '../dto/project-variant.dto';
 

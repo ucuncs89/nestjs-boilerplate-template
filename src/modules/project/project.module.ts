@@ -18,6 +18,8 @@ import { ProjectVariantService } from './services/project_variant.service';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { ProjectVendorMaterialController } from './controllers/project-vendor-material.controller';
 import { ProjectVendorMaterialService } from './services/project-vendor-material.service';
+import { ProjectVendorProductionController } from './controllers/project-vendor-production.controller';
+import { ProjectVendorProductionService } from './services/project-vendor-production.service';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { ProjectVendorMaterialService } from './services/project-vendor-material
     ProjectMaterialController,
     ProjectVariantController,
     ProjectVendorMaterialController,
+    ProjectVendorProductionController,
   ],
   providers: [
     ProjectService,
@@ -45,6 +48,7 @@ import { ProjectVendorMaterialService } from './services/project-vendor-material
     ProjectMaterialService,
     ProjectVariantService,
     ProjectVendorMaterialService,
+    ProjectVendorProductionService,
   ],
 })
 export class ProjectModule {}
