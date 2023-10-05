@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Connection, In, IsNull, Repository } from 'typeorm';
-import { CreateProjectMaterialDto } from '../dto/create-project-material.dto';
-import { ProjectMaterialEntity } from 'src/entities/project/project_material.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { ProjectFabricEntity } from 'src/entities/project/project_fabric.entity';
-import { ProjectAccessoriesSewingEntity } from 'src/entities/project/project_accessories_sewing.entity';
-import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_accessories_packaging.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdateProjectMaterialDto } from '../dto/update-project-material.dto';
 import { CreateProjectVariantDto } from '../dto/project-variant.dto';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { ProjectVariantFabricColorEntity } from 'src/entities/project/project_variant_fabric_color.entity';
