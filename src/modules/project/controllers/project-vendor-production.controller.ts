@@ -15,71 +15,35 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectVendorMaterialDto } from '../dto/project-vendor-material.dto';
-import { ProjectVendorMaterialService } from '../services/project-vendor-material.service';
+import { ProjectVendorProductionService } from '../services/project-vendor-production.service';
+import { ProjectVendorProductionDto } from '../dto/project-vendor-production.dto';
 
 @ApiBearerAuth()
 @ApiTags('project')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
-export class ProjectVendorMaterialController {
+export class ProjectVendorProductionController {
   constructor(
-    private readonly projectVendorMaterialService: ProjectVendorMaterialService,
+    private readonly projectVendorProductionService: ProjectVendorProductionService,
   ) {}
 
-  @Post(':project_id/detail/:detail_id/vendor-material')
+  @Post(':project_id/detail/:detail_id/vendor-production')
   async createVariant(
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('detail_id') detail_id: number,
-    @Body() projectVendorMaterialDto: ProjectVendorMaterialDto,
+    @Body() projectVendorProductionDto: ProjectVendorProductionDto,
     @I18n() i18n: I18nContext,
   ) {
-    let vendor_fabric: any;
-    let vendor_accessories_sewing: any;
-    let vendor_accessories_packaging: any;
-    if (
-      Array.isArray(projectVendorMaterialDto.vendor_fabric) &&
-      projectVendorMaterialDto.vendor_fabric
-    ) {
-      vendor_fabric =
-        await this.projectVendorMaterialService.createVendorMaterialFabric(
-          detail_id,
-          projectVendorMaterialDto.vendor_fabric,
-          req.user.id,
-          i18n,
-        );
-    }
-    if (
-      Array.isArray(projectVendorMaterialDto.vendor_accessories_sewing) &&
-      projectVendorMaterialDto.vendor_accessories_sewing
-    ) {
-      vendor_accessories_sewing =
-        await this.projectVendorMaterialService.createVendorMaterialSewing(
-          detail_id,
-          projectVendorMaterialDto.vendor_accessories_sewing,
-          req.user.id,
-          i18n,
-        );
-    }
-    if (
-      Array.isArray(projectVendorMaterialDto.vendor_accessories_packaging) &&
-      projectVendorMaterialDto.vendor_accessories_packaging
-    ) {
-      vendor_accessories_packaging =
-        await this.projectVendorMaterialService.createVendorMaterialPackaging(
-          detail_id,
-          projectVendorMaterialDto.vendor_accessories_packaging,
-          req.user.id,
-          i18n,
-        );
-    }
-    return {
-      data: {
-        vendor_fabric,
-        vendor_accessories_sewing,
-        vendor_accessories_packaging,
-      },
-    };
+    const data =
+      await this.projectVendorProductionService.createVendorProduction(
+        detail_id,
+        projectVendorProductionDto,
+        req.user.id,
+        i18n,
+      );
+
+    return { data };
   }
 
   //   @Get(':project_id/detail/:detail_id/variant')
