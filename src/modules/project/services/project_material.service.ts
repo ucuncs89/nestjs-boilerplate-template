@@ -2,18 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { Connection, IsNull, Repository } from 'typeorm';
 import { CreateProjectMaterialDto } from '../dto/create-project-material.dto';
 import { ProjectMaterialEntity } from 'src/entities/project/project_material.entity';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
 import { ProjectFabricEntity } from 'src/entities/project/project_fabric.entity';
 import { ProjectAccessoriesSewingEntity } from 'src/entities/project/project_accessories_sewing.entity';
 import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_accessories_packaging.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateProjectMaterialDto } from '../dto/update-project-material.dto';
+import { ProjectVariantService } from './project_variant.service';
 
 @Injectable()
 export class ProjectMaterialService {
   constructor(
     @InjectRepository(ProjectMaterialEntity)
     private projectMaterialRepository: Repository<ProjectMaterialEntity>,
+
+    @InjectRepository(ProjectFabricEntity)
+    private projectaFabricRepository: Repository<ProjectFabricEntity>,
+
+    private projectVariantService: ProjectVariantService,
     private connection: Connection,
   ) {}
 
@@ -207,5 +216,53 @@ export class ProjectMaterialService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findProjectFabricVariant(project_detail_id: number) {
+    const findProjectMaterialId = await this.projectMaterialRepository.findOne({
+      where: {
+        project_detail_id,
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+      },
+    });
+    if (!findProjectMaterialId) {
+      throw new AppErrorNotFoundException();
+    }
+    const arrResult = [];
+    const fabric = await this.projectaFabricRepository.find({
+      select: {
+        id: true,
+        project_material_id: true,
+        fabric_id: true,
+        name: true,
+        category: true,
+        used_for: true,
+        cut_shape: true,
+        consumption: true,
+        consumption_unit: true,
+        heavy: true,
+        heavy_unit: true,
+        wide: true,
+        wide_unit: true,
+        diameter: true,
+        diameter_unit: true,
+      },
+      where: {
+        project_material_id: findProjectMaterialId.id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    const variant = await this.projectVariantService.findByProjectDetail(
+      null,
+      project_detail_id,
+    );
+    for (const data of fabric) {
+      arrResult.push({ ...data, variant });
+    }
+    return arrResult;
   }
 }
