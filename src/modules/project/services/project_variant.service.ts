@@ -75,6 +75,13 @@ export class ProjectVariantService {
   async findByProjectDetail(project_id: number, project_detail_id: number) {
     return await this.projectVariantRepository.find({
       where: { project_detail_id, deleted_at: IsNull(), deleted_by: IsNull() },
+      select: {
+        id: true,
+        project_detail_id: true,
+        name: true,
+        total_item: true,
+        item_unit: true,
+      },
       relations: {
         size: true,
         project_fabric: true,
