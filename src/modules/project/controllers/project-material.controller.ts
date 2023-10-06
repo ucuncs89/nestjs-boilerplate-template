@@ -94,4 +94,17 @@ export class ProjectMaterialController {
     );
     return { data };
   }
+
+  @Get(':project_id/detail/:detail_id/material-fabric-variant')
+  async getFabricVariant(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectMaterialService.findProjectFabricVariant(
+      detail_id,
+    );
+    return { data };
+  }
 }
