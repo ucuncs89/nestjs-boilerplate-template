@@ -23,6 +23,7 @@ import { ProjectVendorProductionService } from './services/project-vendor-produc
 import { ProjectShippingController } from './controllers/project-shipping.controller';
 import { ProjectShippingService } from './services/project-shipping.service';
 import { ProjectFabricEntity } from 'src/entities/project/project_fabric.entity';
+import { ProjectShippingEntity } from 'src/entities/project/project_shipping.entity';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ProjectFabricEntity } from 'src/entities/project/project_fabric.entity'
       ProjectMaterialEntity,
       ProjectVariantEntity,
       ProjectFabricEntity,
+      ProjectShippingEntity,
     ]),
     RabbitMQModule,
   ],
