@@ -107,4 +107,29 @@ export class ProjectMaterialController {
     );
     return { data };
   }
+
+  @Get(':project_id/detail/:detail_id/material-sewing-variant')
+  async getSewingVariant(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectMaterialService.findProjectSewingVariant(
+      detail_id,
+    );
+    return { data };
+  }
+  @Get(':project_id/detail/:detail_id/material-packaging-variant')
+  async getPackagingVariant(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectMaterialService.findProjectPackagingVariant(
+      detail_id,
+    );
+    return { data };
+  }
 }

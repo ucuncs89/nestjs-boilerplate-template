@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppErrorException } from 'src/exceptions/app-exception';
 import { Connection, IsNull, Repository } from 'typeorm';
-import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
-import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
 import { CreateProjectShippingDto } from '../dto/project-shipping.dto';
 import { ProjectShippingEntity } from 'src/entities/project/project_shipping.entity';
 

@@ -22,6 +22,12 @@ export class ProjectMaterialService {
     @InjectRepository(ProjectFabricEntity)
     private projectaFabricRepository: Repository<ProjectFabricEntity>,
 
+    @InjectRepository(ProjectAccessoriesSewingEntity)
+    private projectAccessoriesSewingRepository: Repository<ProjectAccessoriesSewingEntity>,
+
+    @InjectRepository(ProjectAccessoriesPackagingEntity)
+    private projectAccessoriesPackagingRepository: Repository<ProjectAccessoriesPackagingEntity>,
+
     private projectVariantService: ProjectVariantService,
     private connection: Connection,
   ) {}
@@ -261,6 +267,85 @@ export class ProjectMaterialService {
       project_detail_id,
     );
     for (const data of fabric) {
+      arrResult.push({ ...data, variant });
+    }
+    return arrResult;
+  }
+  async findProjectSewingVariant(project_detail_id: number) {
+    const findProjectMaterialId = await this.projectMaterialRepository.findOne({
+      where: {
+        project_detail_id,
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+      },
+    });
+    if (!findProjectMaterialId) {
+      throw new AppErrorNotFoundException();
+    }
+    const arrResult = [];
+    const sewing = await this.projectAccessoriesSewingRepository.find({
+      select: {
+        id: true,
+        project_material_id: true,
+        accessories_sewing_id: true,
+        name: true,
+        category: true,
+        consumption: true,
+        consumption_unit: true,
+      },
+      where: {
+        project_material_id: findProjectMaterialId.id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    const variant = await this.projectVariantService.findByProjectDetail(
+      null,
+      project_detail_id,
+    );
+    for (const data of sewing) {
+      arrResult.push({ ...data, variant });
+    }
+    return arrResult;
+  }
+
+  async findProjectPackagingVariant(project_detail_id: number) {
+    const findProjectMaterialId = await this.projectMaterialRepository.findOne({
+      where: {
+        project_detail_id,
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+      },
+    });
+    if (!findProjectMaterialId) {
+      throw new AppErrorNotFoundException();
+    }
+    const arrResult = [];
+    const packaging = await this.projectAccessoriesPackagingRepository.find({
+      select: {
+        id: true,
+        project_material_id: true,
+        accessories_packaging_id: true,
+        name: true,
+        category: true,
+        consumption: true,
+        consumption_unit: true,
+      },
+      where: {
+        project_material_id: findProjectMaterialId.id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    const variant = await this.projectVariantService.findByProjectDetail(
+      null,
+      project_detail_id,
+    );
+    for (const data of packaging) {
       arrResult.push({ ...data, variant });
     }
     return arrResult;
