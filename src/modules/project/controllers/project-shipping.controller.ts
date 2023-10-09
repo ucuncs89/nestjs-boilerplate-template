@@ -27,7 +27,7 @@ export class ProjectShippingController {
   ) {}
 
   @Post(':project_id/detail/:detail_id/shipping')
-  async createVariant(
+  async createShipping(
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('detail_id') detail_id: number,
@@ -43,52 +43,35 @@ export class ProjectShippingController {
 
     return { data };
   }
+  @Put(':project_id/detail/:detail_id/shipping')
+  async updateShipping(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Body() createProjectShippingDto: CreateProjectShippingDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectShippingService.updateProjectShipping(
+      detail_id,
+      createProjectShippingDto,
+      req.user.id,
+      i18n,
+    );
 
-  //   @Get(':project_id/detail/:detail_id/variant')
-  //   async getbyDetailId(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectVariantService.findByProjectDetail(
-  //       project_id,
-  //       detail_id,
-  //     );
-  //     return { data };
-  //   }
+    return { data };
+  }
 
-  //   @Get(':project_id/detail/:detail_id/material/:material_id')
-  //   async getbyMaterialId(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @Param('material_id') material_id: number,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectMaterialService.findDetailbyMaterialId(
-  //       project_id,
-  //       detail_id,
-  //       material_id,
-  //     );
-  //     return { data };
-  //   }
+  @Get(':project_id/detail/:detail_id/shipping')
+  async getShipping(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectShippingService.findProjectShipping(
+      detail_id,
+    );
 
-  //   @Put(':project_id/detail/:detail_id/variant')
-  //   async updateMaterial(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @Body() createProjectVariantDto: CreateProjectVariantDto,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectVariantService.updateProjectVariant(
-  //       project_id,
-  //       detail_id,
-  //       createProjectVariantDto,
-  //       req.user.id,
-  //       i18n,
-  //     );
-  //     return { data };
-  //   }
+    return { data };
+  }
 }
