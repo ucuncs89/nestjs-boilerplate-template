@@ -29,7 +29,7 @@ export class ProjectSetSamplingController {
   ) {}
 
   @Post(':project_id/detail/:detail_id/set-sampling')
-  async createShipping(
+  async createSampling(
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('detail_id') detail_id: number,
