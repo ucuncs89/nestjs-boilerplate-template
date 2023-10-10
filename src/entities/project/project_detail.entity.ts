@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { ProjectEntity } from './project.entity';
 
 @Entity('project_detail')
 export class ProjectDetailEntity {
@@ -35,4 +34,10 @@ export class ProjectDetailEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @Column({ type: 'boolean', nullable: true })
+  is_sampling: boolean;
+
+  @Column({ type: 'boolean', nullable: true })
+  is_confirm: boolean;
 }
