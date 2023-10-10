@@ -38,4 +38,13 @@ export class ProjectDetailService {
     }
     return data;
   }
+
+  async updateIsSampling(id, is_sampling) {
+    return await this.projectDetailRepository.update(
+      { id },
+      {
+        is_sampling,
+      },
+    );
+  }
 }

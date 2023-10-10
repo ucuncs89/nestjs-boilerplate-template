@@ -1,8 +1,9 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, ValidateNested } from 'class-validator';
 
-export class CreateProjectSetSamplingto {
+export class CreateProjectSetSamplingDto {
+  @ApiProperty()
+  is_sampling: boolean;
+
   @ApiProperty()
   sampling_date: string;
 
@@ -15,7 +16,9 @@ export class CreateProjectSetSamplingto {
   created_at?: string;
 }
 
-// export class UpdateProjectFabricDto extends PartialType(ProjectFabricDto) {}
+export class UpdateProjectSetSamplingDto extends PartialType(
+  CreateProjectSetSamplingDto,
+) {}
 
 export class GetListProjectShippingDto {
   @ApiProperty({ required: false })

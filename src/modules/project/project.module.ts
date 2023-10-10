@@ -26,6 +26,9 @@ import { ProjectFabricEntity } from 'src/entities/project/project_fabric.entity'
 import { ProjectShippingEntity } from 'src/entities/project/project_shipping.entity';
 import { ProjectAccessoriesSewingEntity } from 'src/entities/project/project_accessories_sewing.entity';
 import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_accessories_packaging.entity';
+import { ProjectSetSamplingEntity } from 'src/entities/project/project_set_sampling.entity';
+import { ProjectSetSamplingService } from './services/project-set-sampling.service';
+import { ProjectSetSamplingController } from './controllers/project-set-sampling.controller';
 
 @Module({
   imports: [
@@ -39,6 +42,7 @@ import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_
       ProjectShippingEntity,
       ProjectAccessoriesSewingEntity,
       ProjectAccessoriesPackagingEntity,
+      ProjectSetSamplingEntity,
     ]),
     RabbitMQModule,
   ],
@@ -51,6 +55,7 @@ import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_
     ProjectVendorMaterialController,
     ProjectVendorProductionController,
     ProjectShippingController,
+    ProjectSetSamplingController,
   ],
   providers: [
     ProjectService,
@@ -61,6 +66,7 @@ import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_
     ProjectVendorMaterialService,
     ProjectVendorProductionService,
     ProjectShippingService,
+    ProjectSetSamplingService,
   ],
 })
 export class ProjectModule {}
