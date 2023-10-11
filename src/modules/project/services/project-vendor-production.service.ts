@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { Connection } from 'typeorm';
+import { Connection, IsNull, Repository } from 'typeorm';
 import { ProjectVendorProductionDto } from '../dto/project-vendor-production.dto';
 import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
@@ -9,8 +9,8 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
 @Injectable()
 export class ProjectVendorProductionService {
   constructor(
-    // @InjectRepository(ProjectVariantEntity)
-    // private projectVariantRepository: Repository<ProjectVariantEntity>,
+    @InjectRepository(ProjectVendorProductionEntity)
+    private projectVendorProductionRepository: Repository<ProjectVendorProductionEntity>,
     private connection: Connection,
   ) {}
 
@@ -57,5 +57,35 @@ export class ProjectVendorProductionService {
     } finally {
       await queryRunner.release();
     }
+  }
+  async findVendorProduction(project_detail_id) {
+    const data = await this.projectVendorProductionRepository.find({
+      select: {
+        id: true,
+        project_detail_id: true,
+        sewing_percentage_of_loss: true,
+        cutting_percentage_of_loss: true,
+        vendor_production_detail: {
+          id: true,
+          activity_id: true,
+          activity_name: true,
+          price: true,
+          quantity: true,
+          quantity_unit: true,
+          vendor_id: true,
+          vendor_name: true,
+          project_vendor_production_id: true,
+        },
+      },
+      where: {
+        project_detail_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      relations: {
+        vendor_production_detail: true,
+      },
+    });
+    return data;
   }
 }

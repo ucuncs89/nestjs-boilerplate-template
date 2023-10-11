@@ -4,17 +4,13 @@ import {
   Post,
   Body,
   Param,
-  Delete,
   UseGuards,
   Req,
-  Query,
-  Put,
 } from '@nestjs/common';
 
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { ProjectVendorMaterialDto } from '../dto/project-vendor-material.dto';
 import { ProjectVendorProductionService } from '../services/project-vendor-production.service';
 import { ProjectVendorProductionDto } from '../dto/project-vendor-production.dto';
 
@@ -28,7 +24,7 @@ export class ProjectVendorProductionController {
   ) {}
 
   @Post(':project_id/detail/:detail_id/vendor-production')
-  async createVariant(
+  async createVendorProduction(
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('detail_id') detail_id: number,
@@ -46,19 +42,18 @@ export class ProjectVendorProductionController {
     return { data };
   }
 
-  //   @Get(':project_id/detail/:detail_id/variant')
-  //   async getbyDetailId(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectVariantService.findByProjectDetail(
-  //       project_id,
-  //       detail_id,
-  //     );
-  //     return { data };
-  //   }
+  @Get(':project_id/detail/:detail_id/vendor-production')
+  async getVendorProduction(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectVendorProductionService.findVendorProduction(
+      detail_id,
+    );
+    return { data };
+  }
 
   //   @Get(':project_id/detail/:detail_id/material/:material_id')
   //   async getbyMaterialId(
