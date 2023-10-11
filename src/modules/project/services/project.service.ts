@@ -30,6 +30,7 @@ export class ProjectService {
     try {
       const project = await queryRunner.manager.insert(ProjectEntity, {
         ...createProjectDto,
+        deadline: createProjectDto.deadline + ' 23:59:59',
         created_by: user_id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

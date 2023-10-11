@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from './project_vendor_material_accessories_sewing_detail.entity';
 
 @Entity('project_vendor_material_accessories_sewing')
 export class ProjectVendorMaterialAccessoriesSewingEntity {
@@ -34,4 +41,12 @@ export class ProjectVendorMaterialAccessoriesSewingEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @OneToMany(
+    () => ProjectVendorMaterialAccessoriesSewingDetailEntity,
+    (detail: ProjectVendorMaterialAccessoriesSewingDetailEntity) =>
+      detail.vendor_material_sewing,
+  )
+  @JoinColumn({ name: 'project_vendor_material_accessories_sewing_id' })
+  detail: ProjectVendorMaterialAccessoriesSewingDetailEntity[];
 }

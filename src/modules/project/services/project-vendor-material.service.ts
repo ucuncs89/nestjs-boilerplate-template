@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
+import { Connection, IsNull, Repository } from 'typeorm';
 import { ProjectVendorMaterialFabricDto } from '../dto/project-vendor-material-fabric.dto';
 import { ProjectVendorMaterialFabricEntity } from 'src/entities/project/project_vendor_material_fabric.entity';
 import { ProjectVendorMaterialFabricDetailEntity } from 'src/entities/project/project_vendor_material_fabric_detail.entity';
@@ -15,8 +15,15 @@ import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entit
 @Injectable()
 export class ProjectVendorMaterialService {
   constructor(
-    // @InjectRepository(ProjectVariantEntity)
-    // private projectVariantRepository: Repository<ProjectVariantEntity>,
+    @InjectRepository(ProjectVendorMaterialFabricEntity)
+    private projectVendorMaterialFabricRepository: Repository<ProjectVendorMaterialFabricEntity>,
+
+    @InjectRepository(ProjectVendorMaterialAccessoriesPackagingEntity)
+    private projectVendorMaterialAccessoriesPackagingRepository: Repository<ProjectVendorMaterialAccessoriesPackagingEntity>,
+
+    @InjectRepository(ProjectVendorMaterialAccessoriesSewingEntity)
+    private projectVendorMaterialAccessoriesSewingRepository: Repository<ProjectVendorMaterialAccessoriesSewingEntity>,
+
     private connection: Connection,
   ) {}
 
@@ -170,5 +177,85 @@ export class ProjectVendorMaterialService {
     } finally {
       await queryRunner.release();
     }
+  }
+  async findVendorMaterialFabric(project_detail_id: number) {
+    const data = await this.projectVendorMaterialFabricRepository.find({
+      where: {
+        project_detail_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        project_variant_id: true,
+        project_fabric_id: true,
+        detail: {
+          vendor_id: true,
+          quantity: true,
+          quantity_unit: true,
+          price: true,
+          price_unit: true,
+          total_price: true,
+        },
+      },
+      relations: {
+        detail: true,
+      },
+    });
+    return data;
+  }
+  async findVendorMaterialSewing(project_detail_id: number) {
+    const data =
+      await this.projectVendorMaterialAccessoriesSewingRepository.find({
+        where: {
+          project_detail_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        select: {
+          id: true,
+          project_variant_id: true,
+          project_accessories_sewing_id: true,
+          detail: {
+            vendor_id: true,
+            quantity: true,
+            quantity_unit: true,
+            price: true,
+            price_unit: true,
+            total_price: true,
+          },
+        },
+        relations: {
+          detail: true,
+        },
+      });
+    return data;
+  }
+  async findVendorMaterialPackaging(project_detail_id: number) {
+    const data =
+      await this.projectVendorMaterialAccessoriesPackagingRepository.find({
+        where: {
+          project_detail_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        select: {
+          id: true,
+          project_variant_id: true,
+          project_accessories_packaging_id: true,
+          detail: {
+            vendor_id: true,
+            quantity: true,
+            quantity_unit: true,
+            price: true,
+            price_unit: true,
+            total_price: true,
+          },
+        },
+        relations: {
+          detail: true,
+        },
+      });
+    return data;
   }
 }

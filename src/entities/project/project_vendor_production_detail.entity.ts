@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ProjectVendorProductionEntity } from './project_vendor_production.entity';
 
 @Entity('project_vendor_production_detail')
 export class ProjectVendorProductionDetailEntity {
@@ -20,7 +27,7 @@ export class ProjectVendorProductionDetailEntity {
   @Column({ type: 'varchar' })
   activity_name: string;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'double precision', nullable: true })
   quantity: number;
 
   @Column({ type: 'varchar', nullable: true })
@@ -49,4 +56,13 @@ export class ProjectVendorProductionDetailEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @ManyToOne(
+    () => ProjectVendorProductionEntity,
+    (vendor_production: ProjectVendorProductionEntity) =>
+      vendor_production.vendor_production_detail,
+    { cascade: true },
+  )
+  @JoinColumn({ name: 'project_vendor_production_id' })
+  public vendor_production: ProjectVendorProductionEntity;
 }
