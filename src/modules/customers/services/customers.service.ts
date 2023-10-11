@@ -102,6 +102,11 @@ export class CustomersService {
           is_active: order_by,
         };
         break;
+      case 'code':
+        orderObj = {
+          code: order_by,
+        };
+        break;
       case 'created_at':
         orderObj = {
           id: order_by,

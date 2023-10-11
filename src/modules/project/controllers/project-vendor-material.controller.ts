@@ -82,19 +82,32 @@ export class ProjectVendorMaterialController {
     };
   }
 
-  //   @Get(':project_id/detail/:detail_id/variant')
-  //   async getbyDetailId(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectVariantService.findByProjectDetail(
-  //       project_id,
-  //       detail_id,
-  //     );
-  //     return { data };
-  //   }
+  @Get(':project_id/detail/:detail_id/vendor-material')
+  async getbyDetailId(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const vendor_fabric =
+      await this.projectVendorMaterialService.findVendorMaterialFabric(
+        detail_id,
+      );
+
+    const vendor_accessories_sewing =
+      await this.projectVendorMaterialService.findVendorMaterialSewing(
+        detail_id,
+      );
+    const vendor_accessories_packaging =
+      await this.projectVendorMaterialService.findVendorMaterialPackaging(
+        detail_id,
+      );
+    return {
+      vendor_fabric,
+      vendor_accessories_sewing,
+      vendor_accessories_packaging,
+    };
+  }
 
   //   @Get(':project_id/detail/:detail_id/material/:material_id')
   //   async getbyMaterialId(
