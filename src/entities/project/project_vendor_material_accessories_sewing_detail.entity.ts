@@ -18,7 +18,7 @@ export class ProjectVendorMaterialAccessoriesSewingDetailEntity {
   @Column({ type: 'int' })
   vendor_id: number;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'double precision', nullable: true })
   quantity: number;
 
   @Column({ type: 'varchar', nullable: true })

@@ -22,6 +22,9 @@ export class ProjectEntity {
   @Column({ type: 'varchar' })
   code: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  sequential_number: string;
+
   @Column({ type: 'varchar' })
   style_name: string;
 

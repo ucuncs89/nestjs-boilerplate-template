@@ -23,18 +23,21 @@ export class ProjectService {
     private projectHistoryService: ProjectHistoryService,
   ) {}
   async create(createProjectDto: CreateProjectDto, user_id, i18n) {
-    const code = await this.generateCodeProject();
+    const generateCodeProject = await this.generateCodeProject(
+      createProjectDto.company,
+      createProjectDto.order_type,
+    );
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
       const project = await queryRunner.manager.insert(ProjectEntity, {
         ...createProjectDto,
-        deadline: createProjectDto.deadline + ' 23:59:59',
         created_by: user_id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        code,
+        code: `${generateCodeProject.codeProject}${generateCodeProject.sequential_number}`,
+        sequential_number: generateCodeProject.sequential_number,
         status: 'Planning',
         department_id: createProjectDto.departement_id,
         target_price_for_customer: createProjectDto.target_price_for_buyer,
@@ -235,11 +238,21 @@ export class ProjectService {
       where: {
         id,
       },
-      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+      select: {
+        id: true,
+        deleted_at: true,
+        deleted_by: true,
+        status: true,
+        sequential_number: true,
+      },
     });
     if (!project) {
       throw new AppErrorNotFoundException('Not Found');
     }
+    const generateCodeProject = await this.generateCodeProject(
+      updateProjectDto.company,
+      updateProjectDto.order_type,
+    );
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -258,6 +271,8 @@ export class ProjectService {
         sub_category_id: updateProjectDto.sub_category_id,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
+        code: `${generateCodeProject.codeProject}${project.sequential_number}`,
+        sequential_number: generateCodeProject.sequential_number,
       });
       for (const documents of updateProjectDto.project_document) {
         documents.project_id = id;
@@ -302,7 +317,38 @@ export class ProjectService {
     return true;
   }
 
-  async generateCodeProject() {
+  async generateCodeProject(company: string, order_type: string) {
+    let companyCode: string;
+    let typeProject: string;
+    switch (company) {
+      case 'Sami Teknologi Internasional':
+        companyCode = 'T';
+        break;
+      case 'Sami Kreasi Internasional':
+        companyCode = 'K';
+        break;
+      default:
+        companyCode = '';
+        break;
+    }
+    switch (order_type) {
+      case 'CMT':
+        typeProject = 'C';
+        break;
+      case 'FOB':
+        typeProject = 'F';
+        break;
+      case 'FABRIC':
+        typeProject = 'K';
+        break;
+      default:
+        typeProject = '';
+        break;
+    }
+    const today = new Date();
+    const year = today.getFullYear().toString().slice(-2);
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+
     const pad = '0000';
     try {
       const project = await this.projectRepository.find({
@@ -313,7 +359,10 @@ export class ProjectService {
         take: 1,
       });
       const id = project[0] ? `${project[0].id + 1}` : '1';
-      return pad.substring(0, pad.length - id.length) + id;
+      return {
+        codeProject: `${companyCode}${year}${month}-${typeProject}`,
+        sequential_number: pad.substring(0, pad.length - id.length) + id,
+      };
     } catch (error) {
       throw new Error(error);
     }
