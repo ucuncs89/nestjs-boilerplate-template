@@ -19,6 +19,10 @@ export class ProjectService {
   constructor(
     @InjectRepository(ProjectEntity)
     private projectRepository: Repository<ProjectEntity>,
+
+    @InjectRepository(ProjectSizeEntity)
+    private projectSizeRepository: Repository<ProjectSizeEntity>,
+
     private connection: Connection,
     private projectHistoryService: ProjectHistoryService,
   ) {}
@@ -366,5 +370,20 @@ export class ProjectService {
     } catch (error) {
       throw new Error(error);
     }
+  }
+  async findSize(project_id: number) {
+    const data = await this.projectSizeRepository.find({
+      where: {
+        project_id,
+      },
+      select: {
+        id: true,
+        project_id: true,
+        size_ratio: true,
+        number_of_item: true,
+      },
+    });
+    const sumOfItems = data.reduce((acc, item) => acc + item.number_of_item, 0);
+    return { sum_total_item: sumOfItems, data };
   }
 }

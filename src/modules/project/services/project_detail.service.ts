@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectDetailEntity } from 'src/entities/project/project_detail.entity';
 import { Connection, IsNull, Repository } from 'typeorm';
 import { CreateProjectDetailDto } from '../dto/create-project-detail.dto';
+import { ProjectConfirmDto } from '../dto/project-confirm.dto';
 
 @Injectable()
 export class ProjectDetailService {
@@ -44,6 +45,22 @@ export class ProjectDetailService {
       { id },
       {
         is_sampling,
+      },
+    );
+  }
+  async updateIsConfirm(
+    project_id: number,
+    id: number,
+    projectConfirmDto: ProjectConfirmDto,
+  ) {
+    return await this.projectDetailRepository.update(
+      {
+        project_id,
+        id,
+      },
+      {
+        is_confirm: projectConfirmDto.is_confirmation,
+        status: projectConfirmDto.status,
       },
     );
   }
