@@ -19,6 +19,10 @@ import { ProjectDetailService } from '../services/project_detail.service';
 import { ProjectConfirmDto } from '../dto/project-confirm.dto';
 import { ProjectService } from '../services/project.service';
 import { ProjectMaterialService } from '../services/project_material.service';
+import { ProjectVariantService } from '../services/project_variant.service';
+import { ProjectVendorProductionService } from '../services/project-vendor-production.service';
+import { ProjectShippingService } from '../services/project-shipping.service';
+import { ProjectSetSamplingService } from '../services/project-set-sampling.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -29,6 +33,10 @@ export class ProjectConfirmReviewController {
     private readonly projectDetailService: ProjectDetailService,
     private readonly projectService: ProjectService,
     private readonly projectMaterialService: ProjectMaterialService,
+    private readonly projectVariantService: ProjectVariantService,
+    private readonly projectVendorProductionService: ProjectVendorProductionService,
+    private readonly projectShippingService: ProjectShippingService,
+    private readonly projectSetSamplingService: ProjectSetSamplingService,
   ) {}
 
   @Post(':project_id/detail/:detail_id/confirmation')
@@ -76,10 +84,92 @@ export class ProjectConfirmReviewController {
     @Param('detail_id') detail_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    // const data = await this.projectMaterialService.findByProjectDetail(
-    //   project_id,
-    //   detail_id,
-    // );
-    return { data: 'ini belum' };
+    const data = await this.projectVariantService.findByProjectDetail(
+      project_id,
+      detail_id,
+    );
+    return { data };
+  }
+  @Get(':project_id/detail/:detail_id/review/consumption')
+  async getConsumption(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const fabric = await this.projectMaterialService.findProjectFabricVariant(
+      detail_id,
+    );
+    const sewing = await this.projectMaterialService.findProjectSewingVariant(
+      detail_id,
+    );
+    const packaging =
+      await this.projectMaterialService.findProjectPackagingVariant(detail_id);
+    const data = [...fabric, ...sewing, ...packaging].map((item) => {
+      return { ...item, type: this.getType(item) };
+    });
+    return { data };
+  }
+
+  @Get(':project_id/detail/:detail_id/review/vendor')
+  async getVendor(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectVendorProductionService.findVendorProduction(
+      detail_id,
+    );
+    return { data };
+  }
+
+  @Get(':project_id/detail/:detail_id/review/shipping')
+  async getShipping(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectShippingService.findProjectShipping(
+      detail_id,
+    );
+    return { data };
+  }
+
+  @Get(':project_id/detail/:detail_id/review/set-sampling')
+  async getSetSampling(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectSetSamplingService.findProjectSetSamplingOne(
+      detail_id,
+    );
+    return { data };
+  }
+
+  @Get(':project_id/detail/:detail_id/review/pricing')
+  async getPricing(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectShippingService.findProjectShipping(
+      detail_id,
+    );
+    return { data };
+  }
+
+  getType(item) {
+    if ('fabric_id' in item) {
+      return 'fabric';
+    } else if ('accessories_sewing_id' in item) {
+      return 'sewing';
+    } else {
+      return 'packaging';
+    }
   }
 }
