@@ -59,7 +59,7 @@ export class ProjectVendorProductionService {
     }
   }
   async findVendorProduction(project_detail_id) {
-    const data = await this.projectVendorProductionRepository.find({
+    const data = await this.projectVendorProductionRepository.findOne({
       select: {
         id: true,
         project_detail_id: true,
@@ -84,6 +84,9 @@ export class ProjectVendorProductionService {
       },
       relations: {
         vendor_production_detail: true,
+      },
+      order: {
+        id: 'DESC',
       },
     });
     return data;
