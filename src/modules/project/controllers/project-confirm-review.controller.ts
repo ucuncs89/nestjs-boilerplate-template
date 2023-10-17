@@ -165,10 +165,17 @@ export class ProjectConfirmReviewController {
     @Param('detail_id') detail_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    // const data = await this.projectMaterialService.findProjectConfirmFabric(
-    //   detail_id,
-    // );
-    return { data: 'belum' };
+    const fabric = await this.projectMaterialService.findProjectConfirmFabric(
+      detail_id,
+    );
+    const sewing = await this.projectMaterialService.findProjectConfirmSewing(
+      detail_id,
+    );
+    const packaging =
+      await this.projectMaterialService.findProjectConfirmPackaging(detail_id);
+
+    const data = [...fabric, ...sewing, ...packaging];
+    return { data };
   }
 
   getType(item) {

@@ -2,10 +2,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectVendorMaterialFabricDetailEntity } from './project_vendor_material_fabric_detail.entity';
+import { ProjectFabricEntity } from './project_fabric.entity';
+import { ProjectVariantEntity } from './project_variant.entity';
 
 @Entity('project_vendor_material_fabric')
 export class ProjectVendorMaterialFabricEntity {
@@ -49,4 +52,21 @@ export class ProjectVendorMaterialFabricEntity {
   )
   @JoinColumn({ name: 'project_vendor_material_fabric_id' })
   detail: ProjectVendorMaterialFabricDetailEntity[];
+
+  @ManyToOne(
+    () => ProjectFabricEntity,
+    (project_fabric: ProjectFabricEntity) => project_fabric.vendor_material,
+    { cascade: true },
+  )
+  @JoinColumn({ name: 'project_fabric_id' })
+  public project_fabric: ProjectFabricEntity;
+
+  @ManyToOne(
+    () => ProjectVariantEntity,
+    (project_fabric: ProjectVariantEntity) =>
+      project_fabric.vendor_material_fabric,
+    { cascade: true },
+  )
+  @JoinColumn({ name: 'project_variant_id' })
+  public project_variant: ProjectVariantEntity;
 }

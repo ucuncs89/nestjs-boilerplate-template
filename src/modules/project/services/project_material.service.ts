@@ -350,6 +350,7 @@ export class ProjectMaterialService {
     }
     return arrResult;
   }
+
   async findProjectConfirmFabric(project_detail_id: number) {
     const findProjectMaterialId = await this.projectMaterialRepository.findOne({
       where: {
@@ -361,25 +362,193 @@ export class ProjectMaterialService {
       },
     });
     if (!findProjectMaterialId) {
-      throw new AppErrorNotFoundException();
+      return [];
     }
-    const data = await this.projectFabricRepository
-      .createQueryBuilder('project_fabric')
-      .select([
-        'project_fabric.id',
-        'project_fabric.project_material_id',
-        'project_fabric.name',
-      ])
-      .where('project_fabric.project_material_id = :material_id', {
-        material_id: findProjectMaterialId.id,
-      })
-      .leftJoin(
-        'project_vendor_material_fabric',
-        'pvmf',
-        'project_fabric.id = pvmf.project_fabric_id',
-      )
-      .getMany();
+    const data = await this.projectFabricRepository.find({
+      where: {
+        project_material_id: findProjectMaterialId.id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        vendor_material: {
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+          project_variant: {
+            deleted_at: IsNull(),
+            deleted_by: IsNull(),
+          },
+          detail: {
+            deleted_at: IsNull(),
+            deleted_by: IsNull(),
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        vendor_material: {
+          id: true,
+          project_detail_id: true,
+          project_variant_id: true,
+          project_variant: {
+            id: true,
+            project_detail_id: true,
+            name: true,
+            total_item: true,
+            item_unit: true,
+          },
+          detail: {
+            id: true,
+            project_vendor_material_fabric_id: true,
+            vendor_id: true,
+            total_price: true,
+            price: true,
+            price_unit: true,
+            quantity: true,
+            quantity_unit: true,
+          },
+        },
+      },
+      relations: {
+        vendor_material: { detail: true, project_variant: true },
+      },
+    });
+    for (const item of data) {
+      item.category = 'Fabric';
+    }
+    return data;
+  }
 
+  async findProjectConfirmSewing(project_detail_id: number) {
+    const findProjectMaterialId = await this.projectMaterialRepository.findOne({
+      where: {
+        project_detail_id,
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+      },
+    });
+    if (!findProjectMaterialId) {
+      return [];
+    }
+    const data = await this.projectAccessoriesSewingRepository.find({
+      where: {
+        project_material_id: findProjectMaterialId.id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        vendor_material: {
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+          project_variant: {
+            deleted_at: IsNull(),
+            deleted_by: IsNull(),
+          },
+          detail: {
+            deleted_at: IsNull(),
+            deleted_by: IsNull(),
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        vendor_material: {
+          id: true,
+          project_detail_id: true,
+          project_variant_id: true,
+          project_variant: {
+            id: true,
+            project_detail_id: true,
+            name: true,
+            total_item: true,
+            item_unit: true,
+          },
+          detail: {
+            id: true,
+            project_vendor_material_accessories_sewing_id: true,
+            vendor_id: true,
+            total_price: true,
+            price: true,
+            price_unit: true,
+            quantity: true,
+            quantity_unit: true,
+          },
+        },
+      },
+      relations: {
+        vendor_material: { detail: true, project_variant: true },
+      },
+    });
+    for (const item of data) {
+      item.category = 'Sewing';
+    }
+    return data;
+  }
+
+  async findProjectConfirmPackaging(project_detail_id: number) {
+    const findProjectMaterialId = await this.projectMaterialRepository.findOne({
+      where: {
+        project_detail_id,
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+      },
+    });
+    if (!findProjectMaterialId) {
+      return [];
+    }
+    const data = await this.projectAccessoriesPackagingRepository.find({
+      where: {
+        project_material_id: findProjectMaterialId.id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        vendor_material: {
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+          project_variant: {
+            deleted_at: IsNull(),
+            deleted_by: IsNull(),
+          },
+          detail: {
+            deleted_at: IsNull(),
+            deleted_by: IsNull(),
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        vendor_material: {
+          id: true,
+          project_detail_id: true,
+          project_variant_id: true,
+          project_variant: {
+            id: true,
+            project_detail_id: true,
+            name: true,
+            total_item: true,
+            item_unit: true,
+          },
+          detail: {
+            id: true,
+            project_vendor_material_accessories_packaging_id: true,
+            vendor_id: true,
+            total_price: true,
+            price: true,
+            price_unit: true,
+            quantity: true,
+            quantity_unit: true,
+          },
+        },
+      },
+      relations: {
+        vendor_material: { detail: true, project_variant: true },
+      },
+    });
+    for (const item of data) {
+      item.category = 'Packaging';
+    }
     return data;
   }
 }
