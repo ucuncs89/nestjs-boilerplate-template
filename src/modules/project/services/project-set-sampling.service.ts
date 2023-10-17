@@ -25,8 +25,12 @@ export class ProjectSetSamplingService {
     try {
       const sampling = this.projectSetSamplingRepository.create({
         project_detail_id,
-        sampling_date: createProjectSetSamplingDto.sampling_date,
-        sampling_price: createProjectSetSamplingDto.sampling_price,
+        sampling_date: createProjectSetSamplingDto.is_sampling
+          ? createProjectSetSamplingDto.sampling_date
+          : null,
+        sampling_price: createProjectSetSamplingDto.is_sampling
+          ? createProjectSetSamplingDto.sampling_price
+          : null,
         created_at: new Date().toISOString(),
         created_by: user_id,
       });
@@ -37,20 +41,20 @@ export class ProjectSetSamplingService {
     }
   }
   async findProjectSetSamplingOne(project_detail_id: number) {
-    const data = await this.projectSetSamplingRepository.findOne({
-      where: {
-        project_detail_id,
-        deleted_at: IsNull(),
-        deleted_by: IsNull(),
-      },
-      select: {
-        id: true,
-        project_detail_id: true,
-        sampling_date: true,
-        sampling_price: true,
-      },
-    });
-    return data;
+    const data = await this.projectSetSamplingRepository.query(`select
+     "project_set_sampling"."id",
+     "project_set_sampling"."project_detail_id",
+     "project_set_sampling"."sampling_date",
+     "project_set_sampling"."sampling_price",
+     "project_detail"."is_sampling"
+   from
+     "project_set_sampling" "project_set_sampling"
+   left join "project_detail" "project_detail" on
+     "project_set_sampling"."project_detail_id" = "project_detail"."id"
+   where
+     "project_set_sampling"."project_detail_id" = ${project_detail_id}`);
+
+    return data[0] ? data[0] : null;
   }
   async updateProjectShipping(
     project_detail_id,
@@ -65,8 +69,12 @@ export class ProjectSetSamplingService {
           id,
         },
         {
-          sampling_date: updateProjectSetSamplingDto.sampling_date,
-          sampling_price: updateProjectSetSamplingDto.sampling_price,
+          sampling_date: updateProjectSetSamplingDto.is_sampling
+            ? updateProjectSetSamplingDto.sampling_date
+            : null,
+          sampling_price: updateProjectSetSamplingDto.is_sampling
+            ? updateProjectSetSamplingDto.sampling_price
+            : null,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
         },
