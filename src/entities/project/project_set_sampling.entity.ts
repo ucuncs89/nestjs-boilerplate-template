@@ -8,11 +8,11 @@ export class ProjectSetSamplingEntity {
   @Column({ type: 'int' })
   project_detail_id: number;
 
-  @Column({ type: 'timestamp with time zone' })
-  sampling_date: string;
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  sampling_date?: string;
 
-  @Column({ type: 'int' })
-  sampling_price: number;
+  @Column({ type: 'int', nullable: true })
+  sampling_price?: number;
 
   @Column({
     type: 'timestamp with time zone',
