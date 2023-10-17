@@ -3,9 +3,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectMaterialEntity } from './project_material.entity';
+import { ProjectVendorMaterialAccessoriesSewingEntity } from './project_vendor_material_accessories_sewing.entity';
 
 @Entity('project_accessories_sewing')
 export class ProjectAccessoriesSewingEntity {
@@ -57,4 +59,12 @@ export class ProjectAccessoriesSewingEntity {
   )
   @JoinColumn({ name: 'project_material_id' })
   public project_material: ProjectMaterialEntity;
+
+  @OneToMany(
+    () => ProjectVendorMaterialAccessoriesSewingEntity,
+    (sewing_material: ProjectVendorMaterialAccessoriesSewingEntity) =>
+      sewing_material.project_accessories_sewing,
+  )
+  @JoinColumn({ name: 'project_accessories_sewing_id' })
+  vendor_material: ProjectVendorMaterialAccessoriesSewingEntity[];
 }
