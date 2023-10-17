@@ -20,7 +20,7 @@ export class ProjectMaterialService {
     private projectMaterialRepository: Repository<ProjectMaterialEntity>,
 
     @InjectRepository(ProjectFabricEntity)
-    private projectaFabricRepository: Repository<ProjectFabricEntity>,
+    private projectFabricRepository: Repository<ProjectFabricEntity>,
 
     @InjectRepository(ProjectAccessoriesSewingEntity)
     private projectAccessoriesSewingRepository: Repository<ProjectAccessoriesSewingEntity>,
@@ -238,7 +238,7 @@ export class ProjectMaterialService {
       throw new AppErrorNotFoundException();
     }
     const arrResult = [];
-    const fabric = await this.projectaFabricRepository.find({
+    const fabric = await this.projectFabricRepository.find({
       select: {
         id: true,
         project_material_id: true,
@@ -349,5 +349,37 @@ export class ProjectMaterialService {
       arrResult.push({ ...data, variant });
     }
     return arrResult;
+  }
+  async findProjectConfirmFabric(project_detail_id: number) {
+    const findProjectMaterialId = await this.projectMaterialRepository.findOne({
+      where: {
+        project_detail_id,
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+      },
+    });
+    if (!findProjectMaterialId) {
+      throw new AppErrorNotFoundException();
+    }
+    const data = await this.projectFabricRepository
+      .createQueryBuilder('project_fabric')
+      .select([
+        'project_fabric.id',
+        'project_fabric.project_material_id',
+        'project_fabric.name',
+      ])
+      .where('project_fabric.project_material_id = :material_id', {
+        material_id: findProjectMaterialId.id,
+      })
+      .leftJoin(
+        'project_vendor_material_fabric',
+        'pvmf',
+        'project_fabric.id = pvmf.project_fabric_id',
+      )
+      .getMany();
+
+    return data;
   }
 }

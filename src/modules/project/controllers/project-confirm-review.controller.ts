@@ -4,17 +4,13 @@ import {
   Post,
   Body,
   Param,
-  Delete,
   UseGuards,
   Req,
-  Query,
-  Put,
 } from '@nestjs/common';
 
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { ProjectPriceDto } from '../dto/project-price.dto';
 import { ProjectDetailService } from '../services/project_detail.service';
 import { ProjectConfirmDto } from '../dto/project-confirm.dto';
 import { ProjectService } from '../services/project.service';
@@ -161,6 +157,18 @@ export class ProjectConfirmReviewController {
       detail_id,
     );
     return { data };
+  }
+  @Get(':project_id/detail/:detail_id/review/supplier')
+  async getSupplier(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    // const data = await this.projectMaterialService.findProjectConfirmFabric(
+    //   detail_id,
+    // );
+    return { data: 'belum' };
   }
 
   getType(item) {
