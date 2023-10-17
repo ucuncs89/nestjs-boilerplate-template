@@ -7,6 +7,9 @@ import {
 } from 'typeorm';
 import { ProjectVariantSizeEntity } from './project_variant_size.entity';
 import { ProjectVariantFabricColorEntity } from './project_variant_fabric_color.entity';
+import { ProjectVendorMaterialFabricEntity } from './project_vendor_material_fabric.entity';
+import { ProjectVendorMaterialAccessoriesSewingEntity } from './project_vendor_material_accessories_sewing.entity';
+import { ProjectVendorMaterialAccessoriesPackagingEntity } from './project_vendor_material_accessories_packaging.entity';
 
 @Entity('project_variant')
 export class ProjectVariantEntity {
@@ -60,4 +63,29 @@ export class ProjectVariantEntity {
   )
   @JoinColumn({ name: 'project_variant_id' })
   project_fabric: ProjectVariantFabricColorEntity[];
+
+  @OneToMany(
+    () => ProjectVendorMaterialFabricEntity,
+    (vendor_material_fabric: ProjectVendorMaterialFabricEntity) =>
+      vendor_material_fabric.project_variant,
+  )
+  @JoinColumn({ name: 'project_variant_id' })
+  vendor_material_fabric: ProjectVendorMaterialFabricEntity[];
+
+  @OneToMany(
+    () => ProjectVendorMaterialAccessoriesSewingEntity,
+    (vendor_material_sewing: ProjectVendorMaterialAccessoriesSewingEntity) =>
+      vendor_material_sewing.project_variant,
+  )
+  @JoinColumn({ name: 'project_variant_id' })
+  vendor_material_sewing: ProjectVendorMaterialAccessoriesSewingEntity[];
+
+  @OneToMany(
+    () => ProjectVendorMaterialAccessoriesPackagingEntity,
+    (
+      vendor_material_packaging: ProjectVendorMaterialAccessoriesPackagingEntity,
+    ) => vendor_material_packaging.project_variant,
+  )
+  @JoinColumn({ name: 'project_variant_id' })
+  vendor_material_packaging: ProjectVendorMaterialFabricEntity[];
 }
