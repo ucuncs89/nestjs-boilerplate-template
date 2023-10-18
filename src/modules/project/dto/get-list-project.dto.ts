@@ -12,6 +12,10 @@ export enum StatusProjectEnum {
   Hold = 'Hold',
 }
 
+export enum DeadlineFilterProjectEnum {
+  Now = 'Now',
+  WeekMore = 'WeekMore',
+}
 export class GetListProjectDto {
   @ApiProperty({ required: false })
   page: number;
@@ -33,4 +37,7 @@ export class GetListProjectDto {
 
   @ApiProperty({ required: false, enum: OrderTypeProjectEnum })
   order_type?: OrderTypeProjectEnum;
+
+  @ApiProperty({ required: false, enum: DeadlineFilterProjectEnum })
+  deadline?: DeadlineFilterProjectEnum;
 }
