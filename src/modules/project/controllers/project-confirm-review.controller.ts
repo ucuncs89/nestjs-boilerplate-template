@@ -80,11 +80,18 @@ export class ProjectConfirmReviewController {
     @Param('detail_id') detail_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectVariantService.findByProjectDetail(
+    const variant = await this.projectVariantService.findByProjectDetail(
       project_id,
       detail_id,
     );
-    return { data };
+    const fabric = await this.projectMaterialService.findMaterialName(
+      detail_id,
+    );
+    const arrResult = [];
+    for (const data of variant) {
+      arrResult.push({ ...data, fabric });
+    }
+    return { data: arrResult };
   }
   @Get(':project_id/detail/:detail_id/review/consumption')
   async getConsumption(
