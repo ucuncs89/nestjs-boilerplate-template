@@ -61,6 +61,7 @@ export class ProjectController {
       status: query.status,
       keyword: query.keyword,
       order_type: query.order_type,
+      deadline: query.deadline,
     });
     const pagination = await Pagination.pagination(
       data.total_data,

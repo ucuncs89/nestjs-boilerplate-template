@@ -50,7 +50,7 @@ export class ProjectConfirmReviewController {
     );
     return { data };
   }
-  @Get(':project_id/detail/:detail_id/review/size-quality')
+  @Get(':project_id/detail/:detail_id/review/size-quantity')
   async getSizeQuality(
     @Req() req,
     @Param('project_id') project_id: number,

@@ -3,7 +3,17 @@ import { CreateProjectDto } from '../dto/create-project.dto';
 import { UpdateProjectDto } from '../dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from 'src/entities/project/project.entity';
-import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
+import {
+  Between,
+  Connection,
+  ILike,
+  IsNull,
+  LessThan,
+  MoreThan,
+  Not,
+  Raw,
+  Repository,
+} from 'typeorm';
 import { ProjectDocumentEntity } from 'src/entities/project/project_document.entity';
 import { ProjectSizeEntity } from 'src/entities/project/project_size.entity';
 import {
@@ -80,8 +90,16 @@ export class ProjectService {
     }
   }
   async findAll(query: GetListProjectDto) {
-    const { page, page_size, sort_by, order_by, status, keyword, order_type } =
-      query;
+    const {
+      page,
+      page_size,
+      sort_by,
+      order_by,
+      status,
+      keyword,
+      order_type,
+      deadline,
+    } = query;
     let orderObj = {};
     switch (sort_by) {
       case 'name':
@@ -94,6 +112,7 @@ export class ProjectService {
         };
         break;
     }
+    let date_deadline;
     const [results, total] = await this.projectRepository.findAndCount({
       select: {
         id: true,
@@ -136,12 +155,30 @@ export class ProjectService {
           status: status ? status : Not(IsNull()),
           order_type: order_type ? order_type : Not(IsNull()),
           deleted_at: IsNull(),
+          deadline:
+            deadline === 'WeekMore'
+              ? Between(
+                  new Date().toISOString(),
+                  new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                )
+              : deadline === 'Now'
+              ? LessThan(new Date().toISOString())
+              : Not(IsNull()),
         },
         {
           code: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
           status: status ? status : Not(IsNull()),
           order_type: order_type ? order_type : Not(IsNull()),
           deleted_at: IsNull(),
+          deadline:
+            deadline === 'WeekMore'
+              ? Between(
+                  new Date().toISOString(),
+                  new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                )
+              : deadline === 'Now'
+              ? LessThan(new Date().toISOString())
+              : Not(IsNull()),
         },
       ],
       relations: {

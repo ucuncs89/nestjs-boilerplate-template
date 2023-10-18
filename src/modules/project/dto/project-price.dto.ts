@@ -27,8 +27,8 @@ export class ProjectPriceDto {
     isArray: true,
     type: ProjectPriceAdditionalDto,
   })
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
+  // @IsNotEmpty()
+  // @ValidateNested({ each: true })
   @Type(() => ProjectPriceAdditionalDto)
   additional_price?: ProjectPriceAdditionalDto[];
 
