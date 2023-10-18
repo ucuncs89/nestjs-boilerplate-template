@@ -56,6 +56,12 @@ export class ProjectFabricDto {
   project_material_id?: number;
   created_by?: number;
   created_at?: string;
+
+  @ApiProperty({ required: false })
+  method_type: string;
+
+  @ApiProperty({ required: false })
+  id: number;
 }
 
 export class CreateProjectFabricDto {

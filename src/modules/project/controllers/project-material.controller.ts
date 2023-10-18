@@ -132,4 +132,22 @@ export class ProjectMaterialController {
     );
     return { data };
   }
+
+  @Post(':project_id/detail/:detail_id/material/transaction')
+  async trxMaterialBatch(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Body() createProjectMaterialDto: CreateProjectMaterialDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectMaterialService.createDetailMaterial(
+      project_id,
+      detail_id,
+      createProjectMaterialDto,
+      req.user.id,
+      i18n,
+    );
+    return { data, note: 'BELUM' };
+  }
 }
