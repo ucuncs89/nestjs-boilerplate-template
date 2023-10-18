@@ -385,6 +385,7 @@ export class ProjectMaterialService {
       select: {
         id: true,
         name: true,
+        category: true,
         vendor_material: {
           id: true,
           project_detail_id: true,
@@ -412,10 +413,11 @@ export class ProjectMaterialService {
         vendor_material: { detail: true, project_variant: true },
       },
     });
+    const arrResult = [];
     for (const item of data) {
-      item.category = 'Fabric';
+      arrResult.push({ ...item, type: 'Fabric' });
     }
-    return data;
+    return arrResult;
   }
 
   async findProjectConfirmSewing(project_detail_id: number) {
@@ -452,6 +454,7 @@ export class ProjectMaterialService {
       select: {
         id: true,
         name: true,
+        category: true,
         vendor_material: {
           id: true,
           project_detail_id: true,
@@ -479,10 +482,11 @@ export class ProjectMaterialService {
         vendor_material: { detail: true, project_variant: true },
       },
     });
+    const arrResult = [];
     for (const item of data) {
-      item.category = 'Sewing';
+      arrResult.push({ ...item, type: 'Sewing' });
     }
-    return data;
+    return arrResult;
   }
 
   async findProjectConfirmPackaging(project_detail_id: number) {
@@ -519,6 +523,7 @@ export class ProjectMaterialService {
       select: {
         id: true,
         name: true,
+        category: true,
         vendor_material: {
           id: true,
           project_detail_id: true,
@@ -546,9 +551,49 @@ export class ProjectMaterialService {
         vendor_material: { detail: true, project_variant: true },
       },
     });
+    const arrResult = [];
     for (const item of data) {
-      item.category = 'Packaging';
+      arrResult.push({ ...item, type: 'Packaging' });
     }
-    return data;
+    return arrResult;
+  }
+
+  async upsertDetailMaterial(
+    project_id: number,
+    project_detail_id: number,
+    createProjectMaterialDto: CreateProjectMaterialDto,
+    user_id,
+    i18n,
+  ) {
+    return createProjectMaterialDto;
+  }
+  async findMaterialName(project_detail_id) {
+    const findProjectMaterialId = await this.projectMaterialRepository.findOne({
+      where: {
+        project_detail_id,
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+      },
+    });
+    if (!findProjectMaterialId) {
+      return [];
+    }
+    const fabric = await this.projectFabricRepository.find({
+      select: {
+        id: true,
+        project_material_id: true,
+        fabric_id: true,
+        name: true,
+        category: true,
+      },
+      where: {
+        project_material_id: findProjectMaterialId.id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    return fabric;
   }
 }
