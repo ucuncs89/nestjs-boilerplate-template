@@ -614,30 +614,132 @@ export class ProjectMaterialService {
     });
     return fabric;
   }
-
-  async updateMaterial(
-    material_id: number,
+  async transactionUpdate(
+    project_detail_id: number,
+    project_material_id: number,
     updateProjectMaterialDto: UpdateProjectMaterialDto,
     user_id,
+    i18n,
   ) {
-    const data = await this.projectMaterialRepository.update(
-      {
-        id: material_id,
-      },
-      {
-        material_source: updateProjectMaterialDto.material_source,
-        total_price: updateProjectMaterialDto.total_price,
-        fabric_percentage_of_loss:
-          updateProjectMaterialDto.fabric_percentage_of_loss,
-        sewing_accessories_percentage_of_loss:
-          updateProjectMaterialDto.sewing_accessories_percentage_of_loss,
-        packaging_accessories_percentage_of_loss:
-          updateProjectMaterialDto.packaging_accessories_percentage_of_loss,
-        packaging_instructions: updateProjectMaterialDto.packaging_instructions,
-        updated_at: new Date().toISOString(),
-        updated_by: user_id,
-      },
-    );
-    return data;
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const projectMaterial = await queryRunner.manager.update(
+        ProjectMaterialEntity,
+        project_material_id,
+        {
+          project_detail_id,
+          material_source: updateProjectMaterialDto.material_source,
+          total_price: updateProjectMaterialDto.total_price,
+          fabric_percentage_of_loss:
+            updateProjectMaterialDto.fabric_percentage_of_loss,
+          sewing_accessories_percentage_of_loss:
+            updateProjectMaterialDto.sewing_accessories_percentage_of_loss,
+          packaging_accessories_percentage_of_loss:
+            updateProjectMaterialDto.packaging_accessories_percentage_of_loss,
+          packaging_instructions:
+            updateProjectMaterialDto.packaging_instructions,
+          created_at: new Date().toISOString(),
+          created_by: user_id,
+        },
+      );
+      // fabric
+      if (
+        Array.isArray(updateProjectMaterialDto.fabric) &&
+        updateProjectMaterialDto.fabric.length > 0
+      ) {
+        for (const fabric of updateProjectMaterialDto.fabric) {
+          fabric.project_material_id = project_material_id;
+          if (fabric.method_type === 'new') {
+            delete fabric.method_type;
+            delete fabric.id;
+            await queryRunner.manager.insert(ProjectFabricEntity, fabric);
+          } else if (fabric.method_type === 'edit') {
+            delete fabric.method_type;
+            await queryRunner.manager.upsert(ProjectFabricEntity, fabric, {
+              skipUpdateIfNoValuesChanged: true,
+              conflictPaths: { id: true },
+            });
+          } else if (fabric.method_type === 'delete') {
+            await queryRunner.manager.delete(ProjectFabricEntity, {
+              id: fabric.id,
+            });
+          }
+        }
+      }
+      //accessories sewing
+      if (
+        Array.isArray(updateProjectMaterialDto.accessories_sewing) &&
+        updateProjectMaterialDto.accessories_sewing.length > 0
+      ) {
+        for (const sewing of updateProjectMaterialDto.accessories_sewing) {
+          sewing.project_material_id = project_material_id;
+          if (sewing.method_type === 'new') {
+            delete sewing.method_type;
+            delete sewing.id;
+            await queryRunner.manager.insert(
+              ProjectAccessoriesSewingEntity,
+              sewing,
+            );
+          } else if (sewing.method_type === 'edit') {
+            delete sewing.method_type;
+            await queryRunner.manager.upsert(
+              ProjectAccessoriesSewingEntity,
+              sewing,
+              {
+                skipUpdateIfNoValuesChanged: true,
+                conflictPaths: { id: true },
+              },
+            );
+          } else if (sewing.method_type === 'delete') {
+            await queryRunner.manager.delete(ProjectAccessoriesSewingEntity, {
+              id: sewing.id,
+            });
+          }
+        }
+      }
+      // //accessories packaging
+      if (
+        Array.isArray(updateProjectMaterialDto.accessories_packaging) &&
+        updateProjectMaterialDto.accessories_packaging.length > 0
+      ) {
+        for (const packaging of updateProjectMaterialDto.accessories_packaging) {
+          packaging.project_material_id = project_material_id;
+          if (packaging.method_type === 'new') {
+            delete packaging.method_type;
+            delete packaging.id;
+            await queryRunner.manager.insert(
+              ProjectAccessoriesPackagingEntity,
+              packaging,
+            );
+          } else if (packaging.method_type === 'edit') {
+            delete packaging.method_type;
+            await queryRunner.manager.upsert(
+              ProjectAccessoriesPackagingEntity,
+              packaging,
+              {
+                skipUpdateIfNoValuesChanged: true,
+                conflictPaths: { id: true },
+              },
+            );
+          } else if (packaging.method_type === 'delete') {
+            await queryRunner.manager.delete(
+              ProjectAccessoriesPackagingEntity,
+              {
+                id: packaging.id,
+              },
+            );
+          }
+        }
+      }
+      await queryRunner.commitTransaction();
+      return { id: project_material_id, ...updateProjectMaterialDto };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

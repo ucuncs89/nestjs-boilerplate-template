@@ -142,11 +142,13 @@ export class ProjectMaterialController {
     @Body() updateProjectMaterialDto: UpdateProjectMaterialDto,
     @I18n() i18n: I18nContext,
   ) {
-    // const updateMaterial = await this.projectMaterialService.updateMaterial(
-    //   material_id,
-    //   updateProjectMaterialDto,
-    //   req.user.id,
-    // );
-    return { data: 'belum' };
+    const data = await this.projectMaterialService.transactionUpdate(
+      detail_id,
+      material_id,
+      updateProjectMaterialDto,
+      req.user.id,
+      i18n,
+    );
+    return { data };
   }
 }
