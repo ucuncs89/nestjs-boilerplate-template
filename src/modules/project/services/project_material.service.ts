@@ -408,11 +408,15 @@ export class ProjectMaterialService {
             price_unit: true,
             quantity: true,
             quantity_unit: true,
+            vendors: {
+              id: true,
+              company_name: true,
+            },
           },
         },
       },
       relations: {
-        vendor_material: { detail: true, project_variant: true },
+        vendor_material: { detail: { vendors: true }, project_variant: true },
       },
     });
     const arrResult = [];
@@ -479,11 +483,15 @@ export class ProjectMaterialService {
             price_unit: true,
             quantity: true,
             quantity_unit: true,
+            vendors: {
+              id: true,
+              company_name: true,
+            },
           },
         },
       },
       relations: {
-        vendor_material: { detail: true, project_variant: true },
+        vendor_material: { detail: { vendors: true }, project_variant: true },
       },
     });
     const arrResult = [];
@@ -550,11 +558,15 @@ export class ProjectMaterialService {
             price_unit: true,
             quantity: true,
             quantity_unit: true,
+            vendors: {
+              id: true,
+              company_name: true,
+            },
           },
         },
       },
       relations: {
-        vendor_material: { detail: true, project_variant: true },
+        vendor_material: { detail: { vendors: true }, project_variant: true },
       },
     });
     const arrResult = [];
@@ -601,5 +613,31 @@ export class ProjectMaterialService {
       },
     });
     return fabric;
+  }
+
+  async updateMaterial(
+    material_id: number,
+    updateProjectMaterialDto: UpdateProjectMaterialDto,
+    user_id,
+  ) {
+    const data = await this.projectMaterialRepository.update(
+      {
+        id: material_id,
+      },
+      {
+        material_source: updateProjectMaterialDto.material_source,
+        total_price: updateProjectMaterialDto.total_price,
+        fabric_percentage_of_loss:
+          updateProjectMaterialDto.fabric_percentage_of_loss,
+        sewing_accessories_percentage_of_loss:
+          updateProjectMaterialDto.sewing_accessories_percentage_of_loss,
+        packaging_accessories_percentage_of_loss:
+          updateProjectMaterialDto.packaging_accessories_percentage_of_loss,
+        packaging_instructions: updateProjectMaterialDto.packaging_instructions,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
+    return data;
   }
 }

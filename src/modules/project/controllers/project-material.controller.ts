@@ -133,21 +133,20 @@ export class ProjectMaterialController {
     return { data };
   }
 
-  @Post(':project_id/detail/:detail_id/material/transaction')
-  async trxMaterialBatch(
+  @Put(':project_id/detail/:detail_id/material/:material_id/transaction')
+  async updateMaterialTransaction(
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('detail_id') detail_id: number,
-    @Body() createProjectMaterialDto: CreateProjectMaterialDto,
+    @Param('material_id') material_id: number,
+    @Body() updateProjectMaterialDto: UpdateProjectMaterialDto,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectMaterialService.createDetailMaterial(
-      project_id,
-      detail_id,
-      createProjectMaterialDto,
-      req.user.id,
-      i18n,
-    );
-    return { data, note: 'BELUM' };
+    // const updateMaterial = await this.projectMaterialService.updateMaterial(
+    //   material_id,
+    //   updateProjectMaterialDto,
+    //   req.user.id,
+    // );
+    return { data: 'belum' };
   }
 }
