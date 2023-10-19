@@ -34,7 +34,7 @@ export class ProjectHistoryController {
       data.total_data,
       _page,
       _page_size,
-      `/project/${id}`,
+      `/project/${id}/history`,
     );
     return { message: 'Successfully', data, pagination };
   }
