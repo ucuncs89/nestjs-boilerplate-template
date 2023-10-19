@@ -19,6 +19,7 @@ import { ProjectVariantService } from '../services/project_variant.service';
 import { ProjectVendorProductionService } from '../services/project-vendor-production.service';
 import { ProjectShippingService } from '../services/project-shipping.service';
 import { ProjectSetSamplingService } from '../services/project-set-sampling.service';
+import { ProjectPriceService } from '../services/project-price.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -33,6 +34,7 @@ export class ProjectConfirmReviewController {
     private readonly projectVendorProductionService: ProjectVendorProductionService,
     private readonly projectShippingService: ProjectShippingService,
     private readonly projectSetSamplingService: ProjectSetSamplingService,
+    private readonly projectPriceService: ProjectPriceService,
   ) {}
 
   @Post(':project_id/detail/:detail_id/confirmation')
@@ -160,9 +162,7 @@ export class ProjectConfirmReviewController {
     @Param('detail_id') detail_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectShippingService.findProjectShipping(
-      detail_id,
-    );
+    const data = await this.projectPriceService.findProjectPrice(detail_id);
     return { data };
   }
   @Get(':project_id/detail/:detail_id/review/supplier')
