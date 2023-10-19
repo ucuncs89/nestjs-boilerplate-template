@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectVendorMaterialAccessoriesPackagingEntity } from './project_vendor_material_accessories_packaging.entity';
+import { VendorsEntity } from '../vendors/vendors.entity';
 
 @Entity('project_vendor_material_accessories_packaging_detail')
 export class ProjectVendorMaterialAccessoriesPackagingDetailEntity {
@@ -63,4 +64,12 @@ export class ProjectVendorMaterialAccessoriesPackagingDetailEntity {
   )
   @JoinColumn({ name: 'project_vendor_material_accessories_packaging_id' })
   public vendor_material_packaging: ProjectVendorMaterialAccessoriesPackagingEntity;
+
+  @ManyToOne(
+    () => VendorsEntity,
+    (vendor: VendorsEntity) => vendor.project_vendor_material_fabric_detail,
+    { cascade: true },
+  )
+  @JoinColumn({ name: 'vendor_id' })
+  public vendors: VendorsEntity;
 }
