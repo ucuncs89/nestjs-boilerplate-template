@@ -20,6 +20,7 @@ import { ProjectVendorProductionService } from '../services/project-vendor-produ
 import { ProjectShippingService } from '../services/project-shipping.service';
 import { ProjectSetSamplingService } from '../services/project-set-sampling.service';
 import { ProjectPriceService } from '../services/project-price.service';
+import { ProjectHistoryService } from '../services/project_history.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -35,6 +36,7 @@ export class ProjectConfirmReviewController {
     private readonly projectShippingService: ProjectShippingService,
     private readonly projectSetSamplingService: ProjectSetSamplingService,
     private readonly projectPriceService: ProjectPriceService,
+    private readonly projectHistoryService: ProjectHistoryService,
   ) {}
 
   @Post(':project_id/detail/:detail_id/confirmation')
@@ -49,6 +51,8 @@ export class ProjectConfirmReviewController {
       project_id,
       detail_id,
       projectConfirmDto,
+      req.user.id,
+      i18n,
     );
     return { data };
   }

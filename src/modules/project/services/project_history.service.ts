@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProjectEntity } from 'src/entities/project/project.entity';
 import { CreateProjecHistorytDto } from '../dto/create-project-history.dto';
 import { ProjectHistoryEntity } from 'src/entities/project/project_history.entity';
 import { Repository } from 'typeorm';
@@ -46,6 +45,7 @@ export class ProjectHistoryService {
         updated_at: true,
         updated_by: true,
       },
+
       where: { project_id },
       order: orderObj,
       take: page_size,
