@@ -423,4 +423,14 @@ export class ProjectService {
     const sumOfItems = data.reduce((acc, item) => acc + item.number_of_item, 0);
     return { sum_total_item: sumOfItems, data };
   }
+  async updateStatusProject(
+    project_id: number,
+    status: StatusProjectHistoryEnum,
+    user_id,
+  ) {
+    this.projectRepository.update(
+      { id: project_id },
+      { status, updated_at: new Date().toISOString(), updated_by: user_id },
+    );
+  }
 }
