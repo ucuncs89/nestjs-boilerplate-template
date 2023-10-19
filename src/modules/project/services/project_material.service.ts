@@ -386,6 +386,8 @@ export class ProjectMaterialService {
         id: true,
         name: true,
         category: true,
+        consumption: true,
+        consumption_unit: true,
         vendor_material: {
           id: true,
           project_detail_id: true,
@@ -455,6 +457,8 @@ export class ProjectMaterialService {
         id: true,
         name: true,
         category: true,
+        consumption: true,
+        consumption_unit: true,
         vendor_material: {
           id: true,
           project_detail_id: true,
@@ -524,6 +528,8 @@ export class ProjectMaterialService {
         id: true,
         name: true,
         category: true,
+        consumption: true,
+        consumption_unit: true,
         vendor_material: {
           id: true,
           project_detail_id: true,
