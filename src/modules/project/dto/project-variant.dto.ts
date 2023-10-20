@@ -62,6 +62,12 @@ export class ProjectVariantDto {
   project_detail_id?: number;
   created_by?: number;
   created_at?: string;
+
+  @ApiProperty()
+  method_type?: string;
+
+  @ApiProperty()
+  id?: number;
 }
 
 export class CreateProjectVariantDto {
