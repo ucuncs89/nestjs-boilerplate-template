@@ -165,4 +165,116 @@ export class ProjectVariantService {
     });
     return data.map((v) => v.id);
   }
+
+  async updateProjectVariantTransaction(
+    project_id: number,
+    project_detail_id: number,
+    createProjectVariantDto: CreateProjectVariantDto,
+    user_id,
+    i18n,
+  ) {
+    const arrResult = [];
+    const arrVariantId = await this.findVariantIdsByProjectDetailId(
+      project_detail_id,
+    );
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.delete(ProjectVariantFabricColorEntity, {
+        project_variant_id: In(arrVariantId),
+      });
+      await queryRunner.manager.delete(ProjectVariantSizeEntity, {
+        project_variant_id: In(arrVariantId),
+      });
+      for (const variant of createProjectVariantDto.variant) {
+        if (variant.method_type === 'new') {
+          const projectVariant = await queryRunner.manager.insert(
+            ProjectVariantEntity,
+            {
+              project_detail_id,
+              name: variant.name,
+              total_item: variant.total_item,
+              item_unit: variant.item_unit,
+              created_at: new Date().toISOString(),
+              created_by: user_id,
+            },
+          );
+          if (
+            Array.isArray(variant.project_fabric) &&
+            variant.project_fabric.length > 0
+          ) {
+            for (const fabric of variant.project_fabric) {
+              fabric.project_variant_id = projectVariant.raw[0].id;
+            }
+            await queryRunner.manager.insert(
+              ProjectVariantFabricColorEntity,
+              variant.project_fabric,
+            );
+          }
+          if (Array.isArray(variant.size) && variant.size.length > 0) {
+            for (const size of variant.size) {
+              size.project_variant_id = projectVariant.raw[0].id;
+            }
+            await queryRunner.manager.insert(
+              ProjectVariantSizeEntity,
+              variant.size,
+            );
+          }
+          arrResult.push({ id: projectVariant.raw[0].id, ...variant });
+        } else if (variant.method_type === 'edit') {
+          delete variant.method_type;
+          variant.project_detail_id = project_detail_id;
+          await queryRunner.manager.update(
+            ProjectVariantEntity,
+            { id: variant.id },
+            {
+              project_detail_id,
+              name: variant.name,
+              total_item: variant.total_item,
+              item_unit: variant.item_unit,
+              created_at: new Date().toISOString(),
+              created_by: user_id,
+            },
+          );
+          if (
+            Array.isArray(variant.project_fabric) &&
+            variant.project_fabric.length > 0
+          ) {
+            for (const fabric of variant.project_fabric) {
+              fabric.project_variant_id = variant.id;
+            }
+            await queryRunner.manager.insert(
+              ProjectVariantFabricColorEntity,
+              variant.project_fabric,
+            );
+          }
+          if (Array.isArray(variant.size) && variant.size.length > 0) {
+            for (const size of variant.size) {
+              size.project_variant_id = variant.id;
+            }
+            await queryRunner.manager.insert(
+              ProjectVariantSizeEntity,
+              variant.size,
+            );
+          }
+          arrResult.push({ id: variant.id, ...variant });
+        } else if (variant.method_type === 'delete') {
+          await queryRunner.manager.delete(ProjectVariantEntity, {
+            id: variant.id,
+          });
+        }
+      }
+
+      await queryRunner.commitTransaction();
+      return arrResult;
+    } catch (error) {
+      console.log(error);
+
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }

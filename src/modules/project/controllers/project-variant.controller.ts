@@ -89,4 +89,23 @@ export class ProjectVariantController {
     );
     return { data };
   }
+
+  @Put(':project_id/detail/:detail_id/variant/transaction')
+  async puProjectVariantTransaction(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Body() createProjectVariantDto: CreateProjectVariantDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectVariantService.updateProjectVariantTransaction(
+        project_id,
+        detail_id,
+        createProjectVariantDto,
+        req.user.id,
+        i18n,
+      );
+    return { data };
+  }
 }
