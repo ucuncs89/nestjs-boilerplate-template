@@ -13,7 +13,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateProjectMaterialDto } from '../dto/update-project-material.dto';
 import { ProjectVariantService } from './project_variant.service';
 import { ProjectVendorMaterialFabricEntity } from 'src/entities/project/project_vendor_material_fabric.entity';
-import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
 import { ProjectVendorMaterialAccessoriesSewingEntity } from 'src/entities/project/project_vendor_material_accessories_sewing.entity';
 import { ProjectVendorMaterialAccessoriesPackagingEntity } from 'src/entities/project/project_vendor_material_accessories_packaging.entity';
 
@@ -54,17 +53,25 @@ export class ProjectMaterialService {
           material_source: createProjectMaterialDto.material_source,
           total_price: createProjectMaterialDto.total_price,
           fabric_percentage_of_loss:
-            createProjectMaterialDto.fabric_percentage_of_loss,
+            createProjectMaterialDto.fabric_percentage_of_loss
+              ? createProjectMaterialDto.fabric_percentage_of_loss
+              : 0,
           sewing_accessories_percentage_of_loss:
-            createProjectMaterialDto.sewing_accessories_percentage_of_loss,
+            createProjectMaterialDto.sewing_accessories_percentage_of_loss
+              ? createProjectMaterialDto.sewing_accessories_percentage_of_loss
+              : 0,
           packaging_accessories_percentage_of_loss:
-            createProjectMaterialDto.packaging_accessories_percentage_of_loss,
+            createProjectMaterialDto.packaging_accessories_percentage_of_loss
+              ? createProjectMaterialDto.packaging_accessories_percentage_of_loss
+              : 0,
           packaging_instructions:
             createProjectMaterialDto.packaging_instructions,
           created_at: new Date().toISOString(),
           created_by: user_id,
           finished_goods_percentage_of_loss:
-            createProjectMaterialDto.finished_goods_percentage_of_loss,
+            createProjectMaterialDto.finished_goods_percentage_of_loss
+              ? createProjectMaterialDto.finished_goods_percentage_of_loss
+              : 0,
         },
       );
       if (
@@ -627,6 +634,10 @@ export class ProjectMaterialService {
     user_id,
     i18n,
   ) {
+    const arrVariantId =
+      await this.projectVariantService.findVariantIdsByProjectDetailId(
+        project_detail_id,
+      );
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -639,17 +650,25 @@ export class ProjectMaterialService {
           material_source: updateProjectMaterialDto.material_source,
           total_price: updateProjectMaterialDto.total_price,
           fabric_percentage_of_loss:
-            updateProjectMaterialDto.fabric_percentage_of_loss,
+            updateProjectMaterialDto.fabric_percentage_of_loss
+              ? updateProjectMaterialDto.fabric_percentage_of_loss
+              : 0,
           sewing_accessories_percentage_of_loss:
-            updateProjectMaterialDto.sewing_accessories_percentage_of_loss,
+            updateProjectMaterialDto.sewing_accessories_percentage_of_loss
+              ? updateProjectMaterialDto.sewing_accessories_percentage_of_loss
+              : 0,
           packaging_accessories_percentage_of_loss:
-            updateProjectMaterialDto.packaging_accessories_percentage_of_loss,
+            updateProjectMaterialDto.packaging_accessories_percentage_of_loss
+              ? updateProjectMaterialDto.packaging_accessories_percentage_of_loss
+              : 0,
           packaging_instructions:
             updateProjectMaterialDto.packaging_instructions,
           created_at: new Date().toISOString(),
           created_by: user_id,
           finished_goods_percentage_of_loss:
-            updateProjectMaterialDto.finished_goods_percentage_of_loss,
+            updateProjectMaterialDto.finished_goods_percentage_of_loss
+              ? updateProjectMaterialDto.finished_goods_percentage_of_loss
+              : 0,
         },
       );
       // fabric
@@ -662,7 +681,22 @@ export class ProjectMaterialService {
           if (fabric.method_type === 'new') {
             delete fabric.method_type;
             delete fabric.id;
-            await queryRunner.manager.insert(ProjectFabricEntity, fabric);
+            const projectFabric = await queryRunner.manager.insert(
+              ProjectFabricEntity,
+              fabric,
+            );
+            if (Array.isArray(arrVariantId) && arrVariantId.length > 0) {
+              for (const variantId of arrVariantId) {
+                await queryRunner.manager.insert(
+                  ProjectVendorMaterialFabricEntity,
+                  {
+                    project_detail_id,
+                    project_fabric_id: projectFabric.raw[0].id,
+                    project_variant_id: variantId,
+                  },
+                );
+              }
+            }
           } else if (fabric.method_type === 'edit') {
             delete fabric.method_type;
             await queryRunner.manager.upsert(ProjectFabricEntity, fabric, {
@@ -693,10 +727,22 @@ export class ProjectMaterialService {
           if (sewing.method_type === 'new') {
             delete sewing.method_type;
             delete sewing.id;
-            await queryRunner.manager.insert(
+            const projectSewing = await queryRunner.manager.insert(
               ProjectAccessoriesSewingEntity,
               sewing,
             );
+            if (Array.isArray(arrVariantId) && arrVariantId.length > 0) {
+              for (const variantId of arrVariantId) {
+                await queryRunner.manager.insert(
+                  ProjectVendorMaterialAccessoriesSewingEntity,
+                  {
+                    project_detail_id,
+                    project_accessories_sewing_id: projectSewing.raw[0].id,
+                    project_variant_id: variantId,
+                  },
+                );
+              }
+            }
           } else if (sewing.method_type === 'edit') {
             delete sewing.method_type;
             await queryRunner.manager.upsert(
@@ -731,10 +777,23 @@ export class ProjectMaterialService {
           if (packaging.method_type === 'new') {
             delete packaging.method_type;
             delete packaging.id;
-            await queryRunner.manager.insert(
+            const projectPackaging = await queryRunner.manager.insert(
               ProjectAccessoriesPackagingEntity,
               packaging,
             );
+            if (Array.isArray(arrVariantId) && arrVariantId.length > 0) {
+              for (const variantId of arrVariantId) {
+                await queryRunner.manager.insert(
+                  ProjectVendorMaterialAccessoriesPackagingEntity,
+                  {
+                    project_detail_id,
+                    project_accessories_packaging_id:
+                      projectPackaging.raw[0].id,
+                    project_variant_id: variantId,
+                  },
+                );
+              }
+            }
           } else if (packaging.method_type === 'edit') {
             delete packaging.method_type;
             await queryRunner.manager.upsert(
@@ -770,5 +829,54 @@ export class ProjectMaterialService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findMaterialSelectId(project_detail_id: number) {
+    const findProjectMaterialId = await this.projectMaterialRepository.findOne({
+      where: {
+        project_detail_id,
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+    return findProjectMaterialId;
+  }
+  async findIdsMaterialFabricSewingPackaging(project_detail_id) {
+    const materialId = await this.findMaterialSelectId(project_detail_id);
+    const fabric = await this.projectFabricRepository.find({
+      select: {
+        id: true,
+        project_material_id: true,
+      },
+      where: {
+        project_material_id: materialId.id,
+      },
+    });
+
+    const sewing = await this.projectAccessoriesSewingRepository.find({
+      select: {
+        id: true,
+        project_material_id: true,
+      },
+      where: {
+        project_material_id: materialId.id,
+      },
+    });
+
+    const packaging = await this.projectAccessoriesSewingRepository.find({
+      select: {
+        id: true,
+        project_material_id: true,
+      },
+      where: {
+        project_material_id: materialId.id,
+      },
+    });
+    return { fabric, sewing, packaging };
   }
 }
