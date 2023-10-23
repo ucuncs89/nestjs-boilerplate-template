@@ -32,6 +32,9 @@ export class ProjectMaterialEntity {
   @Column({ type: 'double precision', nullable: true })
   packaging_accessories_percentage_of_loss: number;
 
+  @Column({ type: 'double precision', nullable: true })
+  finished_goods_percentage_of_loss: number;
+
   @Column({ type: 'text', nullable: true })
   packaging_instructions: string;
 

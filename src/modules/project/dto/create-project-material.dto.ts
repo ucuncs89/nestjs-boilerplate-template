@@ -26,6 +26,9 @@ export class CreateProjectMaterialDto {
   packaging_accessories_percentage_of_loss?: number;
 
   @ApiProperty()
+  finished_goods_percentage_of_loss?: number;
+
+  @ApiProperty()
   packaging_instructions?: string;
 
   @ApiProperty()
