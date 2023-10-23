@@ -12,6 +12,10 @@ import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateProjectMaterialDto } from '../dto/update-project-material.dto';
 import { ProjectVariantService } from './project_variant.service';
+import { ProjectVendorMaterialFabricEntity } from 'src/entities/project/project_vendor_material_fabric.entity';
+import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
+import { ProjectVendorMaterialAccessoriesSewingEntity } from 'src/entities/project/project_vendor_material_accessories_sewing.entity';
+import { ProjectVendorMaterialAccessoriesPackagingEntity } from 'src/entities/project/project_vendor_material_accessories_packaging.entity';
 
 @Injectable()
 export class ProjectMaterialService {
@@ -59,6 +63,8 @@ export class ProjectMaterialService {
             createProjectMaterialDto.packaging_instructions,
           created_at: new Date().toISOString(),
           created_by: user_id,
+          finished_goods_percentage_of_loss:
+            createProjectMaterialDto.finished_goods_percentage_of_loss,
         },
       );
       if (
@@ -642,6 +648,8 @@ export class ProjectMaterialService {
             updateProjectMaterialDto.packaging_instructions,
           created_at: new Date().toISOString(),
           created_by: user_id,
+          finished_goods_percentage_of_loss:
+            updateProjectMaterialDto.finished_goods_percentage_of_loss,
         },
       );
       // fabric
@@ -665,6 +673,13 @@ export class ProjectMaterialService {
             await queryRunner.manager.delete(ProjectFabricEntity, {
               id: fabric.id,
             });
+            await queryRunner.manager.delete(
+              ProjectVendorMaterialFabricEntity,
+              {
+                project_detail_id,
+                project_fabric_id: fabric.id,
+              },
+            );
           }
         }
       }
@@ -696,6 +711,13 @@ export class ProjectMaterialService {
             await queryRunner.manager.delete(ProjectAccessoriesSewingEntity, {
               id: sewing.id,
             });
+            await queryRunner.manager.delete(
+              ProjectVendorMaterialAccessoriesSewingEntity,
+              {
+                project_detail_id,
+                project_accessories_sewing_id: sewing.id,
+              },
+            );
           }
         }
       }
@@ -728,6 +750,13 @@ export class ProjectMaterialService {
               ProjectAccessoriesPackagingEntity,
               {
                 id: packaging.id,
+              },
+            );
+            await queryRunner.manager.delete(
+              ProjectVendorMaterialAccessoriesPackagingEntity,
+              {
+                project_detail_id,
+                project_accessories_packaging_id: packaging.id,
               },
             );
           }
