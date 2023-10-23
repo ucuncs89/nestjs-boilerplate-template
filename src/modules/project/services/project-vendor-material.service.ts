@@ -39,6 +39,30 @@ export class ProjectVendorMaterialService {
     await queryRunner.startTransaction();
     try {
       for (const vendorMaterial of projectVendorMaterialDto) {
+        const material = await queryRunner.manager.findOne(
+          ProjectVendorMaterialFabricEntity,
+          {
+            where: {
+              project_detail_id,
+              project_variant_id: vendorMaterial.project_variant_id,
+              project_fabric_id: vendorMaterial.project_fabric_id,
+            },
+            select: {
+              id: true,
+            },
+          },
+        );
+        await queryRunner.manager.delete(ProjectVendorMaterialFabricEntity, {
+          project_detail_id,
+          project_variant_id: vendorMaterial.project_variant_id,
+          project_fabric_id: vendorMaterial.project_fabric_id,
+        });
+        if (material) {
+          await queryRunner.manager.delete(
+            ProjectVendorMaterialFabricDetailEntity,
+            { project_vendor_material_fabric_id: material.id },
+          );
+        }
         const materialFabric = await queryRunner.manager.insert(
           ProjectVendorMaterialFabricEntity,
           {
@@ -88,6 +112,35 @@ export class ProjectVendorMaterialService {
     await queryRunner.startTransaction();
     try {
       for (const sewingMaterial of projectVendorMaterialSewingDto) {
+        const material = await queryRunner.manager.findOne(
+          ProjectVendorMaterialAccessoriesSewingEntity,
+          {
+            where: {
+              project_detail_id,
+              project_variant_id: sewingMaterial.project_variant_id,
+              project_accessories_sewing_id:
+                sewingMaterial.project_accessories_sewing_id,
+            },
+            select: {
+              id: true,
+            },
+          },
+        );
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialAccessoriesSewingEntity,
+          {
+            project_detail_id,
+            project_variant_id: sewingMaterial.project_variant_id,
+            project_accessories_sewing_id:
+              sewingMaterial.project_accessories_sewing_id,
+          },
+        );
+        if (material) {
+          await queryRunner.manager.delete(
+            ProjectVendorMaterialAccessoriesSewingDetailEntity,
+            { project_vendor_material_accessories_sewing_id: material.id },
+          );
+        }
         const sewing = await queryRunner.manager.insert(
           ProjectVendorMaterialAccessoriesSewingEntity,
           {
@@ -139,6 +192,35 @@ export class ProjectVendorMaterialService {
     await queryRunner.startTransaction();
     try {
       for (const packagingMaterial of projectVendorMaterialPackagingDto) {
+        const material = await queryRunner.manager.findOne(
+          ProjectVendorMaterialAccessoriesPackagingEntity,
+          {
+            where: {
+              project_detail_id,
+              project_variant_id: packagingMaterial.project_variant_id,
+              project_accessories_packaging_id:
+                packagingMaterial.project_accessories_packaging_id,
+            },
+            select: {
+              id: true,
+            },
+          },
+        );
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialAccessoriesPackagingEntity,
+          {
+            project_detail_id,
+            project_variant_id: packagingMaterial.project_variant_id,
+            project_accessories_packaging_id:
+              packagingMaterial.project_accessories_packaging_id,
+          },
+        );
+        if (material) {
+          await queryRunner.manager.delete(
+            ProjectVendorMaterialAccessoriesPackagingDetailEntity,
+            { project_vendor_material_accessories_packaging_id: material.id },
+          );
+        }
         const packaging = await queryRunner.manager.insert(
           ProjectVendorMaterialAccessoriesPackagingEntity,
           {
