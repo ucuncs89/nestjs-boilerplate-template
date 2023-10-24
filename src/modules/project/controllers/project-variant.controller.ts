@@ -14,7 +14,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { ProjectVariantService } from '../services/project_variant.service';
+import { ProjectVariantService } from '../services/project-variant.service';
 import { CreateProjectVariantDto } from '../dto/project-variant.dto';
 
 @ApiBearerAuth()

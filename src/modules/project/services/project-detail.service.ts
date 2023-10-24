@@ -4,7 +4,7 @@ import { ProjectDetailEntity } from 'src/entities/project/project_detail.entity'
 import { Connection, IsNull, Repository } from 'typeorm';
 import { CreateProjectDetailDto } from '../dto/create-project-detail.dto';
 import { ProjectConfirmDto } from '../dto/project-confirm.dto';
-import { ProjectHistoryService } from './project_history.service';
+import { ProjectHistoryService } from './project-history.service';
 import { StatusProjectHistoryEnum } from '../dto/create-project-history.dto';
 import { ProjectService } from './project.service';
 
@@ -47,6 +47,11 @@ export class ProjectDetailService {
         project_id,
         user_id,
         i18n,
+      );
+      this.projectService.updateStatusProject(
+        project_id,
+        StatusProjectHistoryEnum.Planning,
+        user_id,
       );
       return data;
     }
