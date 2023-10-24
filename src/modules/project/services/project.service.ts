@@ -21,7 +21,7 @@ import {
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import { GetListProjectDto } from '../dto/get-list-project.dto';
-import { ProjectHistoryService } from './project_history.service';
+import { ProjectHistoryService } from './project-history.service';
 import { StatusProjectHistoryEnum } from '../dto/create-project-history.dto';
 
 @Injectable()
@@ -52,7 +52,6 @@ export class ProjectService {
         updated_at: new Date().toISOString(),
         code: `${generateCodeProject.codeProject}${generateCodeProject.sequential_number}`,
         sequential_number: generateCodeProject.sequential_number,
-        status: 'Planning',
         department_id: createProjectDto.departement_id,
         target_price_for_customer: createProjectDto.target_price_for_buyer,
       });

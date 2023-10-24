@@ -22,7 +22,6 @@ import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
-@UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectController {
   constructor(
@@ -30,6 +29,7 @@ export class ProjectController {
     private readonly rabbitMQService: RabbitMQService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(
     @Req() req,
@@ -49,6 +49,7 @@ export class ProjectController {
     return { data };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Query() query: GetListProjectDto) {
     const _page = query.page || 1;
@@ -72,12 +73,14 @@ export class ProjectController {
     return { message: 'Successfully', data, pagination };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string, @I18n() i18n: I18nContext) {
     const data = await this.projectService.findOne(+id, i18n);
     return { message: 'Successfully', data };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @Req() req,
@@ -92,9 +95,16 @@ export class ProjectController {
     return { message: 'Successfully', data };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Req() req, @Param('id') id: string) {
     const data = await this.projectService.remove(+id, req.user.id);
     return { message: 'Successfully', data };
+  }
+
+  @Post('send-notification-deadline')
+  async sendProjectNotificationDeadline() {
+    this.rabbitMQService.send('send-notification-project-deadline', {});
+    return true;
   }
 }

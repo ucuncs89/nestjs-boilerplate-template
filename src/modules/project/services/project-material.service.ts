@@ -11,7 +11,7 @@ import { ProjectAccessoriesSewingEntity } from 'src/entities/project/project_acc
 import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_accessories_packaging.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateProjectMaterialDto } from '../dto/update-project-material.dto';
-import { ProjectVariantService } from './project_variant.service';
+import { ProjectVariantService } from './project-variant.service';
 import { ProjectVendorMaterialFabricEntity } from 'src/entities/project/project_vendor_material_fabric.entity';
 import { ProjectVendorMaterialAccessoriesSewingEntity } from 'src/entities/project/project_vendor_material_accessories_sewing.entity';
 import { ProjectVendorMaterialAccessoriesPackagingEntity } from 'src/entities/project/project_vendor_material_accessories_packaging.entity';

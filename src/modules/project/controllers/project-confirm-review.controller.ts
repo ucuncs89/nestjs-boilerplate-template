@@ -11,16 +11,16 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { ProjectDetailService } from '../services/project_detail.service';
+import { ProjectDetailService } from '../services/project-detail.service';
 import { ProjectConfirmDto } from '../dto/project-confirm.dto';
 import { ProjectService } from '../services/project.service';
-import { ProjectMaterialService } from '../services/project_material.service';
-import { ProjectVariantService } from '../services/project_variant.service';
+import { ProjectMaterialService } from '../services/project-material.service';
+import { ProjectVariantService } from '../services/project-variant.service';
 import { ProjectVendorProductionService } from '../services/project-vendor-production.service';
 import { ProjectShippingService } from '../services/project-shipping.service';
 import { ProjectSetSamplingService } from '../services/project-set-sampling.service';
 import { ProjectPriceService } from '../services/project-price.service';
-import { ProjectHistoryService } from '../services/project_history.service';
+import { ProjectHistoryService } from '../services/project-history.service';
 
 @ApiBearerAuth()
 @ApiTags('project')

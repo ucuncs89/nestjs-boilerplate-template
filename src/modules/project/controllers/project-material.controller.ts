@@ -15,7 +15,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { CreateProjectMaterialDto } from '../dto/create-project-material.dto';
-import { ProjectMaterialService } from '../services/project_material.service';
+import { ProjectMaterialService } from '../services/project-material.service';
 import { UpdateProjectMaterialDto } from '../dto/update-project-material.dto';
 
 @ApiBearerAuth()
