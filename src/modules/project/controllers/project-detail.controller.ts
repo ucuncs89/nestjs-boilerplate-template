@@ -16,7 +16,7 @@ import { UpdateProjectDto } from '../dto/update-project.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { ProjectDetailService } from '../services/project_detail.service';
+import { ProjectDetailService } from '../services/project-detail.service';
 import { CreateProjectDetailDto } from '../dto/create-project-detail.dto';
 import { AppErrorException } from 'src/exceptions/app-exception';
 
