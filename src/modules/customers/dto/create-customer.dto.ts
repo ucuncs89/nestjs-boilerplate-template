@@ -76,4 +76,8 @@ export class CreateCustomerDto {
 
   @ApiProperty()
   province_id?: number;
+
+  status?: string;
+
+  is_active?: boolean;
 }

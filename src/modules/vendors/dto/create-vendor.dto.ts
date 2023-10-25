@@ -90,4 +90,8 @@ export class CreateVendorDto {
 
   @ApiProperty()
   province_id?: number;
+
+  status?: string;
+
+  is_active?: boolean;
 }
