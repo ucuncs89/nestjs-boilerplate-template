@@ -7,6 +7,7 @@ import {
   Between,
   Connection,
   ILike,
+  In,
   IsNull,
   LessThan,
   MoreThan,
@@ -151,7 +152,7 @@ export class ProjectService {
       where: [
         {
           style_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
-          status: status ? status : Not(IsNull()),
+          status: status ? status : Not(In([])),
           order_type: order_type ? order_type : Not(IsNull()),
           deleted_at: IsNull(),
           deadline:
@@ -166,7 +167,7 @@ export class ProjectService {
         },
         {
           code: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
-          status: status ? status : Not(IsNull()),
+          status: status ? status : Not(In([])),
           order_type: order_type ? order_type : Not(IsNull()),
           deleted_at: IsNull(),
           deadline:

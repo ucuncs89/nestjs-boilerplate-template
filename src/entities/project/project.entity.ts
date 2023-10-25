@@ -82,6 +82,9 @@ export class ProjectEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
+  @Column({ type: 'boolean', nullable: true, default: false })
+  is_sent_deadline: boolean;
+
   @OneToMany(
     () => ProjectDocumentEntity,
     (project_document: ProjectDocumentEntity) => project_document.project,
