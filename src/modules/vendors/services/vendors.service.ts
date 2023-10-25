@@ -34,8 +34,11 @@ export class VendorsService {
         ...createVendorDto,
         created_by: user_id,
         code,
-        status: 'Not yet validated',
+        status: createVendorDto.status
+          ? createVendorDto.status
+          : 'Not yet validated',
         created_at: new Date().toISOString(),
+        is_active: createVendorDto.is_active ? createVendorDto.is_active : null,
       });
       if (createVendorDto.vendor_documents) {
         for (const documents of createVendorDto.vendor_documents) {
@@ -427,5 +430,90 @@ export class VendorsService {
       .andWhere('deleted_at is null')
       .getOne();
     return data;
+  }
+
+  async updateVendorExcel(
+    id: number,
+    updateVendorDto: UpdateVendorDto,
+    user_id,
+  ) {
+    const vendor = await this.vendorsRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+    });
+    if (!vendor) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    if (vendor.status === 'Validated') {
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
+    }
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.update(VendorsEntity, id, {
+        company_address: updateVendorDto.company_address,
+        company_name: updateVendorDto.company_name,
+        company_phone_number: updateVendorDto.company_phone_number,
+        pic_email: updateVendorDto.pic_email,
+        pic_full_name: updateVendorDto.pic_full_name,
+        pic_id_number: updateVendorDto.pic_id_number,
+        pic_phone_number: updateVendorDto.pic_phone_number,
+        taxable: updateVendorDto.taxable,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+        bank_account_holder_name: updateVendorDto.bank_account_holder_name,
+        bank_account_number: updateVendorDto.bank_account_number,
+        npwp_number: updateVendorDto.npwp_number,
+        bank_name: updateVendorDto.bank_name,
+        province_id: updateVendorDto.province_id,
+        city_id: updateVendorDto.city_id,
+        status: updateVendorDto.status,
+        is_active: updateVendorDto.is_active,
+      });
+      if (
+        Array.isArray(updateVendorDto.vendor_documents) &&
+        updateVendorDto.vendor_documents.length > 0
+      ) {
+        for (const documents of updateVendorDto.vendor_documents) {
+          documents.vendor_id = id;
+        }
+        await queryRunner.manager.delete(VendorDocumentsEntity, {
+          vendor_id: id,
+        });
+
+        await queryRunner.manager.insert(
+          VendorDocumentsEntity,
+          updateVendorDto.vendor_documents,
+        );
+      }
+      if (
+        Array.isArray(updateVendorDto.vendor_type) &&
+        updateVendorDto.vendor_type.length > 0
+      ) {
+        for (const type of updateVendorDto.vendor_type) {
+          type.vendor_id = id;
+        }
+        await queryRunner.manager.delete(VendorTypeEntity, {
+          vendor_id: id,
+        });
+        await queryRunner.manager.insert(
+          VendorTypeEntity,
+          updateVendorDto.vendor_type,
+        );
+      }
+      await queryRunner.commitTransaction();
+      return updateVendorDto;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
