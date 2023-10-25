@@ -33,8 +33,13 @@ export class CustomersService {
         ...createCustomerDto,
         created_by: user_id,
         code,
-        status: 'Not yet validated',
+        status: createCustomerDto.status
+          ? createCustomerDto.status
+          : 'Not yet validated',
         created_at: new Date().toISOString(),
+        is_active: createCustomerDto.is_active
+          ? createCustomerDto.is_active
+          : null,
       });
       if (createCustomerDto.customer_documents) {
         for (const documents of createCustomerDto.customer_documents) {
@@ -390,5 +395,73 @@ export class CustomersService {
       .andWhere('deleted_at is null')
       .getOne();
     return data;
+  }
+  async updateCustomerExcel(
+    id: number,
+    updateCustomerDto: UpdateCustomerDto,
+    user_id,
+  ) {
+    const customer = await this.customersRepository.findOne({
+      where: {
+        id,
+      },
+      select: { id: true, deleted_at: true, deleted_by: true, status: true },
+    });
+    if (!customer) {
+      throw new AppErrorNotFoundException('Not Found');
+    }
+    if (customer.status === 'Validated') {
+      await this.rolePermissionGuard.canActionByRoles(user_id, [
+        Role.SUPERADMIN,
+        Role.FINANCE,
+      ]);
+    }
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.update(CustomersEntity, id, {
+        company_address: updateCustomerDto.company_address,
+        company_name: updateCustomerDto.company_name,
+        company_phone_number: updateCustomerDto.company_phone_number,
+        pic_email: updateCustomerDto.pic_email,
+        pic_full_name: updateCustomerDto.pic_full_name,
+        pic_id_number: updateCustomerDto.pic_id_number,
+        pic_phone_number: updateCustomerDto.pic_phone_number,
+        taxable: updateCustomerDto.taxable,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+        bank_account_holder_name: updateCustomerDto.bank_account_holder_name,
+        bank_account_number: updateCustomerDto.bank_account_number,
+        npwp_number: updateCustomerDto.npwp_number,
+        bank_name: updateCustomerDto.bank_name,
+        province_id: updateCustomerDto.province_id,
+        city_id: updateCustomerDto.city_id,
+        is_active: updateCustomerDto.is_active,
+        status: updateCustomerDto.status,
+      });
+      if (
+        Array.isArray(updateCustomerDto.customer_documents) &&
+        updateCustomerDto.customer_documents.length > 0
+      ) {
+        for (const documents of updateCustomerDto.customer_documents) {
+          documents.customer_id = id;
+        }
+        await queryRunner.manager.delete(CustomerDocumentsEntity, {
+          customer_id: id,
+        });
+        await queryRunner.manager.insert(
+          CustomerDocumentsEntity,
+          updateCustomerDto.customer_documents,
+        );
+      }
+      await queryRunner.commitTransaction();
+      return updateCustomerDto;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
