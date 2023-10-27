@@ -13,6 +13,7 @@ import { ProjectMaterialEntity } from 'src/entities/project/project_material.ent
 import { ProjectFabricEntity } from 'src/entities/project/project_fabric.entity';
 import { ProjectAccessoriesSewingEntity } from 'src/entities/project/project_accessories_sewing.entity';
 import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_accessories_packaging.entity';
+import { ProjectVendorMaterialFinishedGoodEntity } from 'src/entities/project/project_vendor_material_finished_good.entity';
 
 @Injectable()
 export class ProjectVariantService {
@@ -129,7 +130,15 @@ export class ProjectVariantService {
             );
           }
         }
-
+        if (material.material_source === 'Finished goods') {
+          await queryRunner.manager.insert(
+            ProjectVendorMaterialFinishedGoodEntity,
+            {
+              project_variant_id: projectVariant.raw[0].id,
+              project_detail_id,
+            },
+          );
+        }
         arrResult.push({ id: projectVariant.raw[0].id, ...variant });
       }
       await queryRunner.commitTransaction();
@@ -338,6 +347,16 @@ export class ProjectVariantService {
               );
             }
           }
+          //finished goods
+          if (material.material_source === 'Finished goods') {
+            await queryRunner.manager.insert(
+              ProjectVendorMaterialFinishedGoodEntity,
+              {
+                project_variant_id: projectVariant.raw[0].id,
+                project_detail_id,
+              },
+            );
+          }
 
           arrResult.push({ id: projectVariant.raw[0].id, ...variant });
         } else if (variant.method_type === 'edit') {
@@ -399,6 +418,13 @@ export class ProjectVariantService {
               project_detail_id,
             },
           );
+          await queryRunner.manager.delete(
+            ProjectVendorMaterialFinishedGoodEntity,
+            {
+              project_variant_id: variant.id,
+              project_detail_id,
+            },
+          );
         }
       }
 
@@ -420,6 +446,7 @@ export class ProjectVariantService {
       select: {
         id: true,
         project_detail_id: true,
+        material_source: true,
       },
       order: {
         id: 'DESC',
@@ -427,7 +454,12 @@ export class ProjectVariantService {
     });
 
     if (!materialId) {
-      return { fabric: null, sewing: null, packaging: null };
+      return {
+        fabric: null,
+        sewing: null,
+        packaging: null,
+        material_source: null,
+      };
     }
     const fabric = await this.projectFabricRepository.find({
       select: {
@@ -464,6 +496,11 @@ export class ProjectVariantService {
         deleted_by: IsNull(),
       },
     });
-    return { fabric, sewing, packaging };
+    return {
+      fabric,
+      sewing,
+      packaging,
+      material_source: materialId.material_source,
+    };
   }
 }
