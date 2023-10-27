@@ -5,15 +5,17 @@ import { ResponseInterceptor } from './interceptors/response-interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './filter/exception-filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { execSync } from 'child_process';
 
 async function bootstrap() {
+  const gitTag = execSync('git describe --tags').toString().trim();
   const app = await NestFactory.create(AppModule, {
     cors: true,
   });
   const config = new DocumentBuilder()
     .setTitle('Cloami')
-    .setDescription('Cloami - Backend')
-    .setVersion('0.1')
+    .setDescription(`Cloami - Backend , Last Commit ${gitTag}`)
+    .setVersion(`${gitTag}`)
     .addServer(
       env.SWAGGER_BASEPATH
         ? env.SWAGGER_BASEPATH
