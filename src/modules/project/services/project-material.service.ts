@@ -15,6 +15,7 @@ import { ProjectVariantService } from './project-variant.service';
 import { ProjectVendorMaterialFabricEntity } from 'src/entities/project/project_vendor_material_fabric.entity';
 import { ProjectVendorMaterialAccessoriesSewingEntity } from 'src/entities/project/project_vendor_material_accessories_sewing.entity';
 import { ProjectVendorMaterialAccessoriesPackagingEntity } from 'src/entities/project/project_vendor_material_accessories_packaging.entity';
+import { ProjectVendorMaterialFinishedGoodEntity } from 'src/entities/project/project_vendor_material_finished_good.entity';
 
 @Injectable()
 export class ProjectMaterialService {
@@ -30,6 +31,9 @@ export class ProjectMaterialService {
 
     @InjectRepository(ProjectAccessoriesPackagingEntity)
     private projectAccessoriesPackagingRepository: Repository<ProjectAccessoriesPackagingEntity>,
+
+    @InjectRepository(ProjectVendorMaterialFinishedGoodEntity)
+    private projectVendorMaterialFinishedGoodRepository: Repository<ProjectVendorMaterialFinishedGoodEntity>,
 
     private projectVariantService: ProjectVariantService,
     private connection: Connection,
@@ -839,6 +843,7 @@ export class ProjectMaterialService {
       select: {
         id: true,
         project_detail_id: true,
+        material_source: true,
       },
       order: {
         id: 'DESC',
@@ -846,6 +851,7 @@ export class ProjectMaterialService {
     });
     return findProjectMaterialId;
   }
+
   async findIdsMaterialFabricSewingPackaging(project_detail_id) {
     const materialId = await this.findMaterialSelectId(project_detail_id);
     const fabric = await this.projectFabricRepository.find({
@@ -878,5 +884,83 @@ export class ProjectMaterialService {
       },
     });
     return { fabric, sewing, packaging };
+  }
+
+  async transactionDelete(project_detail_id) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.delete(ProjectVendorMaterialFabricEntity, {
+        project_detail_id,
+      });
+      await queryRunner.manager.delete(
+        ProjectVendorMaterialAccessoriesSewingEntity,
+        { project_detail_id },
+      );
+      await queryRunner.manager.delete(
+        ProjectVendorMaterialAccessoriesPackagingEntity,
+        { project_detail_id },
+      );
+      await queryRunner.manager.delete(
+        ProjectVendorMaterialFinishedGoodEntity,
+        {
+          project_detail_id,
+        },
+      );
+      await queryRunner.commitTransaction();
+      return true;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      // throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async findProjectConfirmFinishedGood(project_detail_id: number) {
+    const data = await this.projectVendorMaterialFinishedGoodRepository.find({
+      where: {
+        project_detail_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        project_detail_id: true,
+        project_variant_id: true,
+        project_variant: {
+          id: true,
+          project_detail_id: true,
+          name: true,
+          total_item: true,
+          item_unit: true,
+        },
+        detail: {
+          id: true,
+          project_vendor_material_finished_good_id: true,
+          vendor_id: true,
+          total_price: true,
+          price: true,
+          price_unit: true,
+          quantity: true,
+          quantity_unit: true,
+          vendors: {
+            id: true,
+            company_name: true,
+          },
+        },
+      },
+
+      relations: {
+        detail: true,
+        project_variant: true,
+      },
+    });
+    const arrResult = [];
+    for (const item of data) {
+      arrResult.push({ ...item, type: 'Finished goods' });
+    }
+    return arrResult;
   }
 }

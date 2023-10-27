@@ -37,9 +37,10 @@ export class ProjectVendorMaterialController {
     let vendor_fabric: any;
     let vendor_accessories_sewing: any;
     let vendor_accessories_packaging: any;
+    let vendor_finished_good: any;
     if (
       Array.isArray(projectVendorMaterialDto.vendor_fabric) &&
-      projectVendorMaterialDto.vendor_fabric
+      projectVendorMaterialDto.vendor_fabric.length > 0
     ) {
       vendor_fabric =
         await this.projectVendorMaterialService.createVendorMaterialFabric(
@@ -51,7 +52,7 @@ export class ProjectVendorMaterialController {
     }
     if (
       Array.isArray(projectVendorMaterialDto.vendor_accessories_sewing) &&
-      projectVendorMaterialDto.vendor_accessories_sewing
+      projectVendorMaterialDto.vendor_accessories_sewing.length > 0
     ) {
       vendor_accessories_sewing =
         await this.projectVendorMaterialService.createVendorMaterialSewing(
@@ -63,7 +64,7 @@ export class ProjectVendorMaterialController {
     }
     if (
       Array.isArray(projectVendorMaterialDto.vendor_accessories_packaging) &&
-      projectVendorMaterialDto.vendor_accessories_packaging
+      projectVendorMaterialDto.vendor_accessories_packaging.length > 0
     ) {
       vendor_accessories_packaging =
         await this.projectVendorMaterialService.createVendorMaterialPackaging(
@@ -73,11 +74,26 @@ export class ProjectVendorMaterialController {
           i18n,
         );
     }
+
+    if (
+      Array.isArray(projectVendorMaterialDto.vendor_finished_good) &&
+      projectVendorMaterialDto.vendor_finished_good.length > 0
+    ) {
+      vendor_finished_good =
+        await this.projectVendorMaterialService.createVendorMaterialFinishedGood(
+          detail_id,
+          projectVendorMaterialDto.vendor_finished_good,
+          req.user.id,
+          i18n,
+        );
+    }
+
     return {
       data: {
         vendor_fabric,
         vendor_accessories_sewing,
         vendor_accessories_packaging,
+        vendor_finished_good,
       },
     };
   }
@@ -108,38 +124,4 @@ export class ProjectVendorMaterialController {
       vendor_accessories_packaging,
     };
   }
-
-  //   @Get(':project_id/detail/:detail_id/material/:material_id')
-  //   async getbyMaterialId(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @Param('material_id') material_id: number,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectMaterialService.findDetailbyMaterialId(
-  //       project_id,
-  //       detail_id,
-  //       material_id,
-  //     );
-  //     return { data };
-  //   }
-
-  //   @Put(':project_id/detail/:detail_id/variant')
-  //   async updateMaterial(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @Body() createProjectVariantDto: CreateProjectVariantDto,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectVariantService.updateProjectVariant(
-  //       project_id,
-  //       detail_id,
-  //       createProjectVariantDto,
-  //       req.user.id,
-  //       i18n,
-  //     );
-  //     return { data };
-  //   }
 }

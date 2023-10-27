@@ -92,6 +92,14 @@ export class ProjectMaterialController {
       req.user.id,
       i18n,
     );
+    const materialId = await this.projectMaterialService.findMaterialSelectId(
+      detail_id,
+    );
+    if (
+      materialId.material_source !== updateProjectMaterialDto.material_source
+    ) {
+      this.projectMaterialService.transactionDelete(detail_id);
+    }
     return { data };
   }
 

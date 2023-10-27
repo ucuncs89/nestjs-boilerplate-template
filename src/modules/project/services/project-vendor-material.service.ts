@@ -11,6 +11,9 @@ import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities
 import { ProjectVendorMaterialPackagingDto } from '../dto/project-vendor-material-packaging.dto';
 import { ProjectVendorMaterialAccessoriesPackagingEntity } from 'src/entities/project/project_vendor_material_accessories_packaging.entity';
 import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
+import { ProjectVendorMaterialFinishedGoodEntity } from 'src/entities/project/project_vendor_material_finished_good.entity';
+import { ProjectVendorMaterialFinishedGoodDto } from '../dto/project-vendor-material-finished-good.dto';
+import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
 
 @Injectable()
 export class ProjectVendorMaterialService {
@@ -260,6 +263,82 @@ export class ProjectVendorMaterialService {
       await queryRunner.release();
     }
   }
+
+  async createVendorMaterialFinishedGood(
+    project_detail_id,
+    projectVendorMaterialFinishedGoodDto: ProjectVendorMaterialFinishedGoodDto[],
+    user_id,
+    i18n,
+  ) {
+    const arrResult = [];
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      for (const finishedGoodMaterial of projectVendorMaterialFinishedGoodDto) {
+        const material = await queryRunner.manager.findOne(
+          ProjectVendorMaterialFinishedGoodEntity,
+          {
+            where: {
+              project_detail_id,
+              project_variant_id: finishedGoodMaterial.project_variant_id,
+            },
+            select: {
+              id: true,
+            },
+          },
+        );
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialFinishedGoodEntity,
+          {
+            project_detail_id,
+            project_variant_id: finishedGoodMaterial.project_variant_id,
+          },
+        );
+        if (material) {
+          await queryRunner.manager.delete(
+            ProjectVendorMaterialFinishedGoodDetailEntity,
+            { project_vendor_material_finished_good_id: material.id },
+          );
+        }
+        const packaging = await queryRunner.manager.insert(
+          ProjectVendorMaterialFinishedGoodEntity,
+          {
+            project_detail_id,
+            project_variant_id: finishedGoodMaterial.project_variant_id,
+            created_at: new Date().toISOString(),
+            created_by: user_id,
+          },
+        );
+        if (
+          Array.isArray(finishedGoodMaterial.detail) &&
+          finishedGoodMaterial.detail.length > 0
+        ) {
+          for (const detail of finishedGoodMaterial.detail) {
+            detail.project_vendor_material_finished_good_id =
+              packaging.raw[0].id;
+          }
+          await queryRunner.manager.insert(
+            ProjectVendorMaterialFinishedGoodDetailEntity,
+            finishedGoodMaterial.detail,
+          );
+        }
+
+        arrResult.push({
+          id: packaging.raw[0].id,
+          ...finishedGoodMaterial,
+        });
+      }
+      await queryRunner.commitTransaction();
+      return arrResult;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async findVendorMaterialFabric(project_detail_id: number) {
     const data = await this.projectVendorMaterialFabricRepository.find({
       where: {
