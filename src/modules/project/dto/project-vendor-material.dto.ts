@@ -4,13 +4,14 @@ import { IsNotEmpty, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ProjectVendorMaterialSewingDto } from './project-vendor-material-sewing.dto';
 import { ProjectVendorMaterialPackagingDto } from './project-vendor-material-packaging.dto';
+import { ProjectVendorMaterialFinishedGoodDto } from './project-vendor-material-finished-good.dto';
 
 export class ProjectVendorMaterialDto {
   @ApiProperty({
     isArray: true,
     type: ProjectVendorMaterialFabricDto,
   })
-  @ValidateNested({ each: true })
+  // @ValidateNested({ each: true })
   @Type(() => ProjectVendorMaterialFabricDto)
   vendor_fabric?: ProjectVendorMaterialFabricDto[];
 
@@ -18,7 +19,7 @@ export class ProjectVendorMaterialDto {
     isArray: true,
     type: ProjectVendorMaterialSewingDto,
   })
-  @ValidateNested({ each: true })
+  // @ValidateNested({ each: true })
   @Type(() => ProjectVendorMaterialSewingDto)
   vendor_accessories_sewing?: ProjectVendorMaterialSewingDto[];
 
@@ -26,7 +27,15 @@ export class ProjectVendorMaterialDto {
     isArray: true,
     type: ProjectVendorMaterialPackagingDto,
   })
-  @ValidateNested({ each: true })
+  // @ValidateNested({ each: true })
   @Type(() => ProjectVendorMaterialPackagingDto)
   vendor_accessories_packaging?: ProjectVendorMaterialPackagingDto[];
+
+  @ApiProperty({
+    isArray: true,
+    type: ProjectVendorMaterialFinishedGoodDto,
+  })
+  // @ValidateNested({ each: true })
+  @Type(() => ProjectVendorMaterialFinishedGoodDto)
+  vendor_finished_good?: ProjectVendorMaterialFinishedGoodDto[];
 }

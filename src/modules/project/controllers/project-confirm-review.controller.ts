@@ -184,8 +184,12 @@ export class ProjectConfirmReviewController {
     );
     const packaging =
       await this.projectMaterialService.findProjectConfirmPackaging(detail_id);
+    const finishedGoods =
+      await this.projectMaterialService.findProjectConfirmFinishedGood(
+        detail_id,
+      );
 
-    const data = [...fabric, ...sewing, ...packaging];
+    const data = [...finishedGoods, ...fabric, ...sewing, ...packaging];
     return { data };
   }
 
