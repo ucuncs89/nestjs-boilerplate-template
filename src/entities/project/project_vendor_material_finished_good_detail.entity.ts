@@ -62,7 +62,7 @@ export class ProjectVendorMaterialFinishedGoodDetailEntity {
       vendor_material_finished_good.detail,
     { cascade: true },
   )
-  @JoinColumn({ name: 'project_vendor_material_fabric_id' })
+  @JoinColumn({ name: 'project_vendor_material_finished_good_id' })
   public vendor_material_finished_good: ProjectVendorMaterialFinishedGoodEntity;
 
   @ManyToOne(
