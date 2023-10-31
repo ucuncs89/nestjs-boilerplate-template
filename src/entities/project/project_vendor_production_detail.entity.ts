@@ -21,12 +21,6 @@ export class ProjectVendorProductionDetailEntity {
   @Column({ type: 'varchar' })
   vendor_name: string;
 
-  @Column({ type: 'int' })
-  activity_id: number;
-
-  @Column({ type: 'varchar' })
-  activity_name: string;
-
   @Column({ type: 'double precision', nullable: true })
   quantity: number;
 

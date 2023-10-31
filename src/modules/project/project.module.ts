@@ -39,6 +39,7 @@ import { ProjectVendorMaterialAccessoriesSewingEntity } from 'src/entities/proje
 import { ProjectConfirmReviewController } from './controllers/project-confirm-review.controller';
 import { ProjectSizeEntity } from 'src/entities/project/project_size.entity';
 import { ProjectVendorMaterialFinishedGoodEntity } from 'src/entities/project/project_vendor_material_finished_good.entity';
+import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { ProjectVendorMaterialFinishedGoodEntity } from 'src/entities/project/pr
       ProjectVendorMaterialAccessoriesSewingEntity,
       ProjectSizeEntity,
       ProjectVendorMaterialFinishedGoodEntity,
+      ProjectVendorProductionDetailEntity,
     ]),
     RabbitMQModule,
   ],
