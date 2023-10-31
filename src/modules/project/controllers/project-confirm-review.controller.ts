@@ -127,10 +127,15 @@ export class ProjectConfirmReviewController {
     @Param('detail_id') detail_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectVendorProductionService.findVendorProduction(
-      detail_id,
-    );
-    return { data };
+    const data =
+      await this.projectVendorProductionService.findVendorProductionDetailReview(
+        detail_id,
+      );
+    const percentage_of_loss =
+      await this.projectVendorProductionService.findIdsVendorProduction(
+        detail_id,
+      );
+    return { data, percentage_of_loss };
   }
 
   @Get(':project_id/detail/:detail_id/review/shipping')

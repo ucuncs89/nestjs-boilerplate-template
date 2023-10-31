@@ -15,11 +15,17 @@ export class ProjectVendorProductionEntity {
   @Column({ type: 'int' })
   project_detail_id: number;
 
-  @Column({ type: 'double precision', nullable: true })
-  sewing_percentage_of_loss: number;
+  @Column({ type: 'int', nullable: true })
+  activity_id: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  activity_name: string;
 
   @Column({ type: 'double precision', nullable: true })
-  cutting_percentage_of_loss: number;
+  percentage_of_loss: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  total_quantity: number;
 
   @Column({
     type: 'timestamp with time zone',

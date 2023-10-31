@@ -10,12 +10,6 @@ export class ProjectVendorProductionDetailDto {
   vendor_name: string;
 
   @ApiProperty()
-  activity_id: number;
-
-  @ApiProperty()
-  activity_name: string;
-
-  @ApiProperty()
   quantity: number;
 
   @ApiProperty()
@@ -24,25 +18,30 @@ export class ProjectVendorProductionDetailDto {
   @ApiProperty()
   price: number;
 
-  project_vendor_production_id?: number;
   created_by?: number;
   created_at?: string;
 }
 export class ProjectVendorProductionDto {
   @ApiProperty()
-  sewing_percentage_of_loss: number;
+  activity_id: number;
 
   @ApiProperty()
-  cutting_percentage_of_loss: number;
+  activity_name: string;
 
-  @ApiProperty({
-    isArray: true,
-    type: ProjectVendorProductionDetailDto,
-  })
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => ProjectVendorProductionDetailDto)
-  detail?: ProjectVendorProductionDetailDto[];
+  @ApiProperty()
+  percentage_of_loss: number;
+
+  @ApiProperty()
+  total_quantity: number;
+
+  // @ApiProperty({
+  //   isArray: true,
+  //   type: ProjectVendorProductionDetailDto,
+  // })
+  // @IsNotEmpty()
+  // @ValidateNested({ each: true })
+  // @Type(() => ProjectVendorProductionDetailDto)
+  // detail?: ProjectVendorProductionDetailDto[];
 
   project_detail_id?: number;
   created_by?: number;
@@ -63,4 +62,26 @@ export class GetListProjectVendorMaterialFabricDto {
 
   @ApiProperty({ required: false })
   sort_by?: string;
+}
+export class ProjectVendorProductionLossPercentageDto {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  percentage_of_loss: number;
+
+  project_detail_id?: number;
+  created_by?: number;
+  created_at?: string;
+}
+
+export class ProjectVendorProductionLossDto {
+  @ApiProperty({
+    isArray: true,
+    type: ProjectVendorProductionLossPercentageDto,
+  })
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => ProjectVendorProductionLossPercentageDto)
+  vendor?: ProjectVendorProductionLossPercentageDto[];
 }

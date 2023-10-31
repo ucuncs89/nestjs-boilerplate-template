@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { Connection, IsNull, Repository } from 'typeorm';
-import { ProjectVendorProductionDto } from '../dto/project-vendor-production.dto';
+import { Connection, In, IsNull, Repository } from 'typeorm';
+import {
+  ProjectVendorProductionDetailDto,
+  ProjectVendorProductionDto,
+  ProjectVendorProductionLossPercentageDto,
+} from '../dto/project-vendor-production.dto';
 import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
 
@@ -11,64 +15,22 @@ export class ProjectVendorProductionService {
   constructor(
     @InjectRepository(ProjectVendorProductionEntity)
     private projectVendorProductionRepository: Repository<ProjectVendorProductionEntity>,
+    @InjectRepository(ProjectVendorProductionDetailEntity)
+    private projectVendorProductionDetailRepository: Repository<ProjectVendorProductionDetailEntity>,
     private connection: Connection,
   ) {}
 
-  async createVendorProduction(
-    project_detail_id,
-    projectVendorProductionDto: ProjectVendorProductionDto,
-    user_id,
-    i18n,
-  ) {
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      const vendorProduction = await queryRunner.manager.insert(
-        ProjectVendorProductionEntity,
-        {
-          project_detail_id,
-          cutting_percentage_of_loss:
-            projectVendorProductionDto.cutting_percentage_of_loss,
-          sewing_percentage_of_loss:
-            projectVendorProductionDto.sewing_percentage_of_loss,
-          created_at: new Date().toISOString(),
-          created_by: user_id,
-        },
-      );
-      if (
-        Array.isArray(projectVendorProductionDto.detail) &&
-        projectVendorProductionDto.detail.length > 0
-      ) {
-        for (const detail of projectVendorProductionDto.detail) {
-          detail.project_vendor_production_id = vendorProduction.raw[0].id;
-        }
-        await queryRunner.manager.insert(
-          ProjectVendorProductionDetailEntity,
-          projectVendorProductionDto.detail,
-        );
-      }
-
-      await queryRunner.commitTransaction();
-      return { id: vendorProduction.raw[0].id, ...projectVendorProductionDto };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw new AppErrorException(error.message);
-    } finally {
-      await queryRunner.release();
-    }
-  }
   async findVendorProduction(project_detail_id) {
-    const data = await this.projectVendorProductionRepository.findOne({
+    const data = await this.projectVendorProductionRepository.find({
       select: {
         id: true,
         project_detail_id: true,
-        sewing_percentage_of_loss: true,
-        cutting_percentage_of_loss: true,
+        activity_id: true,
+        activity_name: true,
+        percentage_of_loss: true,
+        total_quantity: true,
         vendor_production_detail: {
           id: true,
-          activity_id: true,
-          activity_name: true,
           price: true,
           quantity: true,
           quantity_unit: true,
@@ -87,6 +49,182 @@ export class ProjectVendorProductionService {
       },
       order: {
         id: 'DESC',
+      },
+    });
+    return data;
+  }
+
+  async createVendorProductionActivity(
+    project_detail_id,
+    projectVendorProductionDto: ProjectVendorProductionDto,
+    user_id,
+    i18n,
+  ) {
+    try {
+      const activity = this.projectVendorProductionRepository.create({
+        ...projectVendorProductionDto,
+        project_detail_id,
+        created_at: new Date().toISOString(),
+        created_by: user_id,
+      });
+      await this.projectVendorProductionRepository.save(activity);
+      return activity;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+
+  async removeVendorProductionActivity(
+    project_detail_id: number,
+    id: number,
+    user_id,
+  ) {
+    try {
+      const data = await this.projectVendorProductionRepository.delete({
+        id,
+        project_detail_id,
+      });
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+
+  async createVendorProduction(
+    project_detail_id,
+    project_vendor_production_id: number,
+    projectVendorProductionDetailDto: ProjectVendorProductionDetailDto,
+    user_id,
+    i18n,
+  ) {
+    try {
+      const vendor = this.projectVendorProductionDetailRepository.create({
+        ...projectVendorProductionDetailDto,
+        project_vendor_production_id,
+        created_at: new Date().toISOString(),
+        created_by: user_id,
+      });
+      await this.projectVendorProductionDetailRepository.save(vendor);
+      return vendor;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+  async updateVendorProduction(
+    project_vendor_production_id: number,
+    project_vendor_production_detail_id: number,
+    projectVendorProductionDetailDto: ProjectVendorProductionDetailDto,
+    user_id,
+    i18n,
+  ) {
+    try {
+      const data = await this.projectVendorProductionDetailRepository.update(
+        {
+          id: project_vendor_production_detail_id,
+          project_vendor_production_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        {
+          ...projectVendorProductionDetailDto,
+          updated_at: new Date().toISOString(),
+          updated_by: user_id,
+        },
+      );
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+  async deleteVendorProductionDetail(
+    project_vendor_production_id: number,
+    project_vendor_production_detail_id: number,
+  ) {
+    try {
+      const data = await this.projectVendorProductionDetailRepository.delete({
+        project_vendor_production_id,
+        id: project_vendor_production_detail_id,
+      });
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+
+  async updateLossPercentage(
+    project_detail_id,
+    projectVendorProductionLossPercentageDto: ProjectVendorProductionLossPercentageDto[],
+    user_id,
+    i18n,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      if (
+        Array.isArray(projectVendorProductionLossPercentageDto) &&
+        projectVendorProductionLossPercentageDto.length > 0
+      ) {
+        for (const data of projectVendorProductionLossPercentageDto) {
+          await queryRunner.manager.update(
+            ProjectVendorProductionEntity,
+            {
+              id: data.id,
+              project_detail_id,
+              updated_at: new Date().toISOString(),
+            },
+            { percentage_of_loss: data.percentage_of_loss },
+          );
+        }
+        await queryRunner.commitTransaction();
+      }
+      return projectVendorProductionLossPercentageDto;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async findVendorProductionDetailReview(project_detail_id) {
+    const projectVendor = await this.findIdsVendorProduction(project_detail_id);
+    if (projectVendor.length < 1) {
+      return [];
+    }
+    const arrId = projectVendor.map((item) => item.id);
+    const data = await this.projectVendorProductionDetailRepository.find({
+      where: { project_vendor_production_id: In(arrId) },
+      select: {
+        id: true,
+        project_vendor_production_id: true,
+        vendor_id: true,
+        vendor_name: true,
+        price: true,
+        quantity: true,
+        quantity_unit: true,
+        vendor_production: {
+          id: true,
+          project_detail_id: true,
+          activity_id: true,
+          activity_name: true,
+          percentage_of_loss: true,
+          total_quantity: true,
+        },
+      },
+      relations: { vendor_production: true },
+    });
+    return data;
+  }
+
+  async findIdsVendorProduction(project_detail_id) {
+    const data = await this.projectVendorProductionRepository.find({
+      where: { project_detail_id, deleted_at: IsNull(), deleted_by: IsNull() },
+      select: {
+        id: true,
+        activity_id: true,
+        activity_name: true,
+        percentage_of_loss: true,
       },
     });
     return data;
