@@ -27,6 +27,12 @@ export class ProjectVendorProductionEntity {
   @Column({ type: 'double precision', nullable: true })
   total_quantity: number;
 
+  @Column({ type: 'double precision', nullable: true })
+  quantity_unit_required: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  sub_total_price: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

@@ -43,6 +43,10 @@ export class ProjectVendorProductionDto {
   // @Type(() => ProjectVendorProductionDetailDto)
   // detail?: ProjectVendorProductionDetailDto[];
 
+  quantity_unit_required?: number;
+
+  sub_total_price?: number;
+
   project_detail_id?: number;
   created_by?: number;
   created_at?: string;
