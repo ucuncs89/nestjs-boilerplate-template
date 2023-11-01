@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Connection, IsNull, Repository } from 'typeorm';
+import { Connection, In, IsNull, Repository } from 'typeorm';
 import { CreateProjectMaterialDto } from '../dto/create-project-material.dto';
 import { ProjectMaterialEntity } from 'src/entities/project/project_material.entity';
 import {
@@ -16,6 +16,10 @@ import { ProjectVendorMaterialFabricEntity } from 'src/entities/project/project_
 import { ProjectVendorMaterialAccessoriesSewingEntity } from 'src/entities/project/project_vendor_material_accessories_sewing.entity';
 import { ProjectVendorMaterialAccessoriesPackagingEntity } from 'src/entities/project/project_vendor_material_accessories_packaging.entity';
 import { ProjectVendorMaterialFinishedGoodEntity } from 'src/entities/project/project_vendor_material_finished_good.entity';
+import { ProjectVendorMaterialFabricDetailEntity } from 'src/entities/project/project_vendor_material_fabric_detail.entity';
+import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
+import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
+import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
 
 @Injectable()
 export class ProjectMaterialService {
@@ -891,28 +895,119 @@ export class ProjectMaterialService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager.delete(ProjectVendorMaterialFabricEntity, {
-        project_detail_id,
-      });
-      await queryRunner.manager.delete(
-        ProjectVendorMaterialAccessoriesSewingEntity,
-        { project_detail_id },
-      );
-      await queryRunner.manager.delete(
-        ProjectVendorMaterialAccessoriesPackagingEntity,
-        { project_detail_id },
-      );
-      await queryRunner.manager.delete(
-        ProjectVendorMaterialFinishedGoodEntity,
+      const findIdsFabric = await queryRunner.manager.find(
+        ProjectVendorMaterialFabricEntity,
         {
-          project_detail_id,
+          where: {
+            project_detail_id,
+          },
+          select: {
+            id: true,
+          },
         },
       );
+      if (Array.isArray(findIdsFabric) && findIdsFabric.length > 0) {
+        findIdsFabric.map((item) => item.id);
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialFabricDetailEntity,
+          {
+            project_vendor_material_fabric_id: In(findIdsFabric),
+          },
+        );
+        await queryRunner.manager.delete(ProjectVendorMaterialFabricEntity, {
+          project_detail_id,
+        });
+      }
+
+      const findIdsSewing = await queryRunner.manager.find(
+        ProjectVendorMaterialAccessoriesSewingEntity,
+        {
+          where: {
+            project_detail_id,
+          },
+          select: {
+            id: true,
+          },
+        },
+      );
+
+      if (Array.isArray(findIdsSewing) && findIdsSewing.length > 0) {
+        findIdsSewing.map((item) => item.id);
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialAccessoriesSewingDetailEntity,
+          {
+            project_vendor_material_accessories_sewing_id: In(findIdsSewing),
+          },
+        );
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialAccessoriesSewingEntity,
+          { project_detail_id },
+        );
+      }
+
+      const findIdsPackaging = await queryRunner.manager.find(
+        ProjectVendorMaterialAccessoriesPackagingEntity,
+        {
+          where: {
+            project_detail_id,
+          },
+          select: {
+            id: true,
+          },
+        },
+      );
+      if (Array.isArray(findIdsPackaging) && findIdsPackaging.length > 0) {
+        findIdsPackaging.map((item) => item.id);
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialAccessoriesPackagingDetailEntity,
+          {
+            project_vendor_material_accessories_packaging_id:
+              In(findIdsPackaging),
+          },
+        );
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialAccessoriesPackagingEntity,
+          { project_detail_id },
+        );
+      }
+
+      const findIdsFinishedGood = await queryRunner.manager.find(
+        ProjectVendorMaterialAccessoriesPackagingEntity,
+        {
+          where: {
+            project_detail_id,
+          },
+          select: {
+            id: true,
+          },
+        },
+      );
+
+      if (
+        Array.isArray(findIdsFinishedGood) &&
+        findIdsFinishedGood.length > 0
+      ) {
+        findIdsFinishedGood.map((item) => item.id);
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialFinishedGoodDetailEntity,
+          {
+            project_vendor_material_finished_good_id: In(findIdsFinishedGood),
+          },
+        );
+        await queryRunner.manager.delete(
+          ProjectVendorMaterialFinishedGoodEntity,
+          {
+            project_detail_id,
+          },
+        );
+      }
+
       await queryRunner.commitTransaction();
       return true;
     } catch (error) {
+      console.log(error);
+
       await queryRunner.rollbackTransaction();
-      // throw new AppErrorException(error.message);
     } finally {
       await queryRunner.release();
     }
