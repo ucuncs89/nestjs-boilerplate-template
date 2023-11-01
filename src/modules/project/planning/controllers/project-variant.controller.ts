@@ -18,7 +18,7 @@ import { ProjectVariantService } from '../services/project-variant.service';
 import { CreateProjectVariantDto } from '../dto/project-variant.dto';
 
 @ApiBearerAuth()
-@ApiTags('project')
+@ApiTags('Project Planning')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectVariantController {

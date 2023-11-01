@@ -16,10 +16,10 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectSetSamplingService } from '../services/project-set-sampling.service';
 import { CreateProjectSetSamplingDto } from '../dto/project-set-sampling.dto';
-import { ProjectDetailService } from '../services/project-detail.service';
+import { ProjectDetailService } from '../../general/services/project-detail.service';
 
 @ApiBearerAuth()
-@ApiTags('project')
+@ApiTags('Project Planning')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectSetSamplingController {

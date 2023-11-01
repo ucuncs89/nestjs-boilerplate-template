@@ -11,19 +11,19 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { ProjectDetailService } from '../services/project-detail.service';
+import { ProjectDetailService } from '../../general/services/project-detail.service';
 import { ProjectConfirmDto } from '../dto/project-confirm.dto';
-import { ProjectService } from '../services/project.service';
+import { ProjectService } from '../../general/services/project.service';
 import { ProjectMaterialService } from '../services/project-material.service';
 import { ProjectVariantService } from '../services/project-variant.service';
 import { ProjectVendorProductionService } from '../services/project-vendor-production.service';
 import { ProjectShippingService } from '../services/project-shipping.service';
 import { ProjectSetSamplingService } from '../services/project-set-sampling.service';
 import { ProjectPriceService } from '../services/project-price.service';
-import { ProjectHistoryService } from '../services/project-history.service';
+import { ProjectHistoryService } from '../../general/services/project-history.service';
 
 @ApiBearerAuth()
-@ApiTags('project')
+@ApiTags('Project Planning')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectConfirmReviewController {
