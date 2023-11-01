@@ -4,10 +4,8 @@ import {
   Post,
   Body,
   Param,
-  Delete,
   UseGuards,
   Req,
-  Query,
   Put,
 } from '@nestjs/common';
 
@@ -84,6 +82,15 @@ export class ProjectMaterialController {
     @Body() updateProjectMaterialDto: UpdateProjectMaterialDto,
     @I18n() i18n: I18nContext,
   ) {
+    const materialId = await this.projectMaterialService.findMaterialSelectId(
+      detail_id,
+    );
+
+    if (
+      materialId.material_source !== updateProjectMaterialDto.material_source
+    ) {
+      this.projectMaterialService.transactionDelete(detail_id);
+    }
     const data = await this.projectMaterialService.updateDetailMaterial(
       project_id,
       detail_id,
@@ -92,14 +99,7 @@ export class ProjectMaterialController {
       req.user.id,
       i18n,
     );
-    const materialId = await this.projectMaterialService.findMaterialSelectId(
-      detail_id,
-    );
-    if (
-      materialId.material_source !== updateProjectMaterialDto.material_source
-    ) {
-      this.projectMaterialService.transactionDelete(detail_id);
-    }
+
     return { data };
   }
 
