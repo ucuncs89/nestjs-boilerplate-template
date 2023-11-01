@@ -18,7 +18,7 @@ import { ProjectPriceService } from '../services/project-price.service';
 import { ProjectPriceDto } from '../dto/project-price.dto';
 
 @ApiBearerAuth()
-@ApiTags('project')
+@ApiTags('Project Planning')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectPriceController {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
-import { StatusProjectDetailEnum } from './create-project-detail.dto';
+import { StatusProjectDetailEnum } from '../../general/dto/create-project-detail.dto';
 import { ProjectFabricDto } from './project-fabric.dto';
 import { Type } from 'class-transformer';
 import { ProjectAccessoriesSewingDTO } from './project-accessories-sewing.dto';

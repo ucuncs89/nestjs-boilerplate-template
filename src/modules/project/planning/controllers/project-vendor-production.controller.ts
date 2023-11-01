@@ -19,10 +19,10 @@ import {
   ProjectVendorProductionDto,
   ProjectVendorProductionLossDto,
 } from '../dto/project-vendor-production.dto';
-import { ProjectService } from '../services/project.service';
+import { ProjectService } from '../../general/services/project.service';
 
 @ApiBearerAuth()
-@ApiTags('project')
+@ApiTags('Project Planning')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectVendorProductionController {

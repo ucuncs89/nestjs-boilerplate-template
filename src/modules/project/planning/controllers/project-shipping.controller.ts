@@ -18,7 +18,7 @@ import { CreateProjectShippingDto } from '../dto/project-shipping.dto';
 import { ProjectShippingService } from '../services/project-shipping.service';
 
 @ApiBearerAuth()
-@ApiTags('project')
+@ApiTags('Project Planning')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectShippingController {

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectDetailEntity } from 'src/entities/project/project_detail.entity';
 import { Connection, IsNull, Repository } from 'typeorm';
 import { CreateProjectDetailDto } from '../dto/create-project-detail.dto';
-import { ProjectConfirmDto } from '../dto/project-confirm.dto';
+import { ProjectConfirmDto } from '../../planning/dto/project-confirm.dto';
 import { ProjectHistoryService } from './project-history.service';
 import { StatusProjectHistoryEnum } from '../dto/create-project-history.dto';
 import { ProjectService } from './project.service';
