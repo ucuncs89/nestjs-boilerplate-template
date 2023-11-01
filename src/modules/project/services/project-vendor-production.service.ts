@@ -9,6 +9,7 @@ import {
 } from '../dto/project-vendor-production.dto';
 import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+import { ProjectService } from './project.service';
 
 @Injectable()
 export class ProjectVendorProductionService {
@@ -29,6 +30,8 @@ export class ProjectVendorProductionService {
         activity_name: true,
         percentage_of_loss: true,
         total_quantity: true,
+        sub_total_price: true,
+        quantity_unit_required: true,
         vendor_production_detail: {
           id: true,
           price: true,
@@ -105,6 +108,7 @@ export class ProjectVendorProductionService {
         created_by: user_id,
       });
       await this.projectVendorProductionDetailRepository.save(vendor);
+      this.updateTotalQuantitySubtotal(project_vendor_production_id);
       return vendor;
     } catch (error) {
       throw new AppErrorException(error);
@@ -131,6 +135,7 @@ export class ProjectVendorProductionService {
           updated_by: user_id,
         },
       );
+      this.updateTotalQuantitySubtotal(project_vendor_production_id);
       return data;
     } catch (error) {
       throw new AppErrorException(error);
@@ -145,6 +150,7 @@ export class ProjectVendorProductionService {
         project_vendor_production_id,
         id: project_vendor_production_detail_id,
       });
+      this.updateTotalQuantitySubtotal(project_vendor_production_id);
       return data;
     } catch (error) {
       throw new AppErrorException(error);
@@ -210,6 +216,8 @@ export class ProjectVendorProductionService {
           activity_name: true,
           percentage_of_loss: true,
           total_quantity: true,
+          quantity_unit_required: true,
+          sub_total_price: true,
         },
       },
       relations: { vendor_production: true },
@@ -228,5 +236,34 @@ export class ProjectVendorProductionService {
       },
     });
     return data;
+  }
+
+  async updateTotalQuantitySubtotal(project_vendor_production_id) {
+    const total_quantity =
+      await this.projectVendorProductionDetailRepository.sum('quantity', {
+        project_vendor_production_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      });
+    const sumPrice = await this.projectVendorProductionDetailRepository.sum(
+      'price',
+      {
+        project_vendor_production_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    );
+    const update = await this.projectVendorProductionRepository.update(
+      {
+        id: project_vendor_production_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      {
+        total_quantity,
+        sub_total_price: sumPrice,
+      },
+    );
+    return update;
   }
 }

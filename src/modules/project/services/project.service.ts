@@ -433,4 +433,13 @@ export class ProjectService {
       { status, updated_at: new Date().toISOString(), updated_by: user_id },
     );
   }
+
+  async sumProjectSizeQuantity(project_id: number) {
+    const data = await this.projectSizeRepository.sum('number_of_item', {
+      project_id,
+      deleted_at: IsNull(),
+      deleted_by: IsNull(),
+    });
+    return data;
+  }
 }

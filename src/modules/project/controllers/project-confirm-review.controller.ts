@@ -131,11 +131,13 @@ export class ProjectConfirmReviewController {
       await this.projectVendorProductionService.findVendorProductionDetailReview(
         detail_id,
       );
+
+    const total_price = data.reduce((sum, item) => sum + item.price, 0);
     const percentage_of_loss =
       await this.projectVendorProductionService.findIdsVendorProduction(
         detail_id,
       );
-    return { data, percentage_of_loss };
+    return { data, total_price, percentage_of_loss };
   }
 
   @Get(':project_id/detail/:detail_id/review/shipping')
