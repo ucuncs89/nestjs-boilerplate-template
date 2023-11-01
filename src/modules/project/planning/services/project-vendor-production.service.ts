@@ -9,7 +9,7 @@ import {
 } from '../dto/project-vendor-production.dto';
 import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
-import { ProjectService } from './project.service';
+import { ProjectService } from '../../general/services/project.service';
 
 @Injectable()
 export class ProjectVendorProductionService {
@@ -177,9 +177,11 @@ export class ProjectVendorProductionService {
             {
               id: data.id,
               project_detail_id,
+            },
+            {
+              percentage_of_loss: data.percentage_of_loss,
               updated_at: new Date().toISOString(),
             },
-            { percentage_of_loss: data.percentage_of_loss },
           );
         }
         await queryRunner.commitTransaction();

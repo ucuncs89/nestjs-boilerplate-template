@@ -18,7 +18,7 @@ import { ProjectVendorMaterialDto } from '../dto/project-vendor-material.dto';
 import { ProjectVendorMaterialService } from '../services/project-vendor-material.service';
 
 @ApiBearerAuth()
-@ApiTags('project')
+@ApiTags('Project Planning')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectVendorMaterialController {
