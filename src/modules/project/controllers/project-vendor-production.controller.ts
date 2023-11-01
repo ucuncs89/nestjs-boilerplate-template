@@ -18,8 +18,8 @@ import {
   ProjectVendorProductionDetailDto,
   ProjectVendorProductionDto,
   ProjectVendorProductionLossDto,
-  ProjectVendorProductionLossPercentageDto,
 } from '../dto/project-vendor-production.dto';
+import { ProjectService } from '../services/project.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -28,6 +28,8 @@ import {
 export class ProjectVendorProductionController {
   constructor(
     private readonly projectVendorProductionService: ProjectVendorProductionService,
+
+    private readonly projectService: ProjectService,
   ) {}
 
   @Post(':project_id/detail/:detail_id/vendor-production-activity')
@@ -38,6 +40,10 @@ export class ProjectVendorProductionController {
     @Body() projectVendorProductionDto: ProjectVendorProductionDto,
     @I18n() i18n: I18nContext,
   ) {
+    const sumQuantity = await this.projectService.sumProjectSizeQuantity(
+      project_id,
+    );
+    projectVendorProductionDto.quantity_unit_required = sumQuantity;
     const data =
       await this.projectVendorProductionService.createVendorProductionActivity(
         detail_id,
