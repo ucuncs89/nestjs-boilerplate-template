@@ -22,4 +22,15 @@ export class RolesPermissionGuard {
     }
     return true;
   }
+  async isSuperadmin(user_id: number) {
+    const data = await this.usersRolesRepository.findOne({
+      where: { user_id: user_id, role_id: 1 },
+      select: { role_id: true, user_id: true },
+    });
+    if (!data) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }

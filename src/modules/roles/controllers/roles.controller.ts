@@ -24,7 +24,7 @@ import { RolesService } from '../services/roles.service';
 @ApiBearerAuth()
 @ApiTags('roles')
 @Controller('roles')
-@HasRoles(Role.SUPERADMIN)
+@HasRoles(Role.SUPERADMIN, Role.ADMIN)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
@@ -36,14 +36,17 @@ export class RolesController {
   }
 
   @Get()
-  async findAll(@Query() query: GetRolesListDto) {
+  async findAll(@Req() req, @Query() query: GetRolesListDto) {
     const _page = query.page || 1;
     const _page_size = query.page_size || 10;
-    const data = await this.rolesService.findAll({
-      page: (_page - 1) * _page_size,
-      page_size: _page_size,
-      search: query.search,
-    });
+    const data = await this.rolesService.findAll(
+      {
+        page: (_page - 1) * _page_size,
+        page_size: _page_size,
+        search: query.search,
+      },
+      req.user.id,
+    );
     const pagination = await Pagination.pagination(
       data.total_data,
       _page,
