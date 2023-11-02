@@ -6,12 +6,14 @@ import {
   AppErrorNotFoundException,
 } from '../../../exceptions/app-exception';
 import { IsNull, Repository } from 'typeorm';
+import { RolesPermissionGuard } from '../roles-permission';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(RolesEntity)
     private rolesRepository: Repository<RolesEntity>,
+    private readonly rolePermissionGuard: RolesPermissionGuard,
   ) {}
 
   async create(payload, user_id) {
@@ -29,8 +31,9 @@ export class RolesService {
     }
   }
 
-  async findAll(query) {
+  async findAll(query, user_id) {
     const { search, page_size, page } = query;
+    const isSuperadmin = await this.rolePermissionGuard.isSuperadmin(user_id);
     const roles = await this.rolesRepository
       .createQueryBuilder('roles')
       .select(['roles.id', 'roles.title', 'roles.description'])
@@ -41,6 +44,7 @@ export class RolesService {
       ) ${search ? `ILIKE '%${search}%'` : `is not null`}`,
       )
       .andWhere('roles.deleted_by is null')
+      .andWhere(isSuperadmin ? 'roles.id is not null' : 'roles.id <> 1')
       .take(page_size)
       .skip(page)
       .getMany();
@@ -54,6 +58,7 @@ export class RolesService {
     ) ${search ? `ILIKE '%${search}%'` : `is not null`}`,
       )
       .andWhere('roles.deleted_by is null')
+      .andWhere(isSuperadmin ? 'roles.id is not null' : 'roles.id <> 1')
       .getCount();
     return { result: roles, total_data };
   }
