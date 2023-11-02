@@ -26,7 +26,7 @@ import { Pagination } from '../../../utils/pagination';
 @ApiTags('Fabric')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
 @Controller('fabric')
 export class FabricController {
   constructor(private readonly fabricService: FabricService) {}

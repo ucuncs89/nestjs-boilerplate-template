@@ -29,7 +29,7 @@ export class UnitController {
   constructor(private readonly unitService: UnitService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
   @Post()
   async create(
     @Req() req,
@@ -71,7 +71,7 @@ export class UnitController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
   @Put(':id')
   async update(
     @Req() req,
@@ -89,7 +89,7 @@ export class UnitController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
   @Delete(':id')
   async remove(@Req() req, @Param('id') id: string, @I18n() i18n: I18nContext) {
     const data = await this.unitService.remove(+id, req.user.id, i18n);

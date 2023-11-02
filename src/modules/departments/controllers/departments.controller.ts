@@ -26,7 +26,7 @@ import { Pagination } from '../../../utils/pagination';
 @ApiBearerAuth()
 @ApiTags('Departments')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
 @Controller('departments')
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}

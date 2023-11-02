@@ -26,7 +26,7 @@ import { UpdateAccessorySewingDto } from '../dto/update-accessory-sewing.dto';
 @ApiTags('Accessories Sewing')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
 @Controller('accessories/sewing')
 export class AccessoriesSewingController {
   constructor(
