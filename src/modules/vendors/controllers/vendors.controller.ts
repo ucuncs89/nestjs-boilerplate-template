@@ -107,7 +107,7 @@ export class VendorsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @HasRoles(Role.SUPERADMIN, Role.FINANCE)
+  @HasRoles(Role.SUPERADMIN, Role.FINANCE, Role.PROJECT_MANAGEMENT)
   @Put(':id/validation')
   async validateCustomer(
     @Req() req,
@@ -136,7 +136,7 @@ export class VendorsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+  @HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
   @Put(':id/activation')
   async activaition(
     @Req() req,

@@ -25,7 +25,7 @@ import { UpdateFabricVendorDto } from '../dto/update-fabric-vendor.dto';
 @ApiTags('Fabric Vendor')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
 @Controller('fabric')
 export class FabricVendorController {
   constructor(private readonly fabricVendorService: FabricVendorService) {}

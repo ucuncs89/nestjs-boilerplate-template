@@ -273,6 +273,7 @@ export class VendorsService {
       await this.rolePermissionGuard.canActionByRoles(user_id, [
         Role.SUPERADMIN,
         Role.FINANCE,
+        Role.PROJECT_MANAGEMENT,
       ]);
     }
     const queryRunner = this.connection.createQueryRunner();
@@ -341,6 +342,7 @@ export class VendorsService {
       await this.rolePermissionGuard.canActionByRoles(user_id, [
         Role.SUPERADMIN,
         Role.FINANCE,
+        Role.PROJECT_MANAGEMENT,
       ]);
     }
     try {
@@ -450,6 +452,7 @@ export class VendorsService {
       await this.rolePermissionGuard.canActionByRoles(user_id, [
         Role.SUPERADMIN,
         Role.FINANCE,
+        Role.PROJECT_MANAGEMENT,
       ]);
     }
     const queryRunner = this.connection.createQueryRunner();
