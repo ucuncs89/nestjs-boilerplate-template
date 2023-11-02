@@ -25,7 +25,7 @@ import { GetListAccessoriesPackagingDto } from '../dto/get-list-accessories-pack
 @ApiTags('Accessories Packaging')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
 @Controller('accessories/packaging')
 export class AccessoriesPackagingController {
   constructor(

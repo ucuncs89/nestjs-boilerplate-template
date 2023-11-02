@@ -25,7 +25,7 @@ import { HasRoles } from 'src/modules/roles/has-roles.decorator';
 @ApiTags('Color')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT)
+@HasRoles(Role.SUPERADMIN, Role.DEVELOPMENT, Role.PROJECT_MANAGEMENT)
 @Controller('color')
 export class ColorController {
   constructor(private readonly colorService: ColorService) {}
