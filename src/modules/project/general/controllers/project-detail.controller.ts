@@ -19,6 +19,8 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectDetailService } from '../services/project-detail.service';
 import { CreateProjectDetailDto } from '../dto/create-project-detail.dto';
 import { AppErrorException } from 'src/exceptions/app-exception';
+import { ProjectMaterialService } from '../../planning/services/project-material.service';
+import { ProjectVariantService } from '../../planning/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -43,6 +45,28 @@ export class ProjectDetailController {
           req.user.id,
           i18n,
         );
+        break;
+      case 'Sampling':
+        const sampling =
+          await this.projectDetailService.findProjectDetailSampling(project_id);
+        if (!sampling) {
+          const newProjectDetail =
+            await this.projectDetailService.createProjectDetailSampling(
+              project_id,
+              createProjectDetailDto,
+              req.user.id,
+              i18n,
+            );
+          data = await this.projectDetailService.generateSamplingProject(
+            project_id,
+            newProjectDetail.id,
+            req.user.id,
+            i18n,
+          );
+          return { data: newProjectDetail, generate: data };
+        } else {
+          data = sampling;
+        }
         break;
       default:
         throw new AppErrorException('Payload Type Project not allowed');
