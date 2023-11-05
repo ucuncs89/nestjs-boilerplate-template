@@ -40,6 +40,13 @@ import { ProjectConfirmReviewController } from './planning/controllers/project-c
 import { ProjectSizeEntity } from 'src/entities/project/project_size.entity';
 import { ProjectVendorMaterialFinishedGoodEntity } from 'src/entities/project/project_vendor_material_finished_good.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+import { ProjectVendorMaterialSamplingController } from './sampling/controllers/project-vendor-material-sampling.controller';
+import { ProjectVendorMaterialSamplingService } from './sampling/services/project-vendor-material-sampling.service';
+import { ProjectMaterialSamplingService } from './sampling/services/project-material-sampling.service';
+import { ProjectVendorMaterialFabricDetailEntity } from 'src/entities/project/project_vendor_material_fabric_detail.entity';
+import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
+import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
+import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
 
 @Module({
   imports: [
@@ -62,6 +69,10 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
       ProjectSizeEntity,
       ProjectVendorMaterialFinishedGoodEntity,
       ProjectVendorProductionDetailEntity,
+      ProjectVendorMaterialFabricDetailEntity,
+      ProjectVendorMaterialAccessoriesSewingDetailEntity,
+      ProjectVendorMaterialAccessoriesPackagingDetailEntity,
+      ProjectVendorMaterialFinishedGoodDetailEntity,
     ]),
     RabbitMQModule,
   ],
@@ -77,6 +88,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
     ProjectSetSamplingController,
     ProjectPriceController,
     ProjectConfirmReviewController,
+    ProjectVendorMaterialSamplingController,
   ],
   providers: [
     ProjectService,
@@ -89,6 +101,8 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
     ProjectShippingService,
     ProjectSetSamplingService,
     ProjectPriceService,
+    ProjectMaterialSamplingService,
+    ProjectVendorMaterialSamplingService,
   ],
 })
 export class ProjectModule {}
