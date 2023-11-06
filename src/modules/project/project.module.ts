@@ -47,6 +47,8 @@ import { ProjectVendorMaterialFabricDetailEntity } from 'src/entities/project/pr
 import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
 import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
 import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
+import { ProjectVendorProductionSamplingService } from './sampling/services/project-vendor-production-sampling.service';
+import { ProjectVendorProductionSamplingController } from './sampling/controllers/project-vendor-production.controller';
 
 @Module({
   imports: [
@@ -89,6 +91,7 @@ import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/proj
     ProjectPriceController,
     ProjectConfirmReviewController,
     ProjectVendorMaterialSamplingController,
+    ProjectVendorProductionSamplingController,
   ],
   providers: [
     ProjectService,
@@ -103,6 +106,7 @@ import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/proj
     ProjectPriceService,
     ProjectMaterialSamplingService,
     ProjectVendorMaterialSamplingService,
+    ProjectVendorProductionSamplingService,
   ],
 })
 export class ProjectModule {}
