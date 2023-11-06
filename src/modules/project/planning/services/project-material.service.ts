@@ -799,7 +799,7 @@ export class ProjectMaterialService {
     return { fabric, sewing, packaging };
   }
 
-  async transactionDelete(project_detail_id) {
+  async transactionDelete(project_detail_id, project_material_id) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -816,11 +816,17 @@ export class ProjectMaterialService {
         },
       );
       if (Array.isArray(findIdsFabric) && findIdsFabric.length > 0) {
-        findIdsFabric.map((item) => item.id);
+        const arrIdsFabric = [];
+        for (const item of findIdsFabric) {
+          arrIdsFabric.push(item.id);
+        }
+        await queryRunner.manager.delete(ProjectFabricEntity, {
+          project_material_id,
+        });
         await queryRunner.manager.delete(
           ProjectVendorMaterialFabricDetailEntity,
           {
-            project_vendor_material_fabric_id: In(findIdsFabric),
+            project_vendor_material_fabric_id: In(arrIdsFabric),
           },
         );
         await queryRunner.manager.delete(ProjectVendorMaterialFabricEntity, {
@@ -841,11 +847,17 @@ export class ProjectMaterialService {
       );
 
       if (Array.isArray(findIdsSewing) && findIdsSewing.length > 0) {
-        findIdsSewing.map((item) => item.id);
+        const arrIdsSewing = [];
+        for (const item of findIdsSewing) {
+          arrIdsSewing.push(item.id);
+        }
+        await queryRunner.manager.delete(ProjectAccessoriesSewingEntity, {
+          project_material_id,
+        });
         await queryRunner.manager.delete(
           ProjectVendorMaterialAccessoriesSewingDetailEntity,
           {
-            project_vendor_material_accessories_sewing_id: In(findIdsSewing),
+            project_vendor_material_accessories_sewing_id: In(arrIdsSewing),
           },
         );
         await queryRunner.manager.delete(
@@ -866,12 +878,18 @@ export class ProjectMaterialService {
         },
       );
       if (Array.isArray(findIdsPackaging) && findIdsPackaging.length > 0) {
-        findIdsPackaging.map((item) => item.id);
+        const arrIdsPackaging = [];
+        for (const item of findIdsPackaging) {
+          arrIdsPackaging.push(item.id);
+        }
+        await queryRunner.manager.delete(ProjectAccessoriesPackagingEntity, {
+          project_material_id,
+        });
         await queryRunner.manager.delete(
           ProjectVendorMaterialAccessoriesPackagingDetailEntity,
           {
             project_vendor_material_accessories_packaging_id:
-              In(findIdsPackaging),
+              In(arrIdsPackaging),
           },
         );
         await queryRunner.manager.delete(
@@ -896,11 +914,14 @@ export class ProjectMaterialService {
         Array.isArray(findIdsFinishedGood) &&
         findIdsFinishedGood.length > 0
       ) {
-        findIdsFinishedGood.map((item) => item.id);
+        const arrIdsFinishedGood = [];
+        for (const item of findIdsFinishedGood) {
+          arrIdsFinishedGood.push(item.id);
+        }
         await queryRunner.manager.delete(
           ProjectVendorMaterialFinishedGoodDetailEntity,
           {
-            project_vendor_material_finished_good_id: In(findIdsFinishedGood),
+            project_vendor_material_finished_good_id: In(arrIdsFinishedGood),
           },
         );
         await queryRunner.manager.delete(
@@ -914,6 +935,8 @@ export class ProjectMaterialService {
       await queryRunner.commitTransaction();
       return true;
     } catch (error) {
+      console.log(error);
+
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
