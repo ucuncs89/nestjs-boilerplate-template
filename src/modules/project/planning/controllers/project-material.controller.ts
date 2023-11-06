@@ -152,7 +152,11 @@ export class ProjectMaterialController {
     const materialId = await this.projectMaterialService.findMaterialSelectId(
       detail_id,
     );
-
+    if (
+      materialId.material_source !== updateProjectMaterialDto.material_source
+    ) {
+      this.projectMaterialService.transactionDelete(detail_id);
+    }
     const data = await this.projectMaterialService.transactionUpdate(
       detail_id,
       material_id,
@@ -160,11 +164,7 @@ export class ProjectMaterialController {
       req.user.id,
       i18n,
     );
-    if (
-      materialId.material_source !== updateProjectMaterialDto.material_source
-    ) {
-      this.projectMaterialService.transactionDelete(detail_id);
-    }
+
     return { data };
   }
 }
