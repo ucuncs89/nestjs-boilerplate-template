@@ -154,97 +154,6 @@ export class ProjectMaterialService {
     });
   }
 
-  async updateDetailMaterial(
-    project_id: number,
-    project_detail_id: number,
-    project_material_id: number,
-    updateProjectMaterialDto: UpdateProjectMaterialDto,
-    user_id,
-    i18n,
-  ) {
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      const projectMaterial = await queryRunner.manager.update(
-        ProjectMaterialEntity,
-        project_material_id,
-        {
-          project_detail_id,
-          material_source: updateProjectMaterialDto.material_source,
-          total_price: updateProjectMaterialDto.total_price,
-          fabric_percentage_of_loss:
-            updateProjectMaterialDto.fabric_percentage_of_loss,
-          sewing_accessories_percentage_of_loss:
-            updateProjectMaterialDto.sewing_accessories_percentage_of_loss,
-          packaging_accessories_percentage_of_loss:
-            updateProjectMaterialDto.packaging_accessories_percentage_of_loss,
-          packaging_instructions:
-            updateProjectMaterialDto.packaging_instructions,
-          created_at: new Date().toISOString(),
-          created_by: user_id,
-        },
-      );
-      // fabric
-      if (
-        Array.isArray(updateProjectMaterialDto.fabric) &&
-        updateProjectMaterialDto.fabric.length > 0
-      ) {
-        for (const fabric of updateProjectMaterialDto.fabric) {
-          fabric.project_material_id = project_material_id;
-        }
-
-        await queryRunner.manager.delete(ProjectFabricEntity, {
-          project_material_id,
-        });
-
-        await queryRunner.manager.insert(
-          ProjectFabricEntity,
-          updateProjectMaterialDto.fabric,
-        );
-      }
-      //accessories sewing
-      if (
-        Array.isArray(updateProjectMaterialDto.accessories_sewing) &&
-        updateProjectMaterialDto.accessories_sewing.length > 0
-      ) {
-        for (const sewing of updateProjectMaterialDto.accessories_sewing) {
-          sewing.project_material_id = project_material_id;
-        }
-        await queryRunner.manager.delete(ProjectAccessoriesSewingEntity, {
-          project_material_id,
-        });
-        await queryRunner.manager.insert(
-          ProjectAccessoriesSewingEntity,
-          updateProjectMaterialDto.accessories_sewing,
-        );
-      }
-      //accessories packaging
-      if (
-        Array.isArray(updateProjectMaterialDto.accessories_packaging) &&
-        updateProjectMaterialDto.accessories_packaging.length > 0
-      ) {
-        for (const sewing of updateProjectMaterialDto.accessories_packaging) {
-          sewing.project_material_id = project_material_id;
-        }
-        await queryRunner.manager.delete(ProjectAccessoriesPackagingEntity, {
-          project_material_id,
-        });
-        await queryRunner.manager.insert(
-          ProjectAccessoriesPackagingEntity,
-          updateProjectMaterialDto.accessories_packaging,
-        );
-      }
-      await queryRunner.commitTransaction();
-      return { id: project_material_id, ...updateProjectMaterialDto };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw new AppErrorException(error.message);
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
   async findProjectFabricVariant(project_detail_id: number) {
     const findProjectMaterialId = await this.projectMaterialRepository.findOne({
       where: {
@@ -1005,8 +914,6 @@ export class ProjectMaterialService {
       await queryRunner.commitTransaction();
       return true;
     } catch (error) {
-      console.log(error);
-
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
