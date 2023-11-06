@@ -99,7 +99,7 @@ export class ProjectVendorMaterialSamplingController {
     return { data };
   }
 
-  @Get('sampling/:project_id/detail/:detail_id/vendor-material/packaging')
+  @Get('sampling/:project_id/detail/:detail_id/vendor-material/finished-goods')
   async getVendorMaterialFinishedGood(
     @Req() req,
     @Param('project_id') project_id: number,
