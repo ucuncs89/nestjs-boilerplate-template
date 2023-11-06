@@ -155,7 +155,10 @@ export class ProjectMaterialController {
     if (
       materialId.material_source !== updateProjectMaterialDto.material_source
     ) {
-      this.projectMaterialService.transactionDelete(detail_id);
+      await this.projectMaterialService.transactionDelete(
+        detail_id,
+        material_id,
+      );
     }
     const data = await this.projectMaterialService.transactionUpdate(
       detail_id,
