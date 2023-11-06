@@ -73,35 +73,34 @@ export class ProjectMaterialController {
     return { data };
   }
 
-  @Put(':project_id/detail/:detail_id/material/:material_id')
-  async updateMaterial(
-    @Req() req,
-    @Param('project_id') project_id: number,
-    @Param('detail_id') detail_id: number,
-    @Param('material_id') material_id: number,
-    @Body() updateProjectMaterialDto: UpdateProjectMaterialDto,
-    @I18n() i18n: I18nContext,
-  ) {
-    const materialId = await this.projectMaterialService.findMaterialSelectId(
-      detail_id,
-    );
+  // @Put(':project_id/detail/:detail_id/material/:material_id')
+  // async updateMaterial(
+  //   @Req() req,
+  //   @Param('project_id') project_id: number,
+  //   @Param('detail_id') detail_id: number,
+  //   @Param('material_id') material_id: number,
+  //   @Body() updateProjectMaterialDto: UpdateProjectMaterialDto,
+  //   @I18n() i18n: I18nContext,
+  // ) {
+  //   const materialId = await this.projectMaterialService.findMaterialSelectId(
+  //     detail_id,
+  //   );
 
-    if (
-      materialId.material_source !== updateProjectMaterialDto.material_source
-    ) {
-      this.projectMaterialService.transactionDelete(detail_id);
-    }
-    const data = await this.projectMaterialService.updateDetailMaterial(
-      project_id,
-      detail_id,
-      material_id,
-      updateProjectMaterialDto,
-      req.user.id,
-      i18n,
-    );
+  //   if (
+  //     materialId.material_source !== updateProjectMaterialDto.material_source
+  //   ) {
+  //     this.projectMaterialService.transactionDelete(detail_id);
+  //   }
+  //   const data = await this.projectMaterialService.transactionUpdate(
+  //     detail_id,
+  //     material_id,
+  //     updateProjectMaterialDto,
+  //     req.user.id,
+  //     i18n,
+  //   );
 
-    return { data };
-  }
+  //   return { data };
+  // }
 
   @Get(':project_id/detail/:detail_id/material-fabric-variant')
   async getFabricVariant(
@@ -150,6 +149,10 @@ export class ProjectMaterialController {
     @Body() updateProjectMaterialDto: UpdateProjectMaterialDto,
     @I18n() i18n: I18nContext,
   ) {
+    const materialId = await this.projectMaterialService.findMaterialSelectId(
+      detail_id,
+    );
+
     const data = await this.projectMaterialService.transactionUpdate(
       detail_id,
       material_id,
@@ -157,6 +160,11 @@ export class ProjectMaterialController {
       req.user.id,
       i18n,
     );
+    if (
+      materialId.material_source !== updateProjectMaterialDto.material_source
+    ) {
+      this.projectMaterialService.transactionDelete(detail_id);
+    }
     return { data };
   }
 }

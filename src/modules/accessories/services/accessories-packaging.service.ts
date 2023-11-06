@@ -4,9 +4,9 @@ import { UpdateAccessoryPackagingDto } from '../dto/update-accessory-packaging.d
 import {
   AppErrorException,
   AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+} from '../../../exceptions/app-exception';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AccessoriesPackagingEntity } from 'src/entities/accessories/accessories_packaging.entity';
+import { AccessoriesPackagingEntity } from '../../../entities/accessories/accessories_packaging.entity';
 import { ILike, IsNull, Not, Raw, Repository } from 'typeorm';
 
 @Injectable()
