@@ -1,26 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Query,
-  Put,
-} from '@nestjs/common';
-import { ProjectService } from '../services/project.service';
-import { CreateProjectDto } from '../dto/create-project.dto';
-import { UpdateProjectDto } from '../dto/update-project.dto';
+import { Controller, Post, Body, Param, UseGuards, Req } from '@nestjs/common';
+
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectDetailService } from '../services/project-detail.service';
 import { CreateProjectDetailDto } from '../dto/create-project-detail.dto';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { ProjectMaterialService } from '../../planning/services/project-material.service';
-import { ProjectVariantService } from '../../planning/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
