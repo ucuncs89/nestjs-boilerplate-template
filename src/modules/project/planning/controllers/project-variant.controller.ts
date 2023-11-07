@@ -56,22 +56,6 @@ export class ProjectVariantController {
     return { data };
   }
 
-  //   @Get(':project_id/detail/:detail_id/material/:material_id')
-  //   async getbyMaterialId(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @Param('material_id') material_id: number,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectMaterialService.findDetailbyMaterialId(
-  //       project_id,
-  //       detail_id,
-  //       material_id,
-  //     );
-  //     return { data };
-  //   }
-
   @Put(':project_id/detail/:detail_id/variant')
   async updateMaterial(
     @Req() req,

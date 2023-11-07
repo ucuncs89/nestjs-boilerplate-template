@@ -21,6 +21,7 @@ import { ProjectShippingService } from '../services/project-shipping.service';
 import { ProjectSetSamplingService } from '../services/project-set-sampling.service';
 import { ProjectPriceService } from '../services/project-price.service';
 import { ProjectHistoryService } from '../../general/services/project-history.service';
+import { ProjectVendorMaterialService } from '../services/project-vendor-material.service';
 
 @ApiBearerAuth()
 @ApiTags('Project Planning')
@@ -36,7 +37,7 @@ export class ProjectConfirmReviewController {
     private readonly projectShippingService: ProjectShippingService,
     private readonly projectSetSamplingService: ProjectSetSamplingService,
     private readonly projectPriceService: ProjectPriceService,
-    private readonly projectHistoryService: ProjectHistoryService,
+    private readonly projectVendorMaterialService: ProjectVendorMaterialService,
   ) {}
 
   @Post(':project_id/detail/:detail_id/confirmation')
@@ -183,16 +184,20 @@ export class ProjectConfirmReviewController {
     @Param('detail_id') detail_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const fabric = await this.projectMaterialService.findProjectConfirmFabric(
-      detail_id,
-    );
-    const sewing = await this.projectMaterialService.findProjectConfirmSewing(
-      detail_id,
-    );
+    const fabric =
+      await this.projectVendorMaterialService.findProjectConfirmFabric(
+        detail_id,
+      );
+    const sewing =
+      await this.projectVendorMaterialService.findProjectConfirmSewing(
+        detail_id,
+      );
     const packaging =
-      await this.projectMaterialService.findProjectConfirmPackaging(detail_id);
+      await this.projectVendorMaterialService.findProjectConfirmPackaging(
+        detail_id,
+      );
     const finishedGoods =
-      await this.projectMaterialService.findProjectConfirmFinishedGood(
+      await this.projectVendorMaterialService.findProjectConfirmFinishedGood(
         detail_id,
       );
 
