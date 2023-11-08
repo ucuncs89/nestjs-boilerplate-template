@@ -70,6 +70,7 @@ export class ProjectDetailController {
             generate: data,
           };
         } else {
+          project_detail_id = sampling.id;
           data = sampling;
         }
         break;
@@ -84,6 +85,7 @@ export class ProjectDetailController {
     return {
       data,
       material_source: material_source?.material_source || null,
+      material_id: material_source?.id || null,
     };
   }
 }

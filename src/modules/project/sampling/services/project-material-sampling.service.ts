@@ -98,7 +98,11 @@ export class ProjectMaterialSamplingService {
     });
     const arrResult = [];
     for (const item of data) {
-      arrResult.push({ ...item, type: 'Fabric' });
+      arrResult.push({
+        ...item,
+        type: 'Fabric',
+        material_id: findProjectMaterialId.id,
+      });
     }
     return arrResult;
   }
@@ -173,7 +177,11 @@ export class ProjectMaterialSamplingService {
     });
     const arrResult = [];
     for (const item of data) {
-      arrResult.push({ ...item, type: 'Sewing' });
+      arrResult.push({
+        ...item,
+        type: 'Sewing',
+        material_id: findProjectMaterialId.id,
+      });
     }
     return arrResult;
   }
@@ -248,7 +256,11 @@ export class ProjectMaterialSamplingService {
     });
     const arrResult = [];
     for (const item of data) {
-      arrResult.push({ ...item, type: 'Packaging' });
+      arrResult.push({
+        ...item,
+        type: 'Packaging',
+        material_id: findProjectMaterialId.id,
+      });
     }
     return arrResult;
   }
