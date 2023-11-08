@@ -159,7 +159,7 @@ export class ProjectVendorMaterialSamplingController {
         break;
       case 'Finished goods':
         data =
-          await this.projectVendorMaterialSamplingService.createVendorMaterialPackagingDetail(
+          await this.projectVendorMaterialSamplingService.createVendorMaterialFinishedGoodDetail(
             detail_id,
             vendor_material_id,
             projectVendorMaterialSamplingDetailDto,
