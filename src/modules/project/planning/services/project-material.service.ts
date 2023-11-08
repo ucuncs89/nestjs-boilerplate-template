@@ -389,10 +389,11 @@ export class ProjectMaterialService {
               }
             } else if (fabric.method_type === 'edit') {
               delete fabric.method_type;
-              await queryRunner.manager.upsert(ProjectFabricEntity, fabric, {
-                skipUpdateIfNoValuesChanged: true,
-                conflictPaths: { id: true },
-              });
+              await queryRunner.manager.update(
+                ProjectFabricEntity,
+                { id: fabric.id },
+                fabric,
+              );
             } else if (fabric.method_type === 'delete') {
               await queryRunner.manager.delete(ProjectFabricEntity, {
                 id: fabric.id,
@@ -435,13 +436,10 @@ export class ProjectMaterialService {
               }
             } else if (sewing.method_type === 'edit') {
               delete sewing.method_type;
-              await queryRunner.manager.upsert(
+              await queryRunner.manager.update(
                 ProjectAccessoriesSewingEntity,
+                { id: sewing.id },
                 sewing,
-                {
-                  skipUpdateIfNoValuesChanged: true,
-                  conflictPaths: { id: true },
-                },
               );
             } else if (sewing.method_type === 'delete') {
               await queryRunner.manager.delete(ProjectAccessoriesSewingEntity, {
@@ -486,13 +484,10 @@ export class ProjectMaterialService {
               }
             } else if (packaging.method_type === 'edit') {
               delete packaging.method_type;
-              await queryRunner.manager.upsert(
+              await queryRunner.manager.update(
                 ProjectAccessoriesPackagingEntity,
+                { id: packaging.id },
                 packaging,
-                {
-                  skipUpdateIfNoValuesChanged: true,
-                  conflictPaths: { id: true },
-                },
               );
             } else if (packaging.method_type === 'delete') {
               await queryRunner.manager.delete(
@@ -569,13 +564,10 @@ export class ProjectMaterialService {
               }
             } else if (packaging.method_type === 'edit') {
               delete packaging.method_type;
-              await queryRunner.manager.upsert(
+              await queryRunner.manager.update(
                 ProjectAccessoriesPackagingEntity,
+                { id: packaging.id },
                 packaging,
-                {
-                  skipUpdateIfNoValuesChanged: true,
-                  conflictPaths: { id: true },
-                },
               );
             } else if (packaging.method_type === 'delete') {
               await queryRunner.manager.delete(
