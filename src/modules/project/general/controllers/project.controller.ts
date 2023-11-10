@@ -19,6 +19,9 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { GetListProjectDto } from '../dto/get-list-project.dto';
 import { Pagination } from 'src/utils/pagination';
 import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';
+import { RolesGuard } from 'src/modules/roles/roles.guard';
+import { Role } from 'src/modules/roles/enum/role.enum';
+import { HasRoles } from 'src/modules/roles/has-roles.decorator';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -80,7 +83,13 @@ export class ProjectController {
     return { message: 'Successfully', data };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @HasRoles(
+    Role.SUPERADMIN,
+    Role.DEVELOPMENT,
+    Role.PROJECT_MANAGEMENT,
+    Role.ADMIN,
+  )
   @Put(':id')
   async update(
     @Req() req,

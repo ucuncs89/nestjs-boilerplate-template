@@ -22,7 +22,13 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('documentation', app, document);
+  SwaggerModule.setup('documentation', app, document, {
+    customfavIcon: 'https://dev.cloami.com/favicon.ico',
+    customSiteTitle: 'Cloami Backend',
+    customCss: `
+    .topbar-wrapper img {content:url(\'https://dashboard.cloami.com/_next/static/media/cloami-logo.28284e32.svg\'); width:200px; height:auto;}
+    .swagger-ui .topbar { background-color: #f1f2f1; } `,
+  });
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());

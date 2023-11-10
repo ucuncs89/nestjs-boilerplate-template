@@ -11,4 +11,7 @@ export class ProjectPurchaseOrderSamplingService {
     private projectPurchaseOrderRepository: Repository<ProjectPurchaseOrderEntity>,
     private connection: Connection,
   ) {}
+  async createPurchaseOrder() {}
+  async updatePurchaseOrder() {}
+  async deleteOnePurchaseOrder() {}
 }
