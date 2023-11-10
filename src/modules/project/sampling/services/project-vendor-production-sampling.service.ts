@@ -339,6 +339,7 @@ export class ProjectVendorProductionSamplingService {
 
       return {
         ...vendorItem,
+        purchase_order_id: matchingPurchaseOrders[0]?.purchase_order_id || null,
         type: vendorItem.vendor_production.activity_name || null,
         purchase_order: matchingPurchaseOrders[0] || null,
       };
