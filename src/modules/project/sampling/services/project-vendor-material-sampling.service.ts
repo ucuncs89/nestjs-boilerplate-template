@@ -397,6 +397,7 @@ export class ProjectVendorMaterialSamplingService {
 
       return {
         ...fabricItem,
+        purchase_order_id: matchingPurchaseOrders[0]?.purchase_order_id || null,
         type: 'Fabric',
         purchase_order: matchingPurchaseOrders[0] || null,
       };
@@ -482,6 +483,7 @@ export class ProjectVendorMaterialSamplingService {
 
       return {
         ...sewingItem,
+        purchase_order_id: matchingPurchaseOrders[0]?.purchase_order_id || null,
         type: 'Sewing',
         purchase_order: matchingPurchaseOrders[0] || null,
       };
@@ -569,6 +571,7 @@ export class ProjectVendorMaterialSamplingService {
 
       return {
         ...packagingItem,
+        purchase_order_id: matchingPurchaseOrders[0]?.purchase_order_id || null,
         type: 'Packaging',
         purchase_order: matchingPurchaseOrders[0] || null,
       };
@@ -649,6 +652,7 @@ export class ProjectVendorMaterialSamplingService {
 
       return {
         ...finishedItem,
+        purchase_order_id: matchingPurchaseOrders[0]?.purchase_order_id || null,
         type: 'Finished goods',
         purchase_order: matchingPurchaseOrders[0] || null,
       };

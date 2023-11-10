@@ -16,6 +16,7 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectPurchaseOrderSamplingService } from '../services/project-purchase-order-sampling.service';
 import { ProjectVendorMaterialSamplingService } from '../services/project-vendor-material-sampling.service';
 import { ProjectVendorProductionSamplingService } from '../services/project-vendor-production-sampling.service';
+import { ProjectPurchaseOrderSamplingDto } from '../dto/project-purchase-order-sampling.dto';
 
 @ApiBearerAuth()
 @ApiTags('Project Sampling')
@@ -57,5 +58,40 @@ export class ProjectPurchaseOrderSamplingController {
       );
     const supplier = [...fabric, ...finishedGoods, ...sewing, ...packaging];
     return { supplier, vendor_production };
+  }
+  @Post('sampling/:project_id/detail/:detail_id/purchase-order')
+  async createProjectPurchaseOrder(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Body() projectPurchaseOrderSamplingDto: ProjectPurchaseOrderSamplingDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectPurchaseOrderSamplingService.createPurchaseOrder(
+        detail_id,
+        projectPurchaseOrderSamplingDto,
+        req.user.id,
+      );
+    return { data };
+  }
+  @Put(
+    'sampling/:project_id/detail/:detail_id/purchase-order/:purchase_order_id',
+  )
+  async putProjectPurchaseOrder(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('purchase_order_id') purchase_order_id: number,
+    @Body() projectPurchaseOrderSamplingDto: ProjectPurchaseOrderSamplingDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectPurchaseOrderSamplingService.updatePurchaseOrder(
+        purchase_order_id,
+        projectPurchaseOrderSamplingDto,
+        req.user.id,
+      );
+    return { data };
   }
 }
