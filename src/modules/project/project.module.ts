@@ -52,6 +52,7 @@ import { ProjectVendorProductionSamplingController } from './sampling/controller
 import { ProjectPurchaseOrderSamplingController } from './sampling/controllers/project-purchase-order-sampling.controller';
 import { ProjectPurchaseOrderSamplingService } from './sampling/services/project-purchase-order-sampling.service';
 import { ProjectPurchaseOrderEntity } from 'src/entities/project/project_purchase_order.entity';
+import { PurchaseOrderEntity } from 'src/entities/purchase-order/purchase_order.entity';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { ProjectPurchaseOrderEntity } from 'src/entities/project/project_purchas
       ProjectVendorMaterialAccessoriesPackagingDetailEntity,
       ProjectVendorMaterialFinishedGoodDetailEntity,
       ProjectPurchaseOrderEntity,
+      PurchaseOrderEntity,
     ]),
     RabbitMQModule,
   ],
