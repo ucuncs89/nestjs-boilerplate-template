@@ -49,6 +49,9 @@ import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entit
 import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
 import { ProjectVendorProductionSamplingService } from './sampling/services/project-vendor-production-sampling.service';
 import { ProjectVendorProductionSamplingController } from './sampling/controllers/project-vendor-production.controller';
+import { ProjectPurchaseOrderSamplingController } from './sampling/controllers/project-purchase-order-sampling.controller';
+import { ProjectPurchaseOrderSamplingService } from './sampling/services/project-purchase-order-sampling.service';
+import { ProjectPurchaseOrderEntity } from 'src/entities/project/project_purchase_order.entity';
 
 @Module({
   imports: [
@@ -75,6 +78,7 @@ import { ProjectVendorProductionSamplingController } from './sampling/controller
       ProjectVendorMaterialAccessoriesSewingDetailEntity,
       ProjectVendorMaterialAccessoriesPackagingDetailEntity,
       ProjectVendorMaterialFinishedGoodDetailEntity,
+      ProjectPurchaseOrderEntity,
     ]),
     RabbitMQModule,
   ],
@@ -92,6 +96,7 @@ import { ProjectVendorProductionSamplingController } from './sampling/controller
     ProjectConfirmReviewController,
     ProjectVendorMaterialSamplingController,
     ProjectVendorProductionSamplingController,
+    ProjectPurchaseOrderSamplingController,
   ],
   providers: [
     ProjectService,
@@ -107,6 +112,7 @@ import { ProjectVendorProductionSamplingController } from './sampling/controller
     ProjectMaterialSamplingService,
     ProjectVendorMaterialSamplingService,
     ProjectVendorProductionSamplingService,
+    ProjectPurchaseOrderSamplingService,
   ],
 })
 export class ProjectModule {}

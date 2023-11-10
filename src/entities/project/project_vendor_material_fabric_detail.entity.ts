@@ -3,10 +3,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectVendorMaterialFabricEntity } from './project_vendor_material_fabric.entity';
 import { VendorsEntity } from '../vendors/vendors.entity';
+import { ProjectPurchaseOrderEntity } from './project_purchase_order.entity';
 
 @Entity('project_vendor_material_fabric_detail')
 export class ProjectVendorMaterialFabricDetailEntity {

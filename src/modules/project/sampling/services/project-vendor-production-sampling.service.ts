@@ -11,6 +11,7 @@ import {
   ProjectVendorProductionLossPercentageSamplingDto,
   ProjectVendorProductionSamplingDto,
 } from '../dto/project-vendor-production-sampling.dto';
+import { ProjectPurchaseOrderEntity } from 'src/entities/project/project_purchase_order.entity';
 
 @Injectable()
 export class ProjectVendorProductionSamplingService {
@@ -19,6 +20,10 @@ export class ProjectVendorProductionSamplingService {
     private projectVendorProductionRepository: Repository<ProjectVendorProductionEntity>,
     @InjectRepository(ProjectVendorProductionDetailEntity)
     private projectVendorProductionDetailRepository: Repository<ProjectVendorProductionDetailEntity>,
+
+    @InjectRepository(ProjectPurchaseOrderEntity)
+    private projectPurchaseOrderRepository: Repository<ProjectPurchaseOrderEntity>,
+
     private connection: Connection,
   ) {}
 
@@ -268,5 +273,76 @@ export class ProjectVendorProductionSamplingService {
       },
     );
     return update;
+  }
+
+  async findVendorProductionDetailPO(project_detail_id) {
+    const findVendor = await this.projectVendorProductionRepository.find({
+      where: { project_detail_id, deleted_at: IsNull(), deleted_by: IsNull() },
+    });
+    if (!findVendor[0]) {
+      return [];
+    }
+    const arrIds = findVendor.map((v) => v.id);
+
+    const dataVendorProduction =
+      await this.projectVendorProductionDetailRepository.find({
+        where: {
+          project_vendor_production_id: In(arrIds),
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        select: {
+          id: true,
+          project_vendor_production_id: true,
+          vendor_id: true,
+          vendor_name: true,
+          quantity: true,
+          quantity_unit: true,
+          price: true,
+          vendor_production: {
+            id: true,
+            activity_id: true,
+            activity_name: true,
+            percentage_of_loss: true,
+            project_detail_id: true,
+            quantity_unit_required: true,
+            sub_total_price: true,
+            total_quantity: true,
+          },
+        },
+        relations: { vendor_production: true },
+      });
+    if (dataVendorProduction.length <= 0) {
+      return [];
+    }
+    const arrIdsDataVendorProduction = dataVendorProduction.map((v) => v.id);
+    const purchaseOrder = await this.projectPurchaseOrderRepository.find({
+      where: {
+        relation_id: In(arrIdsDataVendorProduction),
+        project_detail_id,
+        vendor_type: 'Production',
+      },
+      select: {
+        id: true,
+        material_type: true,
+        project_detail_id: true,
+        purchase_order_id: true,
+        relation_id: true,
+        vendor_type: true,
+      },
+    });
+    // Combine arrays based on relation_id and id
+    const combinedArray = dataVendorProduction.map((vendorItem) => {
+      const matchingPurchaseOrders = purchaseOrder.filter(
+        (order) => order.relation_id === vendorItem.id,
+      );
+
+      return {
+        ...vendorItem,
+        type: vendorItem.vendor_production.activity_name || null,
+        purchase_order: matchingPurchaseOrders[0] || null,
+      };
+    });
+    return combinedArray;
   }
 }
