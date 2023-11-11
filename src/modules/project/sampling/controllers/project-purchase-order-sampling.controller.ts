@@ -94,4 +94,20 @@ export class ProjectPurchaseOrderSamplingController {
       );
     return { data };
   }
+  @Get(
+    'sampling/:project_id/detail/:detail_id/purchase-order/:purchase_order_id',
+  )
+  async getDetailProjectPurchaseOrder(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('purchase_order_id') purchase_order_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectPurchaseOrderSamplingService.findDetailPurcahseOrder(
+        purchase_order_id,
+      );
+    return { data };
+  }
 }

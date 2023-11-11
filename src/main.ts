@@ -10,10 +10,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
   });
+
+  // Access the version field
   const config = new DocumentBuilder()
     .setTitle('Cloami')
     .setDescription(`Cloami - Backend , Last Commit`)
-    .setVersion(`0.1`)
+    .setVersion('1.0')
     .addServer(
       env.SWAGGER_BASEPATH
         ? env.SWAGGER_BASEPATH
