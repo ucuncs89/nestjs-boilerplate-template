@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ProjectSamplingStatusEntity } from './project_sampling_status.entity';
+import { ProjectSamplingRevisiEntity } from './project_sampling_revisi.entity';
 
 @Entity('project_set_sampling')
 export class ProjectSetSamplingEntity {
@@ -13,6 +21,9 @@ export class ProjectSetSamplingEntity {
 
   @Column({ type: 'int', nullable: true })
   sampling_price?: number;
+
+  @Column({ type: 'boolean', nullable: true })
+  is_completed: boolean;
 
   @Column({
     type: 'timestamp with time zone',
@@ -34,4 +45,20 @@ export class ProjectSetSamplingEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @OneToMany(
+    () => ProjectSamplingStatusEntity,
+    (project_sampling_status: ProjectSamplingStatusEntity) =>
+      project_sampling_status.project_set_sampling,
+  )
+  @JoinColumn({ name: 'project_set_sampling_id' })
+  project_sampling_status: ProjectSamplingStatusEntity[];
+
+  @OneToMany(
+    () => ProjectSamplingRevisiEntity,
+    (project_sampling_revisi: ProjectSamplingRevisiEntity) =>
+      project_sampling_revisi.project_set_sampling,
+  )
+  @JoinColumn({ name: 'project_set_sampling_id' })
+  project_sampling_revisi: ProjectSamplingRevisiEntity[];
 }
