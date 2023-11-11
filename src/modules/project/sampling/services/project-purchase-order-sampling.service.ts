@@ -90,6 +90,7 @@ export class ProjectPurchaseOrderSamplingService {
           notes: projectPurchaseOrderSamplingDto.notes,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
+          payment_term: projectPurchaseOrderSamplingDto.payment_term,
         },
       );
       return { id: purchase_order_id, ...projectPurchaseOrderSamplingDto };
