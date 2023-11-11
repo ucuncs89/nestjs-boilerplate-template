@@ -49,6 +49,9 @@ export class ProjectPurchaseOrderSamplingDto {
   @ApiProperty()
   notes: string;
 
+  @ApiProperty()
+  payment_term: string;
+
   created_by?: number;
   created_at?: string;
 }
