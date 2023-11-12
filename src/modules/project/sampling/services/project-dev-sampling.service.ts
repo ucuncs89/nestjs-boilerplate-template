@@ -139,6 +139,7 @@ export class ProjectDevSamplingService {
     project_sampling_id,
     sampling_status_id,
     is_validate,
+    user_id,
   ) {
     const data = await this.projectSamplingStatusRepository.update(
       {
@@ -147,6 +148,8 @@ export class ProjectDevSamplingService {
       },
       {
         is_validate,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
       },
     );
     return data;
@@ -163,6 +166,25 @@ export class ProjectDevSamplingService {
       created_by: user_id,
     });
     await this.projectSamplingRevisiRepository.save(data);
+    return data;
+  }
+  async updateRevisiSampling(
+    project_sampling_id,
+    revisi_id,
+    projectSamplingRevisiDto: ProjectSamplingRevisiDto,
+    user_id,
+  ) {
+    const data = await this.projectSamplingRevisiRepository.update(
+      {
+        project_set_sampling_id: project_sampling_id,
+        id: revisi_id,
+      },
+      {
+        ...projectSamplingRevisiDto,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
     return data;
   }
 }
