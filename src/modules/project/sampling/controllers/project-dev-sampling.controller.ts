@@ -66,6 +66,7 @@ export class ProjectDevSamplingController {
       sampling_id,
       status_id,
       is_validate,
+      req.user.id,
     );
     return { data };
   }
@@ -98,6 +99,25 @@ export class ProjectDevSamplingController {
   ) {
     const data = await this.projectDevSamplingService.createRevisiSampling(
       sampling_id,
+      projectSamplingRevisiDto,
+      req.user.id,
+    );
+    return { data };
+  }
+  @Put(
+    'sampling/:project_id/detail/:detail_id/dev-sampling/:sampling_id/revisi/:revisi_id',
+  )
+  async updateRevisi(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('sampling_id') sampling_id: number,
+    @Param('revisi_id') revisi_id: number,
+    @Body() projectSamplingRevisiDto: ProjectSamplingRevisiDto,
+  ) {
+    const data = await this.projectDevSamplingService.updateRevisiSampling(
+      sampling_id,
+      revisi_id,
       projectSamplingRevisiDto,
       req.user.id,
     );
