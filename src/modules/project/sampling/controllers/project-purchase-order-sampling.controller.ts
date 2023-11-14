@@ -58,6 +58,7 @@ export class ProjectPurchaseOrderSamplingController {
       );
     const supplier = [...fabric, ...finishedGoods, ...sewing, ...packaging];
     return { supplier, vendor_production };
+    // return { vendor_production };
   }
   @Post('sampling/:project_id/detail/:detail_id/purchase-order')
   async createProjectPurchaseOrder(

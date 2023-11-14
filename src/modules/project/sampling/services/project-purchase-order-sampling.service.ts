@@ -45,6 +45,7 @@ export class ProjectPurchaseOrderSamplingService {
         vendor_type: projectPurchaseOrderSamplingDto.vendor_type,
         relation_id: projectPurchaseOrderSamplingDto.relation_id,
         material_type: projectPurchaseOrderSamplingDto.material_type,
+        vendor_id: projectPurchaseOrderSamplingDto.vendor_id,
       });
       await queryRunner.manager.insert(PurchaseOrderHistoryEntity, {
         purchase_order_id: purchaseOrder.raw[0].id,
