@@ -17,8 +17,11 @@ export class ProjectPurchaseOrderEntity {
   @Column({ type: 'varchar', nullable: true })
   material_type: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   relation_id: number;
+
+  @Column({ type: 'int', nullable: true })
+  vendor_id: number;
 
   @Column({
     type: 'timestamp with time zone',

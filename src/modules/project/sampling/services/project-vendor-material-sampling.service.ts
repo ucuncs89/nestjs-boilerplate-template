@@ -338,44 +338,38 @@ export class ProjectVendorMaterialSamplingService {
     }
     const arrIds = findFabric.map((v) => v.id);
 
-    const dataFabric =
-      await this.projectVendorMaterialFabricDetailRepository.find({
-        where: {
-          project_vendor_material_fabric_id: In(arrIds),
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        },
-        select: {
-          id: true,
-          vendor_id: true,
-          total_price: true,
-          price: true,
-          price_unit: true,
-          quantity: true,
-          quantity_unit: true,
-          project_vendor_material_fabric_id: true,
-          vendor_material_fabric: {
-            id: true,
-            project_fabric_id: true,
-            project_fabric: { fabric_id: true, name: true },
-          },
-          vendors: {
-            id: true,
-            company_name: true,
-          },
-        },
-        relations: {
-          vendors: true,
-          vendor_material_fabric: { project_fabric: true },
-        },
-      });
+    const dataFabric = await this.projectVendorMaterialFabricDetailRepository
+      .query(`select
+      pvmfd.vendor_id,
+      v.company_name,
+      v.company_phone_number,
+      v.company_address,
+      v.bank_account_number,
+      v.bank_account_holder_name,
+      v.bank_name
+    from
+      project_vendor_material_fabric_detail pvmfd
+    left join 
+      vendors v on
+      v.id = pvmfd.vendor_id
+    where
+      pvmfd.project_vendor_material_fabric_id in (${arrIds})
+    group by
+      pvmfd.vendor_id,
+      v.company_name,
+      v.company_phone_number,
+      v.company_address,
+      v.bank_account_number,
+      v.bank_account_holder_name,
+      v.bank_name`);
     if (dataFabric.length <= 0) {
       return [];
     }
-    const arrIdsDataFabric = dataFabric.map((v) => v.id);
+    const arrVendorIdsDataFabric = dataFabric.map((v) => v.vendor_id);
+
     const purchaseOrder = await this.projectPurchaseOrderRepository.find({
       where: {
-        relation_id: In(arrIdsDataFabric),
+        vendor_id: In(arrVendorIdsDataFabric),
         project_detail_id,
         material_type: 'Fabric',
         vendor_type: 'Material',
@@ -387,12 +381,13 @@ export class ProjectVendorMaterialSamplingService {
         purchase_order_id: true,
         relation_id: true,
         vendor_type: true,
+        vendor_id: true,
       },
     });
     // Combine arrays based on relation_id and id
     const combinedArray = dataFabric.map((fabricItem) => {
       const matchingPurchaseOrders = purchaseOrder.filter(
-        (order) => order.relation_id === fabricItem.id,
+        (order) => order.vendor_id === fabricItem.vendor_id,
       );
 
       return {
@@ -422,46 +417,38 @@ export class ProjectVendorMaterialSamplingService {
     const arrIds = findSewing.map((v) => v.id);
 
     const dataSewing =
-      await this.projectVendorMaterialAccessoriesSewingDetailRepository.find({
-        where: {
-          project_vendor_material_accessories_sewing_id: In(arrIds),
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        },
-        select: {
-          id: true,
-          vendor_id: true,
-          total_price: true,
-          price: true,
-          price_unit: true,
-          quantity: true,
-          quantity_unit: true,
-          project_vendor_material_accessories_sewing_id: true,
-          vendor_material_sewing: {
-            id: true,
-            project_accessories_sewing_id: true,
-            project_accessories_sewing: {
-              accessories_sewing_id: true,
-              name: true,
-            },
-          },
-          vendors: {
-            id: true,
-            company_name: true,
-          },
-        },
-        relations: {
-          vendors: true,
-          vendor_material_sewing: { project_accessories_sewing: true },
-        },
-      });
+      await this.projectVendorMaterialAccessoriesSewingDetailRepository.query(
+        `select
+          pvmasd.vendor_id,
+          v.company_name,
+          v.company_phone_number,
+          v.company_address,
+          v.bank_account_number,
+          v.bank_account_holder_name,
+          v.bank_name
+        from
+          project_vendor_material_accessories_sewing_detail pvmasd
+        left join 
+              vendors v on
+          v.id = pvmasd.vendor_id
+        where
+          pvmasd.project_vendor_material_accessories_sewing_id in (${arrIds})
+        group by
+          pvmasd.vendor_id,
+          v.company_name,
+          v.company_phone_number,
+          v.company_address,
+          v.bank_account_number,
+          v.bank_account_holder_name,
+          v.bank_name`,
+      );
     if (dataSewing.length <= 0) {
       return [];
     }
-    const arrIdsDataSewing = dataSewing.map((v) => v.id);
+    const arrVendorIdsDataSewing = dataSewing.map((v) => v.vendor_id);
     const purchaseOrder = await this.projectPurchaseOrderRepository.find({
       where: {
-        relation_id: In(arrIdsDataSewing),
+        vendor_id: In(arrVendorIdsDataSewing),
         project_detail_id,
         material_type: 'Sewing',
         vendor_type: 'Material',
@@ -473,12 +460,13 @@ export class ProjectVendorMaterialSamplingService {
         purchase_order_id: true,
         relation_id: true,
         vendor_type: true,
+        vendor_id: true,
       },
     });
-    // Combine arrays based on relation_id and id
+    // Combine arrays based on vendor_id and vendor_id
     const combinedArray = dataSewing.map((sewingItem) => {
       const matchingPurchaseOrders = purchaseOrder.filter(
-        (order) => order.relation_id === sewingItem.id,
+        (order) => order.vendor_id === sewingItem.vendor_id,
       );
 
       return {
@@ -508,48 +496,38 @@ export class ProjectVendorMaterialSamplingService {
     const arrIds = findPackaging.map((v) => v.id);
 
     const dataPackaging =
-      await this.projectVendorMaterialAccessoriesPackagingDetailRepository.find(
-        {
-          where: {
-            project_vendor_material_accessories_packaging_id: In(arrIds),
-            deleted_at: IsNull(),
-            deleted_by: IsNull(),
-          },
-          select: {
-            id: true,
-            vendor_id: true,
-            total_price: true,
-            price: true,
-            price_unit: true,
-            quantity: true,
-            quantity_unit: true,
-            project_vendor_material_accessories_packaging_id: true,
-            vendor_material_packaging: {
-              id: true,
-              project_accessories_packaging_id: true,
-              project_accessories_packaging: {
-                accessories_packaging_id: true,
-                name: true,
-              },
-            },
-            vendors: {
-              id: true,
-              company_name: true,
-            },
-          },
-          relations: {
-            vendors: true,
-            vendor_material_packaging: { project_accessories_packaging: true },
-          },
-        },
+      await this.projectVendorMaterialAccessoriesPackagingDetailRepository.query(
+        `select
+       pvmapd.vendor_id,
+       v.company_name,
+       v.company_phone_number,
+       v.company_address,
+       v.bank_account_number,
+       v.bank_account_holder_name,
+       v.bank_name
+     from
+       project_vendor_material_accessories_packaging_detail pvmapd
+     left join 
+           vendors v on
+       v.id = pvmapd.vendor_id
+     where
+       pvmapd.project_vendor_material_accessories_packaging_id in (${arrIds})
+     group by
+       pvmapd.vendor_id,
+       v.company_name,
+       v.company_phone_number,
+       v.company_address,
+       v.bank_account_number,
+       v.bank_account_holder_name,
+       v.bank_name`,
       );
     if (dataPackaging.length <= 0) {
       return [];
     }
-    const arrIdsDataPackaging = dataPackaging.map((v) => v.id);
+    const arrVendorIdsDataPackaging = dataPackaging.map((v) => v.vendor_id);
     const purchaseOrder = await this.projectPurchaseOrderRepository.find({
       where: {
-        relation_id: In(arrIdsDataPackaging),
+        vendor_id: In(arrVendorIdsDataPackaging),
         project_detail_id,
         material_type: 'Packaging',
         vendor_type: 'Material',
@@ -561,14 +539,14 @@ export class ProjectVendorMaterialSamplingService {
         purchase_order_id: true,
         relation_id: true,
         vendor_type: true,
+        vendor_id: true,
       },
     });
     // Combine arrays based on relation_id and id
     const combinedArray = dataPackaging.map((packagingItem) => {
       const matchingPurchaseOrders = purchaseOrder.filter(
-        (order) => order.relation_id === packagingItem.id,
+        (order) => order.vendor_id === packagingItem.vendor_id,
       );
-
       return {
         ...packagingItem,
         purchase_order_id: matchingPurchaseOrders[0]?.purchase_order_id || null,
@@ -595,42 +573,40 @@ export class ProjectVendorMaterialSamplingService {
     }
     const arrIds = findFinishedGood.map((v) => v.id);
 
-    const dataFinishedGood =
-      await this.projectVendorMaterialFinishedGoodDetailRepository.find({
-        where: {
-          project_vendor_material_finished_good_id: In(arrIds),
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        },
-        select: {
-          id: true,
-          vendor_id: true,
-          total_price: true,
-          price: true,
-          price_unit: true,
-          quantity: true,
-          quantity_unit: true,
-          project_vendor_material_finished_good_id: true,
-          vendor_material_finished_good: {
-            id: true,
-          },
-          vendors: {
-            id: true,
-            company_name: true,
-          },
-        },
-        relations: {
-          vendors: true,
-          vendor_material_finished_good: true,
-        },
-      });
+    const dataFinishedGood = await this
+      .projectVendorMaterialFinishedGoodDetailRepository.query(`
+    select
+      pvmfgd.vendor_id,
+      v.company_name,
+      v.company_phone_number,
+      v.company_address,
+      v.bank_account_number,
+      v.bank_account_holder_name,
+      v.bank_name
+    from
+      project_vendor_material_finished_good_detail pvmfgd
+    left join 
+          vendors v on
+      v.id = pvmfgd.vendor_id
+    where
+      pvmfgd.project_vendor_material_finished_good_id  in (${arrIds})
+    group by
+      pvmfgd.vendor_id,
+      v.company_name,
+      v.company_phone_number,
+      v.company_address,
+      v.bank_account_number,
+      v.bank_account_holder_name,
+      v.bank_name`);
     if (dataFinishedGood.length <= 0) {
       return [];
     }
-    const arrIdsDataFinishedGood = dataFinishedGood.map((v) => v.id);
+    const arrVendorIdsDataFinishedGood = dataFinishedGood.map(
+      (v) => v.vendor_id,
+    );
     const purchaseOrder = await this.projectPurchaseOrderRepository.find({
       where: {
-        relation_id: In(arrIdsDataFinishedGood),
+        vendor_id: In(arrVendorIdsDataFinishedGood),
         project_detail_id,
         material_type: 'Finished goods',
         vendor_type: 'Material',
@@ -642,12 +618,13 @@ export class ProjectVendorMaterialSamplingService {
         purchase_order_id: true,
         relation_id: true,
         vendor_type: true,
+        vendor_id: true,
       },
     });
     // Combine arrays based on relation_id and id
     const combinedArray = dataFinishedGood.map((finishedItem) => {
       const matchingPurchaseOrders = purchaseOrder.filter(
-        (order) => order.relation_id === finishedItem.id,
+        (order) => order.vendor_id === finishedItem.vendor_id,
       );
 
       return {
