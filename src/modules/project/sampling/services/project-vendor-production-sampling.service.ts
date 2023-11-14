@@ -283,42 +283,48 @@ export class ProjectVendorProductionSamplingService {
       return [];
     }
     const arrIds = findVendor.map((v) => v.id);
+    console.log(arrIds);
 
-    const dataVendorProduction =
-      await this.projectVendorProductionDetailRepository.find({
-        where: {
-          project_vendor_production_id: In(arrIds),
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        },
-        select: {
-          id: true,
-          project_vendor_production_id: true,
-          vendor_id: true,
-          vendor_name: true,
-          quantity: true,
-          quantity_unit: true,
-          price: true,
-          vendor_production: {
-            id: true,
-            activity_id: true,
-            activity_name: true,
-            percentage_of_loss: true,
-            project_detail_id: true,
-            quantity_unit_required: true,
-            sub_total_price: true,
-            total_quantity: true,
-          },
-        },
-        relations: { vendor_production: true },
-      });
+    const dataVendorProduction = await this
+      .projectVendorProductionDetailRepository.query(`
+      select
+        pvpd.vendor_id,
+        v.company_name,
+        v.company_phone_number,
+        v.company_address,
+        v.bank_account_number,
+        v.bank_account_holder_name,
+        v.bank_name,
+        pvp.activity_name,
+        pvp.activity_id
+      from
+        project_vendor_production_detail pvpd
+      join vendors v on
+        v.id = pvpd.vendor_id
+      join project_vendor_production pvp on
+        pvp.id = pvpd.project_vendor_production_id
+      where
+        pvpd.project_vendor_production_id in (${arrIds})
+      group by
+        pvpd.vendor_id,
+        v.company_name,
+        v.company_phone_number,
+        v.company_address,
+        v.bank_account_number,
+        v.bank_account_holder_name,
+        v.bank_name,
+        pvp.activity_name,
+        pvp.activity_id
+     `);
     if (dataVendorProduction.length <= 0) {
       return [];
     }
-    const arrIdsDataVendorProduction = dataVendorProduction.map((v) => v.id);
+    const arrIdsDataVendorProduction = dataVendorProduction.map(
+      (v) => v.vendor_id,
+    );
     const purchaseOrder = await this.projectPurchaseOrderRepository.find({
       where: {
-        relation_id: In(arrIdsDataVendorProduction),
+        vendor_id: In(arrIdsDataVendorProduction),
         project_detail_id,
         vendor_type: 'Production',
       },
@@ -329,18 +335,21 @@ export class ProjectVendorProductionSamplingService {
         purchase_order_id: true,
         relation_id: true,
         vendor_type: true,
+        vendor_id: true,
       },
     });
     // Combine arrays based on relation_id and id
     const combinedArray = dataVendorProduction.map((vendorItem) => {
       const matchingPurchaseOrders = purchaseOrder.filter(
-        (order) => order.relation_id === vendorItem.id,
+        (order) =>
+          order.vendor_id === vendorItem.vendor_id &&
+          order.material_type === vendorItem.activity_name,
       );
 
       return {
         ...vendorItem,
         purchase_order_id: matchingPurchaseOrders[0]?.purchase_order_id || null,
-        type: vendorItem.vendor_production.activity_name || null,
+        // type: vendorItem.vendor_production.activity_name || null,
         purchase_order: matchingPurchaseOrders[0] || null,
       };
     });
