@@ -14,7 +14,7 @@ export class ProjectPurchaseOrderSamplingDto {
   material_type?: MaterialTypeProjectPurchaseOrderEnum;
 
   @ApiProperty()
-  relation_id: number;
+  relation_id?: number;
 
   @ApiProperty()
   vendor_type: string;
