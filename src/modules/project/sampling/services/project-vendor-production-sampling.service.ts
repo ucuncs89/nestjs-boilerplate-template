@@ -295,7 +295,7 @@ export class ProjectVendorProductionSamplingService {
         v.bank_account_number,
         v.bank_account_holder_name,
         v.bank_name,
-        pvp.activity_name,
+        pvp.activity_name as type,
         pvp.activity_id
       from
         project_vendor_production_detail pvpd
@@ -343,7 +343,7 @@ export class ProjectVendorProductionSamplingService {
       const matchingPurchaseOrders = purchaseOrder.filter(
         (order) =>
           order.vendor_id === vendorItem.vendor_id &&
-          order.material_type === vendorItem.activity_name,
+          order.material_type === vendorItem.type,
       );
 
       return {
