@@ -57,6 +57,9 @@ import { ProjectDevSamplingController } from './sampling/controllers/project-dev
 import { ProjectDevSamplingService } from './sampling/services/project-dev-sampling.service';
 import { ProjectSamplingStatusEntity } from 'src/entities/project/project_sampling_status.entity';
 import { ProjectSamplingRevisiEntity } from 'src/entities/project/project_sampling_revisi.entity';
+import { ProjectVendorMaterialProductionController } from './production/controllers/project-vendor-material-production.controller';
+import { ProjectMaterialProductionService } from './production/services/project-material-production.service';
+import { ProjectVendorMaterialProductionService } from './production/services/project-vendor-material-production.service';
 
 @Module({
   imports: [
@@ -106,6 +109,7 @@ import { ProjectSamplingRevisiEntity } from 'src/entities/project/project_sampli
     ProjectVendorProductionSamplingController,
     ProjectPurchaseOrderSamplingController,
     ProjectDevSamplingController,
+    ProjectVendorMaterialProductionController,
   ],
   providers: [
     ProjectService,
@@ -123,6 +127,8 @@ import { ProjectSamplingRevisiEntity } from 'src/entities/project/project_sampli
     ProjectVendorProductionSamplingService,
     ProjectPurchaseOrderSamplingService,
     ProjectDevSamplingService,
+    ProjectMaterialProductionService,
+    ProjectVendorMaterialProductionService,
   ],
 })
 export class ProjectModule {}
