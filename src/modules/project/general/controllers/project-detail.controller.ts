@@ -74,6 +74,43 @@ export class ProjectDetailController {
           data = sampling;
         }
         break;
+      case 'Production':
+        const production =
+          await this.projectDetailService.findProjectDetailProduction(
+            project_id,
+          );
+
+        if (!production) {
+          const newProjectDetail =
+            await this.projectDetailService.createProjectDetailProduction(
+              project_id,
+              createProjectDetailDto,
+              req.user.id,
+              i18n,
+            );
+
+          data = await this.projectDetailService.generateProductionProject(
+            project_id,
+            newProjectDetail.id,
+            req.user.id,
+            i18n,
+          );
+
+          const material_source =
+            await this.projectMaterialService.findMaterialSelectId(
+              newProjectDetail.id,
+            );
+
+          return {
+            data: newProjectDetail,
+            material_source: material_source.material_source,
+            generate: data,
+          };
+        } else {
+          project_detail_id = production.id;
+          data = production;
+        }
+        break;
 
       default:
         throw new AppErrorException('Payload Type Project not allowed');
