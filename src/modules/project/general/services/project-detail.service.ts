@@ -10,14 +10,8 @@ import { ProjectConfirmDto } from '../../planning/dto/project-confirm.dto';
 import { ProjectHistoryService } from './project-history.service';
 import { StatusProjectHistoryEnum } from '../dto/create-project-history.dto';
 import { ProjectService } from './project.service';
-import { AppErrorException } from 'src/exceptions/app-exception';
 import { ProjectMaterialService } from '../../planning/services/project-material.service';
-import { ProjectFabricEntity } from 'src/entities/project/project_fabric.entity';
-import { ProjectAccessoriesSewingEntity } from 'src/entities/project/project_accessories_sewing.entity';
-import { ProjectAccessoriesPackagingEntity } from 'src/entities/project/project_accessories_packaging.entity';
 import { ProjectVariantService } from '../../planning/services/project-variant.service';
-import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
-import { CreateProjectMaterialDto } from '../../planning/dto/create-project-material.dto';
 
 @Injectable()
 export class ProjectDetailService {
@@ -370,5 +364,38 @@ export class ProjectDetailService {
       i18n,
     );
     return { newMaterial, newVariant };
+  }
+
+  async updateSamplingToProduction(
+    project_id: number,
+    id: number,
+    projectConfirmDto: ProjectConfirmDto,
+    user_id,
+    i18n,
+  ) {
+    const data = await this.projectDetailRepository.update(
+      {
+        project_id,
+        id,
+      },
+      {
+        is_confirm: projectConfirmDto.is_confirmation,
+        status: projectConfirmDto.status,
+      },
+    );
+    this.projectHistoryService.create(
+      {
+        status: StatusProjectHistoryEnum.Production,
+      },
+      project_id,
+      user_id,
+      i18n,
+    );
+    this.projectService.updateStatusProject(
+      project_id,
+      StatusProjectHistoryEnum.Production,
+      user_id,
+    );
+    return data;
   }
 }
