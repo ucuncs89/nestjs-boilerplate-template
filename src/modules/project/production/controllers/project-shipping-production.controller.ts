@@ -7,6 +7,7 @@ import {
   UseGuards,
   Req,
   Put,
+  Delete,
 } from '@nestjs/common';
 
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -79,6 +80,19 @@ export class ProjectShippingProductionController {
     @I18n() i18n: I18nContext,
   ) {
     const data = await this.projectShippingProductionService.findDetailShipping(
+      shipping_id,
+    );
+    return { data };
+  }
+  @Delete('production/:project_id/detail/:detail_id/shipping/:shipping_id')
+  async deleteDetailProjectInvoice(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectShippingProductionService.deleteShipping(
       shipping_id,
     );
     return { data };
