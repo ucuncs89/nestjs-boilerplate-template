@@ -56,7 +56,7 @@ export class ProjectVendorProductionProductionController {
     return { data };
   }
 
-  @Get('sampling/:project_id/detail/:detail_id/vendor-production')
+  @Get('production/:project_id/detail/:detail_id/vendor-production')
   async getVendorProduction(
     @Req() req,
     @Param('project_id') project_id: number,
@@ -71,7 +71,7 @@ export class ProjectVendorProductionProductionController {
   }
 
   @Delete(
-    'sampling/:project_id/detail/:detail_id/vendor-production/:project_vendor_id',
+    'production/:project_id/detail/:detail_id/vendor-production/:project_vendor_id',
   )
   async deleteVendorProduction(
     @Req() req,
@@ -90,7 +90,7 @@ export class ProjectVendorProductionProductionController {
   }
 
   @Post(
-    'sampling/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/detail',
+    'production/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/detail',
   )
   async createVendorProductionDetail(
     @Req() req,
@@ -113,7 +113,7 @@ export class ProjectVendorProductionProductionController {
   }
 
   @Put(
-    'sampling/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/detail/:project_vendor_production_detail_id',
+    'production/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/detail/:project_vendor_production_detail_id',
   )
   async updateVendorProductionDetail(
     @Req() req,
@@ -138,7 +138,7 @@ export class ProjectVendorProductionProductionController {
   }
 
   @Delete(
-    'sampling/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/detail/:project_vendor_production_detail_id',
+    'production/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/detail/:project_vendor_production_detail_id',
   )
   async deleteVendorProductionDetail(
     @Req() req,
@@ -157,7 +157,7 @@ export class ProjectVendorProductionProductionController {
   }
 
   @Put(
-    'sampling/:project_id/detail/:detail_id/vendor-production-activity/loss-percentage',
+    'production/:project_id/detail/:detail_id/vendor-production-activity/loss-percentage',
   )
   async UpdateVendorProductionActivityLossPercentage(
     @Req() req,
