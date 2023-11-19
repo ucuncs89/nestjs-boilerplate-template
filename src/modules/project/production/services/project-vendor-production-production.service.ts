@@ -9,6 +9,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
 import { ProjectPurchaseOrderEntity } from 'src/entities/project/project_purchase_order.entity';
 import {
   ProjectVendorProductionDetailProductionDto,
+  ProjectVendorProductionDetailProductionDueDateDto,
   ProjectVendorProductionLossPercentageProductionDto,
   ProjectVendorProductionProductionDto,
 } from '../dto/project-vendor-production-production.dto';
@@ -47,6 +48,7 @@ export class ProjectVendorProductionProductionService {
           vendor_name: true,
           project_vendor_production_id: true,
           production_is_completed: true,
+          production_due_date: true,
         },
       },
       where: {
@@ -355,5 +357,33 @@ export class ProjectVendorProductionProductionService {
       };
     });
     return combinedArray;
+  }
+
+  async updateVendorProductionDueDate(
+    project_vendor_production_id: number,
+    project_vendor_production_detail_id: number,
+    projectVendorProductionDetailProductionDueDateDto: ProjectVendorProductionDetailProductionDueDateDto,
+    user_id,
+    i18n,
+  ) {
+    try {
+      const data = await this.projectVendorProductionDetailRepository.update(
+        {
+          id: project_vendor_production_detail_id,
+          project_vendor_production_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        {
+          production_due_date:
+            projectVendorProductionDetailProductionDueDateDto.production_due_date,
+          updated_at: new Date().toISOString(),
+          updated_by: user_id,
+        },
+      );
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
   }
 }

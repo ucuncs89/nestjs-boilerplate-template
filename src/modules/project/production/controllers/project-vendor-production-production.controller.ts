@@ -18,6 +18,7 @@ import { ProjectService } from '../../general/services/project.service';
 import { ProjectVendorProductionProductionService } from '../services/project-vendor-production-production.service';
 import {
   ProjectVendorProductionDetailProductionDto,
+  ProjectVendorProductionDetailProductionDueDateDto,
   ProjectVendorProductionLossProductionDto,
   ProjectVendorProductionProductionDto,
 } from '../dto/project-vendor-production-production.dto';
@@ -171,6 +172,30 @@ export class ProjectVendorProductionProductionController {
       await this.projectVendorProductionProductionService.updateLossPercentage(
         detail_id,
         projectVendorProductionLossProductionDto.vendor,
+        req.user.id,
+        i18n,
+      );
+    return { data };
+  }
+  @Put(
+    'production/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/due-date/:project_vendor_production_detail_id',
+  )
+  async updateVendorProductionDetailDueDate(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('project_vendor_id') project_vendor_id: number,
+    @Param('project_vendor_production_detail_id')
+    project_vendor_production_detail_id: number,
+    @Body()
+    projectVendorProductionDetailProductionDueDateDto: ProjectVendorProductionDetailProductionDueDateDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectVendorProductionProductionService.updateVendorProductionDueDate(
+        project_vendor_id,
+        project_vendor_production_detail_id,
+        projectVendorProductionDetailProductionDueDateDto,
         req.user.id,
         i18n,
       );
