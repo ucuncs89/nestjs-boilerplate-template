@@ -66,6 +66,8 @@ import { ProjectPurchaseOrderProductionController } from './production/controlle
 import { ProjectPurchaseOrderProductionService } from './production/services/project-purchase-order-production.service';
 import { GenerateProjectProductionService } from './general/services/generate-project-production.service';
 import { ProjectReviewSamplingController } from './sampling/controllers/project-review-sampling.controller';
+import { ProjectTrackingProductionController } from './production/controllers/project-tracking-production.controllers';
+import { ProjectTrackingProductionService } from './production/services/project-tracking-production.service';
 
 @Module({
   imports: [
@@ -119,6 +121,7 @@ import { ProjectReviewSamplingController } from './sampling/controllers/project-
     ProjectVendorMaterialProductionController,
     ProjectVendorProductionProductionController,
     ProjectPurchaseOrderProductionController,
+    ProjectTrackingProductionController,
   ],
   providers: [
     ProjectService,
@@ -141,6 +144,7 @@ import { ProjectReviewSamplingController } from './sampling/controllers/project-
     ProjectVendorProductionProductionService,
     ProjectPurchaseOrderProductionService,
     GenerateProjectProductionService,
+    ProjectTrackingProductionService,
   ],
 })
 export class ProjectModule {}

@@ -46,6 +46,7 @@ export class ProjectVendorProductionProductionService {
           vendor_id: true,
           vendor_name: true,
           project_vendor_production_id: true,
+          production_is_completed: true,
         },
       },
       where: {

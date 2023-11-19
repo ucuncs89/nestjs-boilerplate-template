@@ -51,6 +51,9 @@ export class ProjectVendorProductionDetailEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
+  @Column({ type: 'boolean', nullable: true })
+  production_is_completed: boolean;
+
   @ManyToOne(
     () => ProjectVendorProductionEntity,
     (vendor_production: ProjectVendorProductionEntity) =>
