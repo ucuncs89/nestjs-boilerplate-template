@@ -74,6 +74,9 @@ import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
 import { ProjectInvoiceEntity } from 'src/entities/project/project_invoice.entity';
 import { ProjectShippingProductionController } from './production/controllers/project-shipping-production.controller';
 import { ProjectShippingProductionService } from './production/services/project-shipping-production.service';
+import { ProjectPriceProductionController } from './production/controllers/project-price-production.controller';
+import { ProjectPriceProductionService } from './production/services/project-price-production.service';
+import { ProjectPriceAdditionalEntity } from 'src/entities/project/project_price_additional.entity';
 
 @Module({
   imports: [
@@ -106,6 +109,7 @@ import { ProjectShippingProductionService } from './production/services/project-
       ProjectSamplingRevisiEntity,
       InvoiceEntity,
       ProjectInvoiceEntity,
+      ProjectPriceAdditionalEntity,
     ]),
     RabbitMQModule,
   ],
@@ -132,6 +136,7 @@ import { ProjectShippingProductionService } from './production/services/project-
     ProjectTrackingProductionController,
     ProjectInvoiceProductionController,
     ProjectShippingProductionController,
+    ProjectPriceProductionController,
   ],
   providers: [
     ProjectService,
@@ -157,6 +162,7 @@ import { ProjectShippingProductionService } from './production/services/project-
     ProjectTrackingProductionService,
     ProjectInvoiceProductionService,
     ProjectShippingProductionService,
+    ProjectPriceProductionService,
   ],
 })
 export class ProjectModule {}
