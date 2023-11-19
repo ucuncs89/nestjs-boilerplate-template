@@ -75,3 +75,8 @@ export class ProjectVendorProductionLossProductionDto {
   @Type(() => ProjectVendorProductionLossPercentageProductionDto)
   vendor?: ProjectVendorProductionLossPercentageProductionDto[];
 }
+
+export class ProjectVendorProductionDetailProductionDueDateDto {
+  @ApiProperty()
+  production_due_date?: string;
+}

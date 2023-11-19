@@ -26,7 +26,7 @@ export class ProjectTrackingProductionController {
   ) {}
 
   @Post(
-    'project/production/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/tracking/:vendor_production_detail_id',
+    'production/:project_id/detail/:detail_id/vendor-production/:project_vendor_id/tracking/:vendor_production_detail_id',
   )
   async createVendorProductionActivityName(
     @Req() req,
