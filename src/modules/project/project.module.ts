@@ -68,6 +68,12 @@ import { GenerateProjectProductionService } from './general/services/generate-pr
 import { ProjectReviewSamplingController } from './sampling/controllers/project-review-sampling.controller';
 import { ProjectTrackingProductionController } from './production/controllers/project-tracking-production.controllers';
 import { ProjectTrackingProductionService } from './production/services/project-tracking-production.service';
+import { ProjectInvoiceProductionController } from './production/controllers/project-invoice-production.controller';
+import { ProjectInvoiceProductionService } from './production/services/project-invoice-production.service';
+import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
+import { ProjectInvoiceEntity } from 'src/entities/project/project_invoice.entity';
+import { ProjectShippingProductionController } from './production/controllers/project-shipping-production.controller';
+import { ProjectShippingProductionService } from './production/services/project-shipping-production.service';
 
 @Module({
   imports: [
@@ -98,6 +104,8 @@ import { ProjectTrackingProductionService } from './production/services/project-
       PurchaseOrderEntity,
       ProjectSamplingStatusEntity,
       ProjectSamplingRevisiEntity,
+      InvoiceEntity,
+      ProjectInvoiceEntity,
     ]),
     RabbitMQModule,
   ],
@@ -122,6 +130,8 @@ import { ProjectTrackingProductionService } from './production/services/project-
     ProjectVendorProductionProductionController,
     ProjectPurchaseOrderProductionController,
     ProjectTrackingProductionController,
+    ProjectInvoiceProductionController,
+    ProjectShippingProductionController,
   ],
   providers: [
     ProjectService,
@@ -145,6 +155,8 @@ import { ProjectTrackingProductionService } from './production/services/project-
     ProjectPurchaseOrderProductionService,
     GenerateProjectProductionService,
     ProjectTrackingProductionService,
+    ProjectInvoiceProductionService,
+    ProjectShippingProductionService,
   ],
 })
 export class ProjectModule {}
