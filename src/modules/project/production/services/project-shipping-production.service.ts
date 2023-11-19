@@ -75,7 +75,7 @@ export class ProjectShippingProductionService {
     return await this.projectShippingRepository.delete({ id: shipping_id });
   }
   async findByProjectDetailId(project_detail_id) {
-    const shipping = await this.projectShippingRepository.findOne({
+    const shipping = await this.projectShippingRepository.find({
       where: {
         project_detail_id,
         deleted_at: IsNull(),
