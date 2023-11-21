@@ -84,6 +84,12 @@ export class PurchaseOrderEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  delivery_date: string;
+
+  @Column({ type: 'double precision', nullable: true })
+  grand_total: number;
+
   @OneToMany(
     () => PurchaseOrderHistoryEntity,
     (history: PurchaseOrderHistoryEntity) => history.purchase_order,
