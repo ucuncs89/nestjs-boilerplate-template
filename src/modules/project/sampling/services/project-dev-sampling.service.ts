@@ -31,14 +31,6 @@ export class ProjectDevSamplingService {
         project_detail_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
-        project_sampling_revisi: {
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        },
-        project_sampling_status: {
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        },
       },
       select: {
         id: true,
@@ -196,16 +188,10 @@ export class ProjectDevSamplingService {
     return data;
   }
   async deleteRevisiSampling(project_sampling_id, revisi_id, user_id) {
-    const data = await this.projectSamplingRevisiRepository.update(
-      {
-        project_set_sampling_id: project_sampling_id,
-        id: revisi_id,
-      },
-      {
-        deleted_at: new Date().toISOString(),
-        deleted_by: user_id,
-      },
-    );
+    const data = await this.projectSamplingRevisiRepository.delete({
+      project_set_sampling_id: project_sampling_id,
+      id: revisi_id,
+    });
     return data;
   }
 }
