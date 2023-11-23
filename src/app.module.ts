@@ -27,6 +27,7 @@ import { RegionModule } from './modules/region/region.module';
 import { ProjectModule } from './modules/project/project.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { MasterModule } from './modules/master/master.module';
+import { PurchaseOrderModule } from './modules/purchase-order/purchase-order.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { MasterModule } from './modules/master/master.module';
     ProjectModule,
     NotificationsModule,
     MasterModule,
+    PurchaseOrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
