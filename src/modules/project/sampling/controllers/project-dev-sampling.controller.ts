@@ -123,4 +123,21 @@ export class ProjectDevSamplingController {
     );
     return { data };
   }
+  @Delete(
+    'sampling/:project_id/detail/:detail_id/dev-sampling/:sampling_id/revisi/:revisi_id',
+  )
+  async deleteRevisi(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('sampling_id') sampling_id: number,
+    @Param('revisi_id') revisi_id: number,
+  ) {
+    const data = await this.projectDevSamplingService.deleteRevisiSampling(
+      sampling_id,
+      revisi_id,
+      req.user.id,
+    );
+    return { data };
+  }
 }
