@@ -1,0 +1,62 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
+import { InvoiceService } from '../services/invoice.service';
+import { CreateInvoiceDto } from '../dto/create-invoice.dto';
+import { UpdateInvoiceDto } from '../dto/update-invoice.dto';
+import { GetListInvoiceDto } from '../dto/get-list-invoice.dto';
+import { Pagination } from 'src/utils/pagination';
+
+@Controller('invoice')
+export class InvoiceController {
+  constructor(private readonly invoiceService: InvoiceService) {}
+
+  // @Post()
+  // create(@Body() createInvoiceDto: CreateInvoiceDto) {
+  //   return this.invoiceService.create(createInvoiceDto);
+  // }
+
+  @Get()
+  async findAll(@Query() query: GetListInvoiceDto) {
+    const _page = query.page || 1;
+    const _page_size = query.page_size || 10;
+    const data = await this.invoiceService.findAll({
+      page: (_page - 1) * _page_size,
+      page_size: _page_size,
+      sort_by: query.sort_by || 'created_at',
+      order_by: query.order_by || 'DESC',
+      keyword: query.keyword,
+    });
+    const pagination = await Pagination.pagination(
+      data.total_data,
+      _page,
+      _page_size,
+      `/project`,
+    );
+    return { message: 'Data nya belum fix', ...data, pagination };
+  }
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    const data = await this.invoiceService.findOne(id);
+    return { message: 'Data nya belum fix', data };
+  }
+
+  @Delete(':id')
+  async remove(@Req() req, @Param('id') id: string) {
+    const data = await this.invoiceService.remove(+id, req.user.id);
+    return { message: 'Data nya belum fix', data };
+  }
+
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
+  //   return this.invoiceService.update(+id, updateInvoiceDto);
+  // }
+}
