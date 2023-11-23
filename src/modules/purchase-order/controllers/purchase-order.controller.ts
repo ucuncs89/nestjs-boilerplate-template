@@ -54,7 +54,8 @@ export class PurchaseOrderController {
   }
 
   @Delete(':id')
-  remove(@Req() req, @Param('id') id: string) {
-    return this.purchaseOrderService.remove(+id, req.user.id);
+  async remove(@Req() req, @Param('id') id: string) {
+    const data = await this.purchaseOrderService.remove(+id, req.user.id);
+    return { data };
   }
 }
