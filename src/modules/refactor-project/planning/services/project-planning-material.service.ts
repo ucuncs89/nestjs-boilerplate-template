@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectDetailEntity } from 'src/entities/project/project_detail.entity';
 import { Connection, In, IsNull, Repository } from 'typeorm';
 import {
+  CreateProjectMaterialOtherDto,
   CreateProjectMaterialSourceDto,
   GetListProjectMaterialDto,
   ProjectMaterialItemDto,
@@ -150,5 +151,21 @@ export class ProjectPlanningMaterialService {
     } catch (error) {
       throw new AppErrorException(error);
     }
+  }
+
+  async createMaterialOther(
+    project_detail_id: number,
+    createProjectMaterialOtherDto: CreateProjectMaterialOtherDto,
+    user_id,
+  ) {
+    const data = await this.projectDetailRepository.update(
+      { id: project_detail_id },
+      {
+        ...createProjectMaterialOtherDto,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
+    return data;
   }
 }

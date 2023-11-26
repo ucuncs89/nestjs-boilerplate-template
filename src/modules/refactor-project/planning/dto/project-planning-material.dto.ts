@@ -6,6 +6,22 @@ export class CreateProjectMaterialSourceDto {
   @IsNotEmpty()
   material_source: string;
 }
+export class CreateProjectMaterialOtherDto {
+  @ApiProperty()
+  fabric_percentage_of_loss: number;
+
+  @ApiProperty()
+  sewing_accessories_percentage_of_loss: number;
+
+  @ApiProperty()
+  packaging_accessories_percentage_of_loss: number;
+
+  @ApiProperty()
+  finished_goods_percentage_of_loss: number;
+
+  @ApiProperty()
+  packaging_instructions: string;
+}
 export enum ProjectMaterialItemEnum {
   Fabric = 'Fabric',
   Sewing = 'Sewing',

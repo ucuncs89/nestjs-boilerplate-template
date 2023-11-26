@@ -16,10 +16,12 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectPlanningMaterialService } from '../services/project-planning-material.service';
 import {
+  CreateProjectMaterialOtherDto,
   CreateProjectMaterialSourceDto,
   GetListProjectMaterialDto,
   ProjectMaterialItemDto,
 } from '../dto/project-planning-material.dto';
+import { ProjectDetailService } from '../../general/services/project-detail.service';
 
 @ApiBearerAuth()
 @ApiTags('refactor-project Planning')
@@ -28,6 +30,7 @@ import {
 export class ProjectPlanningMaterialController {
   constructor(
     private readonly projectPlanningMaterialService: ProjectPlanningMaterialService,
+    private readonly projectDetailService: ProjectDetailService,
   ) {}
 
   @Post(':project_id/detail/:detail_id/material/material-source')
@@ -45,6 +48,23 @@ export class ProjectPlanningMaterialController {
     );
     return {
       data,
+    };
+  }
+  @Get(':project_id/detail/:detail_id/material')
+  async getList(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const detail = await this.projectDetailService.findById(detail_id);
+    const material = await this.projectPlanningMaterialService.listMaterialItem(
+      detail_id,
+      { type: null },
+      req.user.id,
+    );
+    return {
+      data: { ...detail, material },
     };
   }
   @Post(':project_id/detail/:detail_id/material/item')
@@ -116,6 +136,23 @@ export class ProjectPlanningMaterialController {
         material_item_id,
         req.user.id,
       );
+    return {
+      data,
+    };
+  }
+  @Post(':project_id/detail/:detail_id/material/other')
+  async createMaterialOther(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Body() createProjectMaterialOtherDto: CreateProjectMaterialOtherDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectPlanningMaterialService.createMaterialOther(
+      detail_id,
+      createProjectMaterialOtherDto,
+      req.user.id,
+    );
     return {
       data,
     };

@@ -58,6 +58,27 @@ export class ProjectDetailService {
     }
     return data;
   }
+  async findById(id: number) {
+    const data = await this.projectDetailRepository.findOne({
+      select: {
+        id: true,
+        project_id: true,
+        fabric_percentage_of_loss: true,
+        finished_goods_percentage_of_loss: true,
+        is_confirm: true,
+        is_sampling: true,
+        material_source: true,
+        packaging_accessories_percentage_of_loss: true,
+        packaging_instructions: true,
+        sewing_accessories_percentage_of_loss: true,
+        status: true,
+        total_price: true,
+        type: true,
+      },
+      where: { id, deleted_at: IsNull(), deleted_by: IsNull() },
+    });
+    return data;
+  }
 
   //   async updateIsSampling(id, is_sampling) {
   //     return await this.projectDetailRepository.update(
