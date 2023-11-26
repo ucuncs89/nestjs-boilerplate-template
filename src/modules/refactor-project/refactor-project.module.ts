@@ -19,6 +19,8 @@ import { ProjectPriceAdditionalEntity } from 'src/entities/project/project_price
 import { RabbitMQModule } from 'src/rabbitmq/rabbit-mq.module';
 import { ProjectPlanningMaterialController } from './planning/controllers/project-planning-material.controller';
 import { ProjectPlanningMaterialService } from './planning/services/project-planning-material.service';
+import { ProjectPlanningVariantController } from './planning/controllers/project-planning-variant.controller';
+import { ProjectPlanningVariantService } from './planning/services/project-planning-variant.service';
 
 @Module({
   imports: [
@@ -41,12 +43,14 @@ import { ProjectPlanningMaterialService } from './planning/services/project-plan
     ProjectHistoryController,
     ProjectDetailController,
     ProjectPlanningMaterialController,
+    ProjectPlanningVariantController,
   ],
   providers: [
     ProjectDetailService,
     ProjectService,
     ProjectHistoryService,
     ProjectPlanningMaterialService,
+    ProjectPlanningVariantService,
   ],
 })
 export class RefactorProjectModule {}
