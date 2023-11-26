@@ -26,6 +26,7 @@ export enum ProjectMaterialItemEnum {
   Fabric = 'Fabric',
   Sewing = 'Sewing',
   Packaging = 'Packaging',
+  Finishedgoods = 'Finished goods',
 }
 export class ProjectMaterialItemDto {
   @ApiProperty()

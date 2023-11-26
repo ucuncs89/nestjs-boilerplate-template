@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
 
 @Entity('project_material_item')
 export class ProjectMaterialItemEntity {
@@ -77,18 +84,11 @@ export class ProjectMaterialItemEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
-  //   @ManyToOne(
-  //     () => ProjectMaterialEntity,
-  //     (project_material: ProjectMaterialEntity) => project_material.fabric,
-  //   )
-  //   @JoinColumn({ name: 'project_material_id' })
-  //   public project_material: ProjectMaterialEntity;
-
-  //   @OneToMany(
-  //     () => ProjectVendorMaterialFabricEntity,
-  //     (fabric_material: ProjectVendorMaterialFabricEntity) =>
-  //       fabric_material.project_fabric,
-  //   )
-  //   @JoinColumn({ name: 'project_fabric_id' })
-  //   vendor_material: ProjectVendorMaterialFabricEntity[];
+  @OneToMany(
+    () => ProjectVendorMaterialEntity,
+    (vendor_material_material: ProjectVendorMaterialEntity) =>
+      vendor_material_material.project_material_item,
+  )
+  @JoinColumn({ name: 'project_material_item_id' })
+  vendor_material: ProjectVendorMaterialEntity[];
 }

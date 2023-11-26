@@ -21,6 +21,8 @@ import { ProjectPlanningMaterialController } from './planning/controllers/projec
 import { ProjectPlanningMaterialService } from './planning/services/project-planning-material.service';
 import { ProjectPlanningVariantController } from './planning/controllers/project-planning-variant.controller';
 import { ProjectPlanningVariantService } from './planning/services/project-planning-variant.service';
+import { ProjectPlanningVendorMaterialService } from './planning/services/project-planning-vendor-material.service';
+import { ProjectPlanningVendorMaterialController } from './planning/controllers/project-planning-vendor-material.controller';
 
 @Module({
   imports: [
@@ -44,6 +46,7 @@ import { ProjectPlanningVariantService } from './planning/services/project-plann
     ProjectDetailController,
     ProjectPlanningMaterialController,
     ProjectPlanningVariantController,
+    ProjectPlanningVendorMaterialController,
   ],
   providers: [
     ProjectDetailService,
@@ -51,6 +54,7 @@ import { ProjectPlanningVariantService } from './planning/services/project-plann
     ProjectHistoryService,
     ProjectPlanningMaterialService,
     ProjectPlanningVariantService,
+    ProjectPlanningVendorMaterialService,
   ],
 })
 export class RefactorProjectModule {}
