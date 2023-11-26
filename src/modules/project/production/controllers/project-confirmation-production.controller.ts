@@ -32,7 +32,7 @@ export class ProjectConfirmationProductionController {
         detail_id,
       );
     return {
-      message: 'belum',
+      message: 'belum ini masih dummy',
       data: { is_delivered, is_arrived_destination, is_invoice_paid },
     };
   }
