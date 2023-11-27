@@ -30,6 +30,8 @@ import { ProjectVendorProductionEntity } from 'src/entities/project/project_vend
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
 import { ProjectPlanningShippingController } from './planning/controllers/project-planning-shipping.controller';
 import { ProjectPlanningShippingService } from './planning/services/project-planning-shipping.service';
+import { ProjectPlanningPriceService } from './planning/services/project-planning-price.service';
+import { ProjectPlanningPriceController } from './planning/controllers/project-planning-price.controller';
 
 @Module({
   imports: [
@@ -60,6 +62,7 @@ import { ProjectPlanningShippingService } from './planning/services/project-plan
     ProjectPlanningVendorMaterialController,
     ProjectPlanningVendorProductionController,
     ProjectPlanningShippingController,
+    ProjectPlanningPriceController,
   ],
   providers: [
     ProjectDetailService,
@@ -70,6 +73,7 @@ import { ProjectPlanningShippingService } from './planning/services/project-plan
     ProjectPlanningVendorMaterialService,
     ProjectPlanningVendorProductionService,
     ProjectPlanningShippingService,
+    ProjectPlanningPriceService,
   ],
 })
 export class RefactorProjectModule {}
