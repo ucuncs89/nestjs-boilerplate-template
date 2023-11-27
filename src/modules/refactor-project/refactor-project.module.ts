@@ -33,6 +33,8 @@ import { ProjectPlanningShippingService } from './planning/services/project-plan
 import { ProjectPlanningPriceService } from './planning/services/project-planning-price.service';
 import { ProjectPlanningPriceController } from './planning/controllers/project-planning-price.controller';
 import { ProjectPlanningConfirmReviewController } from './planning/controllers/project-planning-confirm-review.controller';
+import { ProjectPlanningSetSamplingService } from './planning/services/project-planning-set-sampling.service';
+import { ProjectPlanningSetSamplingController } from './planning/controllers/project-planning-set-sampling.controller';
 
 @Module({
   imports: [
@@ -65,6 +67,7 @@ import { ProjectPlanningConfirmReviewController } from './planning/controllers/p
     ProjectPlanningShippingController,
     ProjectPlanningPriceController,
     ProjectPlanningConfirmReviewController,
+    ProjectPlanningSetSamplingController,
   ],
   providers: [
     ProjectDetailService,
@@ -76,6 +79,7 @@ import { ProjectPlanningConfirmReviewController } from './planning/controllers/p
     ProjectPlanningVendorProductionService,
     ProjectPlanningShippingService,
     ProjectPlanningPriceService,
+    ProjectPlanningSetSamplingService,
   ],
 })
 export class RefactorProjectModule {}

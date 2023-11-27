@@ -80,46 +80,46 @@ export class ProjectDetailService {
     return data;
   }
 
-  //   async updateIsSampling(id, is_sampling) {
-  //     return await this.projectDetailRepository.update(
-  //       { id },
-  //       {
-  //         is_sampling,
-  //       },
-  //     );
-  //   }
-  //   async updateIsConfirm(
-  //     project_id: number,
-  //     id: number,
-  //     projectConfirmDto: ProjectConfirmDto,
+  async updateIsSampling(id, is_sampling) {
+    return await this.projectDetailRepository.update(
+      { id },
+      {
+        is_sampling,
+      },
+    );
+  }
+  // async updateIsConfirm(
+  //   project_id: number,
+  //   id: number,
+  //   projectConfirmDto: ProjectConfirmDto,
+  //   user_id,
+  //   i18n,
+  // ) {
+  //   const data = await this.projectDetailRepository.update(
+  //     {
+  //       project_id,
+  //       id,
+  //     },
+  //     {
+  //       is_confirm: projectConfirmDto.is_confirmation,
+  //       status: projectConfirmDto.status,
+  //     },
+  //   );
+  //   this.projectHistoryService.create(
+  //     {
+  //       status: StatusProjectHistoryEnum.Sampling,
+  //     },
+  //     project_id,
   //     user_id,
   //     i18n,
-  //   ) {
-  //     const data = await this.projectDetailRepository.update(
-  //       {
-  //         project_id,
-  //         id,
-  //       },
-  //       {
-  //         is_confirm: projectConfirmDto.is_confirmation,
-  //         status: projectConfirmDto.status,
-  //       },
-  //     );
-  //     this.projectHistoryService.create(
-  //       {
-  //         status: StatusProjectHistoryEnum.Sampling,
-  //       },
-  //       project_id,
-  //       user_id,
-  //       i18n,
-  //     );
-  //     this.projectService.updateStatusProject(
-  //       project_id,
-  //       StatusProjectHistoryEnum.Sampling,
-  //       user_id,
-  //     );
-  //     return data;
-  //   }
+  //   );
+  //   this.projectService.updateStatusProject(
+  //     project_id,
+  //     StatusProjectHistoryEnum.Sampling,
+  //     user_id,
+  //   );
+  //   return data;
+  // }
   //   async createProjectDetailSampling(
   //     project_id,
   //     createProjectDetailDto: CreateProjectDetailDto,
