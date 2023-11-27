@@ -9,6 +9,8 @@ import {
 } from 'src/exceptions/app-exception';
 import { Connection, IsNull, Repository } from 'typeorm';
 import { ProjectVariantDto } from '../dto/project-planning-variant.dto';
+import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
+import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 
 @Injectable()
 export class ProjectPlanningVariantService {
@@ -105,6 +107,25 @@ export class ProjectPlanningVariantService {
           projectVariantDto.size,
         );
       }
+      const material = await queryRunner.manager.find(
+        ProjectMaterialItemEntity,
+        {
+          where: {
+            project_detail_id,
+            deleted_at: IsNull(),
+            deleted_by: IsNull(),
+          },
+        },
+      );
+      if (material.length > 0) {
+        for (const dataMaterial of material) {
+          await queryRunner.manager.insert(ProjectVendorMaterialEntity, {
+            project_variant_id: projectVariant.raw[0].id,
+            project_material_item_id: dataMaterial.id,
+            project_detail_id,
+          });
+        }
+      }
       //nanti tambahin relasi ke project_vendor_material
       await queryRunner.commitTransaction();
 
@@ -132,8 +153,19 @@ export class ProjectPlanningVariantService {
       await queryRunner.manager.delete(ProjectVariantSizeEntity, {
         project_variant_id: variant_id,
       });
-      await queryRunner.manager.delete(ProjectVariantEntity, {
-        id: variant_id,
+      await queryRunner.manager.update(
+        ProjectVariantEntity,
+        {
+          id: variant_id,
+          project_detail_id,
+        },
+        {
+          deleted_at: new Date().toISOString(),
+          deleted_by: user_id,
+        },
+      );
+      await queryRunner.manager.delete(ProjectVendorMaterialEntity, {
+        project_variant_id: variant_id,
         project_detail_id,
       });
       //nanti disini tambahin project_vendor_material_item gitu

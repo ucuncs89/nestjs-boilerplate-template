@@ -23,6 +23,7 @@ import { ProjectPlanningVariantController } from './planning/controllers/project
 import { ProjectPlanningVariantService } from './planning/services/project-planning-variant.service';
 import { ProjectPlanningVendorMaterialService } from './planning/services/project-planning-vendor-material.service';
 import { ProjectPlanningVendorMaterialController } from './planning/controllers/project-planning-vendor-material.controller';
+import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ProjectPlanningVendorMaterialController } from './planning/controllers/
       ProjectPriceEntity,
       ProjectSizeEntity,
       ProjectPriceAdditionalEntity,
+      ProjectVendorMaterialDetailEntity,
     ]),
     RabbitMQModule,
   ],

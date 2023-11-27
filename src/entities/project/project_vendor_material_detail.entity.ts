@@ -6,7 +6,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ProjectVendorMaterialFabricEntity } from './project_vendor_material_fabric.entity';
 import { VendorsEntity } from '../vendors/vendors.entity';
 import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
 
@@ -35,6 +34,9 @@ export class ProjectVendorMaterialDetailEntity {
 
   @Column({ type: 'varchar', nullable: true })
   price_unit: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  type: string;
 
   @Column({
     type: 'timestamp with time zone',

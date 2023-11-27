@@ -10,6 +10,8 @@ import {
 } from '../dto/project-planning-material.dto';
 import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
+import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
+import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 
 @Injectable()
 export class ProjectPlanningMaterialService {
@@ -52,6 +54,22 @@ export class ProjectPlanningMaterialService {
         ProjectMaterialItemEntity,
         { ...projectMaterialItemDto, project_detail_id },
       );
+      const variant = await queryRunner.manager.find(ProjectVariantEntity, {
+        where: {
+          project_detail_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+      });
+      if (variant.length > 0) {
+        for (const dataVariant of variant) {
+          await queryRunner.manager.insert(ProjectVendorMaterialEntity, {
+            project_variant_id: dataVariant.id,
+            project_material_item_id: projectMaterial.raw[0].id,
+            project_detail_id,
+          });
+        }
+      }
       await queryRunner.commitTransaction();
 
       return { id: projectMaterial.raw[0].id, ...projectMaterialItemDto };
@@ -136,20 +154,33 @@ export class ProjectPlanningMaterialService {
     material_item_id: number,
     user_id,
   ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const data = await this.projectMaterialItemRepository.update(
+      await queryRunner.manager.update(
+        ProjectMaterialItemEntity,
         {
-          project_detail_id,
           id: material_item_id,
+          project_detail_id,
         },
         {
           deleted_at: new Date().toISOString(),
           deleted_by: user_id,
         },
       );
-      return data;
+      await queryRunner.manager.delete(ProjectVendorMaterialEntity, {
+        project_material_item_id: material_item_id,
+        project_detail_id,
+      });
+      await queryRunner.commitTransaction();
+
+      return true;
     } catch (error) {
-      throw new AppErrorException(error);
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
     }
   }
 
