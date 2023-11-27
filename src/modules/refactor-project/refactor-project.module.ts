@@ -32,6 +32,7 @@ import { ProjectPlanningShippingController } from './planning/controllers/projec
 import { ProjectPlanningShippingService } from './planning/services/project-planning-shipping.service';
 import { ProjectPlanningPriceService } from './planning/services/project-planning-price.service';
 import { ProjectPlanningPriceController } from './planning/controllers/project-planning-price.controller';
+import { ProjectPlanningConfirmReviewController } from './planning/controllers/project-planning-confirm-review.controller';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { ProjectPlanningPriceController } from './planning/controllers/project-p
     ProjectPlanningVendorProductionController,
     ProjectPlanningShippingController,
     ProjectPlanningPriceController,
+    ProjectPlanningConfirmReviewController,
   ],
   providers: [
     ProjectDetailService,

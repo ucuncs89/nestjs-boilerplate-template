@@ -23,7 +23,7 @@ import {
 @ApiBearerAuth()
 @ApiTags('refactor-project Planning')
 @UseGuards(JwtAuthGuard)
-@Controller('refactor-project/price')
+@Controller('refactor-project/planning')
 export class ProjectPlanningPriceController {
   constructor(
     private readonly projectPlanningPriceService: ProjectPlanningPriceService,
