@@ -28,6 +28,8 @@ import { ProjectPlanningVendorProductionController } from './planning/controller
 import { ProjectPlanningVendorProductionService } from './planning/services/project-planning-vendor-production.service';
 import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+import { ProjectPlanningShippingController } from './planning/controllers/project-planning-shipping.controller';
+import { ProjectPlanningShippingService } from './planning/services/project-planning-shipping.service';
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
       ProjectVendorMaterialDetailEntity,
       ProjectVendorProductionEntity,
       ProjectVendorProductionDetailEntity,
+      ProjectShippingEntity,
     ]),
     RabbitMQModule,
   ],
@@ -56,6 +59,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
     ProjectPlanningVariantController,
     ProjectPlanningVendorMaterialController,
     ProjectPlanningVendorProductionController,
+    ProjectPlanningShippingController,
   ],
   providers: [
     ProjectDetailService,
@@ -65,6 +69,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
     ProjectPlanningVariantService,
     ProjectPlanningVendorMaterialService,
     ProjectPlanningVendorProductionService,
+    ProjectPlanningShippingService,
   ],
 })
 export class RefactorProjectModule {}
