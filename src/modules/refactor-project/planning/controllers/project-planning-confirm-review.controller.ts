@@ -21,6 +21,8 @@ import { ProjectPlanningVendorProductionService } from '../services/project-plan
 import { ProjectPlanningShippingService } from '../services/project-planning-shipping.service';
 import { ProjectPlanningPriceService } from '../services/project-planning-price.service';
 import { ProjectPlanningVendorMaterialService } from '../services/project-planning-vendor-material.service';
+import { ProjectPlanningSetSamplingService } from '../services/project-planning-set-sampling.service';
+import { ProjectPlanningConfirmDto } from '../dto/project-planning-confirm.dto';
 
 @ApiBearerAuth()
 @ApiTags('refactor-project Planning')
@@ -36,25 +38,26 @@ export class ProjectPlanningConfirmReviewController {
     private readonly projectPlanningShippingService: ProjectPlanningShippingService,
     private readonly projectPlanningPriceService: ProjectPlanningPriceService,
     private readonly projectPlanningVendorMaterialService: ProjectPlanningVendorMaterialService,
+    private readonly projectPlanningSetSamplingService: ProjectPlanningSetSamplingService,
   ) {}
 
-  //   @Post(':project_id/detail/:detail_id/confirmation')
-  //   async createConfirm(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @Body() projectConfirmDto: ProjectConfirmDto,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectDetailService.updateIsConfirm(
-  //       project_id,
-  //       detail_id,
-  //       projectConfirmDto,
-  //       req.user.id,
-  //       i18n,
-  //     );
-  //     return { data };
-  //   }
+  @Post(':project_id/detail/:detail_id/confirmation')
+  async createConfirm(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Body() projectPlanningConfirmDto: ProjectPlanningConfirmDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectDetailService.updateIsConfirm(
+      project_id,
+      detail_id,
+      projectPlanningConfirmDto,
+      req.user.id,
+      i18n,
+    );
+    return { data };
+  }
 
   @Get(':project_id/detail/:detail_id/review/size-quantity')
   async getSizeQuality(
@@ -172,18 +175,19 @@ export class ProjectPlanningConfirmReviewController {
     return { data };
   }
 
-  //   @Get(':project_id/detail/:detail_id/review/set-sampling')
-  //   async getSetSampling(
-  //     @Req() req,
-  //     @Param('project_id') project_id: number,
-  //     @Param('detail_id') detail_id: number,
-  //     @I18n() i18n: I18nContext,
-  //   ) {
-  //     const data = await this.projectSetSamplingService.findProjectSetSamplingOne(
-  //       detail_id,
-  //     );
-  //     return { data };
-  //   }
+  @Get(':project_id/detail/:detail_id/review/set-sampling')
+  async getSetSampling(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectPlanningSetSamplingService.findProjectSetSamplingOne(
+        detail_id,
+      );
+    return { data };
+  }
 
   @Get(':project_id/detail/:detail_id/review/pricing')
   async getPricing(

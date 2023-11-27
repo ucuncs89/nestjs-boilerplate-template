@@ -64,10 +64,10 @@ import { ProjectPlanningSetSamplingController } from './planning/controllers/pro
     ProjectPlanningVariantController,
     ProjectPlanningVendorMaterialController,
     ProjectPlanningVendorProductionController,
+    ProjectPlanningSetSamplingController,
     ProjectPlanningShippingController,
     ProjectPlanningPriceController,
     ProjectPlanningConfirmReviewController,
-    ProjectPlanningSetSamplingController,
   ],
   providers: [
     ProjectDetailService,
