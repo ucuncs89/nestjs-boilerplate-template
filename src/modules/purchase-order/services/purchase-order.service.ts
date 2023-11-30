@@ -11,7 +11,6 @@ import { ProjectVendorMaterialFabricDetailEntity } from 'src/entities/project/pr
 import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
 import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
-import { CompanyEntity } from 'src/entities/master/company.entity';
 
 @Injectable()
 export class PurchaseOrderService {
