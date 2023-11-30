@@ -9,6 +9,8 @@ import { ProjectVendorMaterialFabricEntity } from 'src/entities/project/project_
 import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
 import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+import { PurchaseOrderPdfService } from './services/purcahse-order-pdf.service';
+import { PurchaseOrderPdfController } from './controllers/purchase-order-pdf.controller';
 
 @Module({
   imports: [
@@ -22,7 +24,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
       ProjectVendorProductionDetailEntity,
     ]),
   ],
-  controllers: [PurchaseOrderController],
-  providers: [PurchaseOrderService],
+  controllers: [PurchaseOrderController, PurchaseOrderPdfController],
+  providers: [PurchaseOrderService, PurchaseOrderPdfService],
 })
 export class PurchaseOrderModule {}
