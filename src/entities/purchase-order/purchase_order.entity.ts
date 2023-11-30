@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PurchaseOrderHistoryEntity } from './purchase_order_history.entity';
+import { PurchaseOrderApprovalEntity } from './purchase_order_approval.entity';
 
 @Entity('purchase_order')
 export class PurchaseOrderEntity {
@@ -96,4 +97,11 @@ export class PurchaseOrderEntity {
   )
   @JoinColumn({ name: 'purchase_order_id' })
   history: PurchaseOrderHistoryEntity[];
+
+  @OneToMany(
+    () => PurchaseOrderApprovalEntity,
+    (history: PurchaseOrderApprovalEntity) => history.purchase_order,
+  )
+  @JoinColumn({ name: 'purchase_order_id' })
+  approval: PurchaseOrderApprovalEntity[];
 }
