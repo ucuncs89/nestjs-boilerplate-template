@@ -1,9 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -43,10 +40,11 @@ export class PurchaseOrderController {
       data.total_data,
       _page,
       _page_size,
-      `/project`,
+      `/purchase-order`,
     );
     return { message: 'Successfully', ...data, pagination };
   }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const data = await this.purchaseOrderService.findOne(id);
@@ -57,5 +55,17 @@ export class PurchaseOrderController {
   async remove(@Req() req, @Param('id') id: string) {
     const data = await this.purchaseOrderService.remove(+id, req.user.id);
     return { data };
+  }
+
+  @Get(':id/detail')
+  async findDetailPurchase(@Param('id') id: number) {
+    const company = {
+      name: 'Cloami',
+      address: 'Jl. Manglid No. 21A / 41A, Bandung',
+      phone_number: '0852 2010 0885',
+    };
+    const detail = await this.purchaseOrderService.findDetail(id);
+
+    return { message: 'Successfully', data: { ...detail, company } };
   }
 }

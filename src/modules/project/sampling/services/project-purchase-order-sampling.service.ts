@@ -9,6 +9,8 @@ import { Connection, In, IsNull, Repository } from 'typeorm';
 import { ProjectPurchaseOrderSamplingDto } from '../dto/project-purchase-order-sampling.dto';
 import { PurchaseOrderEntity } from 'src/entities/purchase-order/purchase_order.entity';
 import { PurchaseOrderHistoryEntity } from 'src/entities/purchase-order/purchase_order_history.entity';
+import { PurchaseOrderService } from 'src/modules/purchase-order/services/purchase-order.service';
+import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
 
 @Injectable()
 export class ProjectPurchaseOrderSamplingService {
@@ -18,6 +20,8 @@ export class ProjectPurchaseOrderSamplingService {
 
     @InjectRepository(ProjectPurchaseOrderEntity)
     private projectPurchaseOrderRepository: Repository<ProjectPurchaseOrderEntity>,
+
+    private purchaseOrderServie: PurchaseOrderService,
     private connection: Connection,
   ) {}
   async createPurchaseOrder(
@@ -25,6 +29,7 @@ export class ProjectPurchaseOrderSamplingService {
     projectPurchaseOrderSamplingDto: ProjectPurchaseOrderSamplingDto,
     user_id,
   ) {
+    const code = await this.purchaseOrderServie.generateCodePurchaseOrder();
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -32,8 +37,8 @@ export class ProjectPurchaseOrderSamplingService {
       const purchaseOrder = await queryRunner.manager.insert(
         PurchaseOrderEntity,
         {
+          code,
           ...projectPurchaseOrderSamplingDto,
-          code: 'belum',
           status: 'Submitted',
         },
       );
@@ -52,7 +57,23 @@ export class ProjectPurchaseOrderSamplingService {
         created_at: new Date().toISOString(),
         created_by: user_id,
       });
+      await queryRunner.manager.insert(PurchaseOrderApprovalEntity, [
+        {
+          purchase_order_id: purchaseOrder.raw[0].id,
+          status_desc: 'Made by',
+        },
+        {
+          purchase_order_id: purchaseOrder.raw[0].id,
+          status_desc: 'Sent by the finance team',
+        },
+        {
+          purchase_order_id: purchaseOrder.raw[0].id,
+          status_desc: 'Approved by',
+        },
+      ]);
       await queryRunner.commitTransaction();
+
+      this.purchaseOrderServie.updateGrandTotal(purchaseOrder.raw[0].id);
       return {
         id: purchaseOrder.raw[0].id,
         ...projectPurchaseOrderSamplingDto,
