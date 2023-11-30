@@ -8,10 +8,7 @@ import { AppErrorException } from 'src/exceptions/app-exception';
 export class PurchaseOrderPdfService {
   async generatePdf(data: any) {
     try {
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      });
+      const browser = await puppeteer.launch();
       const page = await browser.newPage();
 
       const template = fs.readFileSync('templates/example.hbs', 'utf-8');
