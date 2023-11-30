@@ -51,6 +51,8 @@ export class PurchaseOrderPdfService {
       await browser.close();
       return pdfBuffer;
     } catch (error) {
+      console.log(error);
+
       throw new AppErrorException(error);
     }
   }
