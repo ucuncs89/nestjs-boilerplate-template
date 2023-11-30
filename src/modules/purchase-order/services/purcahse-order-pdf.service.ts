@@ -8,7 +8,18 @@ import { AppErrorException } from 'src/exceptions/app-exception';
 export class PurchaseOrderPdfService {
   async generatePdf(data: any) {
     try {
-      const browser = await puppeteer.launch();
+      const browser = await puppeteer.launch({
+        args: [
+          // Required for Docker version of Puppeteer
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--no-zygote',
+          '--single-process',
+          // This will write shared memory files into /tmp instead of /dev/shm,
+          // because Docker’s default for /dev/shm is 64MB
+          '--disable-dev-shm-usage',
+        ],
+      });
       const page = await browser.newPage();
 
       const template = fs.readFileSync('templates/example.hbs', 'utf-8');
