@@ -10,3 +10,12 @@ export class CreateUnitDto {
   @ApiProperty()
   code: string;
 }
+
+export class UnitDto {
+  @ApiProperty({
+    isArray: true,
+    type: CreateUnitDto,
+  })
+  @ApiProperty()
+  unit: CreateUnitDto[];
+}

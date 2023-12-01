@@ -79,6 +79,7 @@ import { ProjectPriceProductionService } from './production/services/project-pri
 import { ProjectPriceAdditionalEntity } from 'src/entities/project/project_price_additional.entity';
 import { ProjectConfirmationProductionController } from './production/controllers/project-confirmation-production.controller';
 import { ProjectConfirmationProductionService } from './production/services/project-confirmation-production.service';
+import { PurchaseOrderService } from '../purchase-order/services/purchase-order.service';
 
 @Module({
   imports: [
@@ -167,6 +168,7 @@ import { ProjectConfirmationProductionService } from './production/services/proj
     ProjectShippingProductionService,
     ProjectPriceProductionService,
     ProjectConfirmationProductionService,
+    PurchaseOrderService,
   ],
 })
 export class ProjectModule {}

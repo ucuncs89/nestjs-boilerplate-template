@@ -52,7 +52,6 @@ export class CreateProjectDto {
   order_type: OrderTypeProjectEnum;
 
   @ApiProperty()
-  @IsNotEmpty()
   description: string;
 
   @ApiProperty()

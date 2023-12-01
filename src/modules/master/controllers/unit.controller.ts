@@ -33,14 +33,10 @@ export class UnitController {
   @Post()
   async create(
     @Req() req,
-    @Body() createUnitDto: CreateUnitDto[],
+    @Body() unitDto: CreateUnitDto,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.unitService.create(
-      createUnitDto,
-      req.user.id,
-      i18n,
-    );
+    const data = await this.unitService.create(unitDto, req.user.id, i18n);
     return { message: 'Successfully', data };
   }
 
