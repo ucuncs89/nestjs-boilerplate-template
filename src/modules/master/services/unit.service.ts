@@ -16,9 +16,13 @@ export class UnitService {
     private unitRepository: Repository<UnitEntity>,
   ) {}
 
-  async create(payload: CreateUnitDto[], user_id, i18n) {
+  async create(payload: CreateUnitDto, user_id, i18n) {
     try {
-      await this.unitRepository.save(payload);
+      await this.unitRepository.save({
+        ...payload,
+        created_at: new Date().toISOString(),
+        created_by: user_id,
+      });
       return true;
     } catch (error) {
       throw new AppErrorException(error);
