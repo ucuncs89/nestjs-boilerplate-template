@@ -72,7 +72,7 @@ export class ProjectPlanningMaterialService {
       }
       await queryRunner.commitTransaction();
 
-      return { id: projectMaterial.raw[0].id, ...projectMaterialItemDto };
+      return { ...projectMaterialItemDto, id: projectMaterial.raw[0].id };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);

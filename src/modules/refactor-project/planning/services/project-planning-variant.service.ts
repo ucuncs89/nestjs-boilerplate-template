@@ -129,7 +129,7 @@ export class ProjectPlanningVariantService {
       //nanti tambahin relasi ke project_vendor_material
       await queryRunner.commitTransaction();
 
-      return { id: projectVariant.raw[0].id, ...projectVariantDto };
+      return { ...projectVariantDto, id: projectVariant.raw[0].id };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);

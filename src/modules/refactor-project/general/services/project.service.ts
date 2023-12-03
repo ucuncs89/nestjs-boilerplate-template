@@ -55,6 +55,7 @@ export class ProjectService {
         sequential_number: generateCodeProject.sequential_number,
         department_id: createProjectDto.departement_id,
         target_price_for_customer: createProjectDto.target_price_for_buyer,
+        status: 'Project Created',
       });
       for (const documents of createProjectDto.project_document) {
         documents.project_id = project.raw[0].id;

@@ -52,6 +52,7 @@ import { ProjectDevSamplingController } from './sampling/controllers/project-dev
 import { ProjectDevSamplingService } from './sampling/services/project-dev-sampling.service';
 import { ProjectSamplingStatusEntity } from 'src/entities/project/project_sampling_status.entity';
 import { ProjectSamplingRevisiEntity } from 'src/entities/project/project_sampling_revisi.entity';
+import { ProjectSamplingReviewController } from './sampling/controllers/project-sampling-review.controller';
 
 @Module({
   imports: [
@@ -97,6 +98,7 @@ import { ProjectSamplingRevisiEntity } from 'src/entities/project/project_sampli
     ProjectSamplingVendorProductionController,
     ProjectSamplingPurchaseOrderController,
     ProjectDevSamplingController,
+    ProjectSamplingReviewController,
   ],
   providers: [
     ProjectDetailService,
