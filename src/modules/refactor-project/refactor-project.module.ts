@@ -35,6 +35,23 @@ import { ProjectPlanningPriceController } from './planning/controllers/project-p
 import { ProjectPlanningConfirmReviewController } from './planning/controllers/project-planning-confirm-review.controller';
 import { ProjectPlanningSetSamplingService } from './planning/services/project-planning-set-sampling.service';
 import { ProjectPlanningSetSamplingController } from './planning/controllers/project-planning-set-sampling.controller';
+import { ProjectSamplingVendorMaterialController } from './sampling/controllers/project-sampling-vendor-material.controller';
+import { ProjectSamplingVendorProductionController } from './sampling/controllers/project-sampling-vendor-production.controller';
+import { ProjectSamplingVendorMaterialService } from './sampling/services/project-sampling-vendor-material.service';
+import { ProjectSamplingVendorProductionService } from './sampling/services/project-sampling-vendor-production.service';
+import { ProjectPurchaseOrderEntity } from 'src/entities/project/project_purchase_order.entity';
+import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
+import { ProjectSamplingPurchaseOrderController } from './sampling/controllers/project-sampling-purchase-order.controller';
+import { ProjectSamplingPurchaseOrderService } from './sampling/services/project-sampling-purchase-order.service';
+import { PurchaseOrderEntity } from 'src/entities/purchase-order/purchase_order.entity';
+import { PurchaseOrderService } from '../purchase-order/services/purchase-order.service';
+import { ProjectVendorMaterialFabricDetailEntity } from 'src/entities/project/project_vendor_material_fabric_detail.entity';
+import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
+import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
+import { ProjectDevSamplingController } from './sampling/controllers/project-dev-sampling.controller';
+import { ProjectDevSamplingService } from './sampling/services/project-dev-sampling.service';
+import { ProjectSamplingStatusEntity } from 'src/entities/project/project_sampling_status.entity';
+import { ProjectSamplingRevisiEntity } from 'src/entities/project/project_sampling_revisi.entity';
 
 @Module({
   imports: [
@@ -53,6 +70,14 @@ import { ProjectPlanningSetSamplingController } from './planning/controllers/pro
       ProjectVendorProductionEntity,
       ProjectVendorProductionDetailEntity,
       ProjectShippingEntity,
+      ProjectPurchaseOrderEntity,
+      ProjectVendorMaterialEntity,
+      PurchaseOrderEntity,
+      ProjectVendorMaterialFabricDetailEntity,
+      ProjectVendorMaterialAccessoriesSewingDetailEntity,
+      ProjectVendorMaterialAccessoriesPackagingDetailEntity,
+      ProjectSamplingStatusEntity,
+      ProjectSamplingRevisiEntity,
     ]),
     RabbitMQModule,
   ],
@@ -68,6 +93,10 @@ import { ProjectPlanningSetSamplingController } from './planning/controllers/pro
     ProjectPlanningShippingController,
     ProjectPlanningPriceController,
     ProjectPlanningConfirmReviewController,
+    ProjectSamplingVendorMaterialController,
+    ProjectSamplingVendorProductionController,
+    ProjectSamplingPurchaseOrderController,
+    ProjectDevSamplingController,
   ],
   providers: [
     ProjectDetailService,
@@ -80,6 +109,11 @@ import { ProjectPlanningSetSamplingController } from './planning/controllers/pro
     ProjectPlanningShippingService,
     ProjectPlanningPriceService,
     ProjectPlanningSetSamplingService,
+    ProjectSamplingVendorMaterialService,
+    ProjectSamplingVendorProductionService,
+    ProjectSamplingPurchaseOrderService,
+    PurchaseOrderService,
+    ProjectDevSamplingService,
   ],
 })
 export class RefactorProjectModule {}

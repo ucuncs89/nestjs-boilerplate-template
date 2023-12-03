@@ -21,4 +21,22 @@ export class CreateProjectDetailDto {
   @IsEnum(TypepProjectDetailEnum)
   @IsNotEmpty()
   type: TypepProjectDetailEnum;
+
+  is_sampling?: boolean;
+
+  is_confirm?: boolean;
+
+  material_source?: string;
+
+  total_price?: number;
+
+  fabric_percentage_of_loss?: number;
+
+  sewing_accessories_percentage_of_loss?: number;
+
+  packaging_accessories_percentage_of_loss?: number;
+
+  finished_goods_percentage_of_loss?: number;
+
+  packaging_instructions?: string;
 }

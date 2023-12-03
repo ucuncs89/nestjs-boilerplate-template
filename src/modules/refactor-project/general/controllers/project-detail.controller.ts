@@ -25,7 +25,6 @@ export class ProjectDetailController {
     @I18n() i18n: I18nContext,
   ) {
     let data: any;
-    let project_detail_id: number;
 
     switch (createProjectDetailDto.type) {
       case 'Planning':
@@ -35,44 +34,26 @@ export class ProjectDetailController {
           req.user.id,
           i18n,
         );
-        project_detail_id = data.id;
         break;
 
-      // case 'Sampling':
-      //   const sampling =
-      //     await this.projectDetailService.findProjectDetailSampling(project_id);
+      case 'Sampling':
+        const sampling =
+          await this.projectDetailService.findProjectDetailSampling(project_id);
 
-      //   if (!sampling) {
-      //     const newProjectDetail =
-      //       await this.projectDetailService.createProjectDetailSampling(
-      //         project_id,
-      //         createProjectDetailDto,
-      //         req.user.id,
-      //         i18n,
-      //       );
+        if (!sampling) {
+          data = await this.projectDetailService.generateSamplingProject(
+            project_id,
+            req.user.id,
+            i18n,
+          );
 
-      //     data = await this.projectDetailService.generateSamplingProject(
-      //       project_id,
-      //       newProjectDetail.id,
-      //       req.user.id,
-      //       i18n,
-      //     );
-
-      //     const material_source =
-      //       await this.projectMaterialService.findMaterialSelectId(
-      //         newProjectDetail.id,
-      //       );
-
-      //     return {
-      //       data: newProjectDetail,
-      //       material_source: material_source.material_source,
-      //       generate: data,
-      //     };
-      //   } else {
-      //     project_detail_id = sampling.id;
-      //     data = sampling;
-      //   }
-      //   break;
+          return {
+            data,
+          };
+        } else {
+          data = sampling;
+        }
+        break;
       // case 'Production':
       // const production =
       //   await this.projectDetailService.findProjectDetailProduction(
@@ -120,8 +101,6 @@ export class ProjectDetailController {
 
     return {
       data,
-      // material_source: material_source?.material_source || null,
-      // material_id: material_source?.id || null,
     };
   }
 }

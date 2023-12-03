@@ -3,11 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectDetailEntity } from 'src/entities/project/project_detail.entity';
 import { Connection, IsNull, Repository } from 'typeorm';
 
-import { CreateProjectDetailDto } from '../dto/create-project-detail.dto';
+import {
+  CreateProjectDetailDto,
+  StatusProjectDetailEnum,
+  TypepProjectDetailEnum,
+} from '../dto/create-project-detail.dto';
 import { StatusProjectHistoryEnum } from '../dto/create-project-history.dto';
 import { ProjectService } from './project.service';
 import { ProjectHistoryService } from './project-history.service';
 import { ProjectPlanningConfirmDto } from '../../planning/dto/project-planning-confirm.dto';
+import { ProjectPlanningMaterialService } from '../../planning/services/project-planning-material.service';
+import { ProjectPlanningVariantService } from '../../planning/services/project-planning-variant.service';
 
 @Injectable()
 export class ProjectDetailService {
@@ -16,6 +22,8 @@ export class ProjectDetailService {
     private projectDetailRepository: Repository<ProjectDetailEntity>,
     private projectHistoryService: ProjectHistoryService,
     private projectService: ProjectService,
+    private projectPlanningMaterialService: ProjectPlanningMaterialService,
+    private projectPlanningVariantService: ProjectPlanningVariantService,
 
     private connection: Connection,
   ) {}
@@ -121,140 +129,126 @@ export class ProjectDetailService {
     );
     return data;
   }
-  //   async createProjectDetailSampling(
-  //     project_id,
-  //     createProjectDetailDto: CreateProjectDetailDto,
-  //     user_id,
-  //     i18n,
-  //   ) {
-  //     const data = await this.projectDetailRepository.findOne({
-  //       where: {
-  //         project_id,
-  //         deleted_at: IsNull(),
-  //         deleted_by: IsNull(),
-  //         type: 'Sampling',
-  //       },
-  //     });
-  //     if (!data) {
-  //       const data = this.projectDetailRepository.create({
-  //         ...createProjectDetailDto,
-  //         created_at: new Date().toISOString(),
-  //         created_by: user_id,
-  //         project_id,
-  //       });
-  //       await this.projectDetailRepository.save(data);
-  //       this.projectHistoryService.create(
-  //         {
-  //           status: StatusProjectHistoryEnum.Sampling,
-  //         },
-  //         project_id,
-  //         user_id,
-  //         i18n,
-  //       );
-  //       this.projectService.updateStatusProject(
-  //         project_id,
-  //         StatusProjectHistoryEnum.Sampling,
-  //         user_id,
-  //       );
-  //       return data;
-  //     }
-  //     return data;
-  //   }
+  async createProjectDetailSampling(
+    project_id,
+    createProjectDetailDto: CreateProjectDetailDto,
 
-  //   async findProjectDetailPlanning(project_id) {
-  //     const data = await this.projectDetailRepository.findOne({
-  //       where: {
-  //         project_id,
-  //         deleted_at: IsNull(),
-  //         deleted_by: IsNull(),
-  //         type: 'Planning',
-  //       },
-  //     });
-  //     return data;
-  //   }
+    user_id,
+    i18n,
+  ) {
+    const data = await this.projectDetailRepository.findOne({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        type: 'Sampling',
+      },
+    });
+    if (!data) {
+      const data = this.projectDetailRepository.create({
+        ...createProjectDetailDto,
+        created_at: new Date().toISOString(),
+        created_by: user_id,
+        project_id,
+      });
+      await this.projectDetailRepository.save(data);
+      this.projectHistoryService.create(
+        {
+          status: StatusProjectHistoryEnum.Sampling,
+        },
+        project_id,
+        user_id,
+        i18n,
+      );
+      this.projectService.updateStatusProject(
+        project_id,
+        StatusProjectHistoryEnum.Sampling,
+        user_id,
+      );
+      return data;
+    }
+    return data;
+  }
 
-  //   async findProjectDetailSampling(project_id) {
-  //     const data = await this.projectDetailRepository.findOne({
-  //       where: {
-  //         project_id,
-  //         deleted_at: IsNull(),
-  //         deleted_by: IsNull(),
-  //         type: 'Sampling',
-  //       },
-  //     });
-  //     return data;
-  //   }
-  //   async generateSamplingProject(
-  //     project_id,
-  //     newProjectDetail_id,
-  //     user_id,
-  //     i18n,
-  //   ) {
-  //     const oldProjectDetail = await this.findProjectDetailPlanning(project_id);
-  //     const oldMaterial = await this.projectMaterialService.findByProjectDetail(
-  //       project_id,
-  //       oldProjectDetail.id,
-  //     );
-  //     const oldVariant = await this.projectVariantService.findByProjectDetail(
-  //       project_id,
-  //       oldProjectDetail.id,
-  //     );
-  //     const arrFabric = [];
-  //     if (Array.isArray(oldMaterial.fabric) && oldMaterial.fabric.length) {
-  //       oldMaterial.fabric.map((v) => {
-  //         arrFabric.push({ ...v, method_type: 'New' });
-  //       });
-  //     }
-  //     const arrSewing = [];
-  //     if (
-  //       Array.isArray(oldMaterial.accessories_sewing) &&
-  //       oldMaterial.accessories_sewing.length
-  //     ) {
-  //       oldMaterial.accessories_sewing.map((v) => {
-  //         arrSewing.push({ ...v, method_type: 'New' });
-  //       });
-  //     }
-  //     const arrPackaging = [];
-  //     if (
-  //       Array.isArray(oldMaterial.accessories_packaging) &&
-  //       oldMaterial.accessories_packaging.length
-  //     ) {
-  //       oldMaterial.accessories_packaging.map((v) => {
-  //         arrPackaging.push({ ...v, method_type: 'New' });
-  //       });
-  //     }
+  async findProjectDetailPlanning(project_id) {
+    const data = await this.projectDetailRepository.findOne({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        type: 'Planning',
+      },
+    });
+    return data;
+  }
 
-  //     const newMaterial = await this.projectMaterialService.createDetailMaterial(
-  //       project_id,
-  //       newProjectDetail_id,
-  //       {
-  //         material_source: oldMaterial.material_source,
-  //         status: StatusProjectDetailEnum.Draft,
-  //         fabric_percentage_of_loss: oldMaterial.fabric_percentage_of_loss,
-  //         finished_goods_percentage_of_loss:
-  //           oldMaterial.finished_goods_percentage_of_loss,
-  //         packaging_accessories_percentage_of_loss:
-  //           oldMaterial.packaging_accessories_percentage_of_loss,
-  //         sewing_accessories_percentage_of_loss:
-  //           oldMaterial.sewing_accessories_percentage_of_loss,
-  //         packaging_instructions: oldMaterial.packaging_instructions,
-  //         fabric: arrFabric,
-  //         accessories_sewing: arrSewing,
-  //         accessories_packaging: arrPackaging,
-  //       },
-  //       user_id,
-  //       i18n,
-  //     );
+  async findProjectDetailSampling(project_id) {
+    const data = await this.projectDetailRepository.findOne({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        type: 'Sampling',
+      },
+    });
+    return data;
+  }
+  async generateSamplingProject(project_id, user_id, i18n) {
+    const oldProjectDetail = await this.findProjectDetailPlanning(project_id);
 
-  //     const newVariant = await this.projectVariantService.createProjectVariant(
-  //       project_id,
-  //       newProjectDetail_id,
-  //       { variant: oldVariant },
-  //       user_id,
-  //       i18n,
-  //     );
-  //     return { newMaterial, newVariant };
-  //   }
+    const oldMaterialItem =
+      await this.projectPlanningMaterialService.listMaterialItem(
+        oldProjectDetail.id,
+        { type: null },
+        user_id,
+      );
+
+    const oldVariant = await this.projectPlanningVariantService.findVariant(
+      oldProjectDetail.id,
+    );
+    const newProjectDetail = await this.createProjectDetailSampling(
+      project_id,
+      {
+        status: StatusProjectDetailEnum.Draft,
+        type: TypepProjectDetailEnum.Sampling,
+        fabric_percentage_of_loss: oldProjectDetail.fabric_percentage_of_loss,
+        finished_goods_percentage_of_loss:
+          oldProjectDetail.finished_goods_percentage_of_loss,
+        packaging_accessories_percentage_of_loss:
+          oldProjectDetail.packaging_accessories_percentage_of_loss,
+        sewing_accessories_percentage_of_loss:
+          oldProjectDetail.sewing_accessories_percentage_of_loss,
+        packaging_instructions: oldProjectDetail.packaging_instructions,
+        material_source: oldProjectDetail.material_source,
+      },
+      user_id,
+      i18n,
+    );
+    const newMaterialItem = [];
+    if (Array.isArray(oldMaterialItem) && oldMaterialItem.length > 0) {
+      for (const materialItem of oldMaterialItem) {
+        const data =
+          await this.projectPlanningMaterialService.createMaterialItemOne(
+            newProjectDetail.id,
+            { ...materialItem, type: materialItem.type },
+            user_id,
+          );
+        newMaterialItem.push(data);
+      }
+    }
+    const newVariant = [];
+    if (Array.isArray(oldVariant) && oldVariant.length > 0) {
+      for (const variant of oldVariant) {
+        const data = await this.projectPlanningVariantService.creteOneVariant(
+          newProjectDetail.id,
+          { ...variant },
+          user_id,
+        );
+        newVariant.push(data);
+      }
+    }
+    return { ...newProjectDetail, newMaterialItem, newVariant };
+  }
 
   //   async findProjectDetailProduction(project_id) {
   //     const data = await this.projectDetailRepository.findOne({
