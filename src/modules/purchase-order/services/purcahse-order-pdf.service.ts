@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import * as path from 'path';
 import * as fs from 'fs';
 import * as handlebars from 'handlebars';
 import * as puppeteer from 'puppeteer';
 import { AppErrorException } from 'src/exceptions/app-exception';
+import { createPdf } from '@saemhco/nestjs-html-pdf';
 
 @Injectable()
 export class PurchaseOrderPdfService {
@@ -62,6 +64,28 @@ export class PurchaseOrderPdfService {
       console.log(error);
 
       throw new AppErrorException(error);
+    }
+  }
+  async generatePDF2(data) {
+    try {
+      const options = {
+        format: 'A4',
+        // displayHeaderFooter: true,
+        margin: {
+          left: '10mm',
+          top: '10mm',
+          right: '10mm',
+          bottom: '10mm',
+        },
+        // headerTemplate: `<div style="width: 100%; text-align: center;"><span style="font-size: 20px;">@saemhco CORP</span><br><span class="date" style="font-size:15px"><span></div>`,
+        // footerTemplate:
+        //   '<div style="width: 100%; text-align: center; font-size: 10px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>',
+        landscape: true,
+      };
+      const filePath = path.join(process.cwd(), 'templates', 'example.hbs');
+      return createPdf(filePath, options, data);
+    } catch (error) {
+      throw new AppErrorException({ ...error });
     }
   }
 }
