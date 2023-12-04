@@ -55,6 +55,22 @@ import { ProjectSamplingRevisiEntity } from 'src/entities/project/project_sampli
 import { ProjectSamplingReviewController } from './sampling/controllers/project-sampling-review.controller';
 import { ProjectProductionVendorMaterialController } from './production/controllers/project-production-vendor-material.controller';
 import { ProjectProductionVendorMaterialService } from './production/services/project-production-vendor-material.service';
+import { ProjectProductionVendorProductionController } from './production/controllers/project-production-vendor-production.controller';
+import { ProjectProductionVendorProductionService } from './production/services/project-production-vendor-production.service';
+import { ProjectProductionPurchaseOrderService } from './production/services/project-production-purchase-order.service';
+import { ProjectProductionPurchaseOrderController } from './production/controllers/project-production-purchase-order.controller';
+import { ProjectProductionTrackingService } from './production/services/project-production-tracking.service';
+import { ProjectProductionTrackingController } from './production/controllers/project-production-tracking.controllers';
+import { ProjectProductionInvoiceController } from './production/controllers/project-production-invoice.controller';
+import { ProjectProductionInvoiceService } from './production/services/project-production-invoice.service';
+import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
+import { ProjectInvoiceEntity } from 'src/entities/project/project_invoice.entity';
+import { ProjectProductionShippingController } from './production/controllers/project-production-shipping.controller';
+import { ProjectProductionShippingService } from './production/services/project-production-shipping.service';
+import { ProjectProductionPriceService } from './production/services/project-production-price.service';
+import { ProjectProductionPriceController } from './production/controllers/project-production-price.controller';
+import { ProjectProductionConfirmationService } from './production/services/project-production-confirmation.service';
+import { ProjectProductionConfirmationController } from './production/controllers/project-production-confirmation.controller';
 
 @Module({
   imports: [
@@ -81,6 +97,8 @@ import { ProjectProductionVendorMaterialService } from './production/services/pr
       ProjectVendorMaterialAccessoriesPackagingDetailEntity,
       ProjectSamplingStatusEntity,
       ProjectSamplingRevisiEntity,
+      InvoiceEntity,
+      ProjectInvoiceEntity,
     ]),
     RabbitMQModule,
   ],
@@ -102,6 +120,13 @@ import { ProjectProductionVendorMaterialService } from './production/services/pr
     ProjectDevSamplingController,
     ProjectSamplingReviewController,
     ProjectProductionVendorMaterialController,
+    ProjectProductionVendorProductionController,
+    ProjectProductionPurchaseOrderController,
+    ProjectProductionTrackingController,
+    ProjectProductionInvoiceController,
+    ProjectProductionShippingController,
+    ProjectProductionPriceController,
+    ProjectProductionConfirmationController,
   ],
   providers: [
     ProjectDetailService,
@@ -120,6 +145,13 @@ import { ProjectProductionVendorMaterialService } from './production/services/pr
     PurchaseOrderService,
     ProjectDevSamplingService,
     ProjectProductionVendorMaterialService,
+    ProjectProductionVendorProductionService,
+    ProjectProductionPurchaseOrderService,
+    ProjectProductionTrackingService,
+    ProjectProductionInvoiceService,
+    ProjectProductionShippingService,
+    ProjectProductionPriceService,
+    ProjectProductionConfirmationService,
   ],
 })
 export class RefactorProjectModule {}

@@ -2,7 +2,7 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
 
-export class ProjectVendorProductionDetailProductionDto {
+export class ProjectProductionVendorProductionDetailDto {
   @ApiProperty()
   vendor_id: number;
 
@@ -21,7 +21,7 @@ export class ProjectVendorProductionDetailProductionDto {
   created_by?: number;
   created_at?: string;
 }
-export class ProjectVendorProductionProductionDto {
+export class ProjectProductionVendorProductionDto {
   @ApiProperty()
   activity_id: number;
 
@@ -53,7 +53,7 @@ export class ProjectVendorProductionProductionDto {
 }
 
 // export class UpdateProjectFabricDto extends PartialType(ProjectFabricDto) {}
-export class ProjectVendorProductionLossPercentageProductionDto {
+export class ProjectProductionVendorProductionLossPercentageDto {
   @ApiProperty()
   id: number;
 
@@ -65,18 +65,18 @@ export class ProjectVendorProductionLossPercentageProductionDto {
   created_at?: string;
 }
 
-export class ProjectVendorProductionLossProductionDto {
+export class ProjectProductionVendorProductionLossDto {
   @ApiProperty({
     isArray: true,
-    type: ProjectVendorProductionLossPercentageProductionDto,
+    type: ProjectProductionVendorProductionLossPercentageDto,
   })
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => ProjectVendorProductionLossPercentageProductionDto)
-  vendor?: ProjectVendorProductionLossPercentageProductionDto[];
+  @Type(() => ProjectProductionVendorProductionLossPercentageDto)
+  vendor?: ProjectProductionVendorProductionLossPercentageDto[];
 }
 
-export class ProjectVendorProductionDetailProductionDueDateDto {
+export class ProjectProductionVendorProductionDetailDueDateDto {
   @ApiProperty()
   production_due_date?: string;
 }

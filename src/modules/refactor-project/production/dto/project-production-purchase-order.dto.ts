@@ -6,7 +6,7 @@ export enum MaterialTypeProjectPurchaseOrderEnum {
   FinishedGoods = 'Finished goods',
 }
 
-export class ProjectPurchaseOrderProductionDto {
+export class ProjectProductionPurchaseOrderDto {
   @ApiProperty()
   vendor_id: number;
 
