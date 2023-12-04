@@ -85,12 +85,12 @@
                 <tbody>
                   {{#each cost_details}}
                     <tr>
-                      <td>{{incremented @index}}</td>
+                      <td>{{@index}}</td>
                       <td style='word-break: break-all'>{{description}}</td>
-                      <td>{{formatCurrency price}}</td>
+                      <td>{{price}}</td>
                       <td>{{unit}}</td>
                       <td>{{quantity}}</td>
-                      <td>{{formatCurrency total_price}}</td>
+                      <td>{{total_price}}</td>
                     </tr>
                   {{/each}}
                 </tbody>
@@ -137,19 +137,19 @@
               <div>
                 <div class='d-flex justify-content-between'>
                   <p>Total</p>
-                  <p class='text-low'>{{formatCurrency total}}</p>
+                  <p class='text-low'>{{total}}</p>
                 </div>
                 <div class='d-flex justify-content-between'>
                   <p>Discount</p>
-                  <p class='text-low'>{{formatCurrency discount}}</p>
+                  <p class='text-low'>{{discount}}</p>
                 </div>
                 <div class='d-flex justify-content-between'>
                   <p>PPN {{ppn}}%</p>
-                  <p class='text-low'>{{formatCurrency ppn_result}}</p>
+                  <p class='text-low'>{{ppn_result}}</p>
                 </div>
                 <div class='d-flex justify-content-between'>
                   <p>PPH {{pph}}%</p>
-                  <p class='text-low'>{{formatCurrency pph_result}}</p>
+                  <p class='text-low'>{{pph_result}}</p>
                 </div>
               </div>
               <div class='border-top pt-3'>
@@ -157,7 +157,7 @@
                   <p>Grand Total</p>
                   <p style='color: #6e7859; font-size: 24px; font-weight: 700;'>
 
-                    {{formatCurrency grand_total}}
+                    {{grand_total}}
                   </p>
                 </div>
               </div>
