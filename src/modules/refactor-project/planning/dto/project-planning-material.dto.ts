@@ -42,10 +42,10 @@ export class ProjectMaterialItemDto {
   category: string;
 
   @ApiProperty()
-  used_for: string;
+  used_for?: string;
 
   @ApiProperty()
-  cut_shape: string;
+  cut_shape?: string;
 
   @IsNotEmpty()
   @ApiProperty()
@@ -56,28 +56,28 @@ export class ProjectMaterialItemDto {
   consumption_unit: string;
 
   @ApiProperty()
-  heavy: number;
+  heavy?: number;
 
   @ApiProperty()
-  heavy_unit: string;
+  heavy_unit?: string;
 
   @ApiProperty()
-  long: number;
+  long?: number;
 
   @ApiProperty()
-  long_unit: string;
+  long_unit?: string;
 
   @ApiProperty()
-  wide: number;
+  wide?: number;
 
   @ApiProperty()
-  wide_unit: string;
+  wide_unit?: string;
 
   @ApiProperty()
-  diameter: number;
+  diameter?: number;
 
   @ApiProperty()
-  diameter_unit: string;
+  diameter_unit?: string;
 
   project_detail_id?: number;
 

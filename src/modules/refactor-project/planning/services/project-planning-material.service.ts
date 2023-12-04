@@ -30,6 +30,32 @@ export class ProjectPlanningMaterialService {
     createProjectMaterialSourceDto: CreateProjectMaterialSourceDto,
     user_id,
   ) {
+    const oldDetail = await this.projectDetailRepository.findOne({
+      where: { id: project_detail_id },
+    });
+    if (
+      oldDetail.material_source !==
+      createProjectMaterialSourceDto.material_source
+    ) {
+      await this.projectMaterialItemRepository.update(
+        { project_detail_id },
+        { deleted_at: new Date().toISOString(), deleted_by: user_id },
+      );
+      if (createProjectMaterialSourceDto.material_source === 'Finished goods') {
+        await this.createMaterialItemOne(
+          project_detail_id,
+          {
+            relation_id: 0,
+            name: 'Finished goods',
+            category: 'Finished goods',
+            type: 'Finished goods',
+            consumption: 0,
+            consumption_unit: '',
+          },
+          user_id,
+        );
+      }
+    }
     const data = await this.projectDetailRepository.update(
       { id: project_detail_id },
       {
