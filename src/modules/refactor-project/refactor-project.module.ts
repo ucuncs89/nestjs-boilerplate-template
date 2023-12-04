@@ -55,6 +55,8 @@ import { ProjectSamplingRevisiEntity } from 'src/entities/project/project_sampli
 import { ProjectSamplingReviewController } from './sampling/controllers/project-sampling-review.controller';
 import { ProjectProductionVendorMaterialController } from './production/controllers/project-production-vendor-material.controller';
 import { ProjectProductionVendorMaterialService } from './production/services/project-production-vendor-material.service';
+import { ProjectProductionVendorProductionController } from './production/controllers/project-production-vendor-production.controller';
+import { ProjectProductionVendorProductionService } from './production/services/project-production-vendor-production.service';
 
 @Module({
   imports: [
@@ -102,6 +104,7 @@ import { ProjectProductionVendorMaterialService } from './production/services/pr
     ProjectDevSamplingController,
     ProjectSamplingReviewController,
     ProjectProductionVendorMaterialController,
+    ProjectProductionVendorProductionController,
   ],
   providers: [
     ProjectDetailService,
@@ -120,6 +123,7 @@ import { ProjectProductionVendorMaterialService } from './production/services/pr
     PurchaseOrderService,
     ProjectDevSamplingService,
     ProjectProductionVendorMaterialService,
+    ProjectProductionVendorProductionService,
   ],
 })
 export class RefactorProjectModule {}
