@@ -29,6 +29,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { MasterModule } from './modules/master/master.module';
 import { PurchaseOrderModule } from './modules/purchase-order/purchase-order.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
+import { RefactorProjectModule } from './modules/refactor-project/refactor-project.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
     MasterModule,
     PurchaseOrderModule,
     InvoiceModule,
+    RefactorProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],

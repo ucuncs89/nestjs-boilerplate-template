@@ -12,6 +12,7 @@ import { FabricVendorEntity } from '../fabric/fabric_vendor.entity';
 import { ProvinceEntity } from '../master/province.entity';
 import { CityEntity } from '../master/city.entity';
 import { ProjectVendorMaterialFabricDetailEntity } from '../project/project_vendor_material_fabric_detail.entity';
+import { ProjectVendorMaterialDetailEntity } from '../project/project_vendor_material_detail.entity';
 
 @Entity('vendors')
 export class VendorsEntity {
@@ -137,4 +138,12 @@ export class VendorsEntity {
   )
   @JoinColumn({ name: 'vendor_id' })
   project_vendor_material_fabric_detail: ProjectVendorMaterialFabricDetailEntity[];
+
+  @OneToMany(
+    () => ProjectVendorMaterialDetailEntity,
+    (vendor_material_detail: ProjectVendorMaterialDetailEntity) =>
+      vendor_material_detail.vendors,
+  )
+  @JoinColumn({ name: 'vendor_id' })
+  project_vendor_material_detail: ProjectVendorMaterialDetailEntity[];
 }

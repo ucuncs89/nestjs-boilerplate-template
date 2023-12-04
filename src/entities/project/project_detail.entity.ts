@@ -40,4 +40,25 @@ export class ProjectDetailEntity {
 
   @Column({ type: 'boolean', nullable: true })
   is_confirm: boolean;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  material_source: string;
+
+  @Column({ type: 'double precision', nullable: true })
+  total_price: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  fabric_percentage_of_loss: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  sewing_accessories_percentage_of_loss: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  packaging_accessories_percentage_of_loss: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  finished_goods_percentage_of_loss: number;
+
+  @Column({ type: 'text', nullable: true })
+  packaging_instructions: string;
 }
