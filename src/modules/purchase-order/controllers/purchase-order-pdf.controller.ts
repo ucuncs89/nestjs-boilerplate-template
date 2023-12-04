@@ -21,7 +21,7 @@ export class PurchaseOrderPdfController {
       phone_number: '0852 2010 0885',
     };
     const detail = await this.purchaseOrderService.findDetail(id);
-    const pdfBuffer = await this.purchaseOrderPdfService.generatePdf({
+    const pdfBuffer = await this.purchaseOrderPdfService.generatePDF2({
       ...detail,
       company,
     });
