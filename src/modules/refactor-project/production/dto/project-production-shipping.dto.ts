@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ProjectShippingProductionDto {
+export class ProjectProductionShippingDto {
   @ApiProperty()
   shipping_name: string;
 
