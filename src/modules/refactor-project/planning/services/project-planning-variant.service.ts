@@ -71,6 +71,7 @@ export class ProjectPlanningVariantService {
           project_variant_id: true,
           color_id: true,
           project_fabric_id: true,
+          color_name: true,
           project_material_item: {
             id: true,
             name: true,
