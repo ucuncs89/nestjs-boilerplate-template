@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
+import { ProjectVariantFabricColorEntity } from './project_variant_fabric_color.entity';
 
 @Entity('project_material_item')
 export class ProjectMaterialItemEntity {
@@ -91,4 +92,12 @@ export class ProjectMaterialItemEntity {
   )
   @JoinColumn({ name: 'project_material_item_id' })
   vendor_material: ProjectVendorMaterialEntity[];
+
+  @OneToMany(
+    () => ProjectVariantFabricColorEntity,
+    (vendor_material_material: ProjectVariantFabricColorEntity) =>
+      vendor_material_material.project_material_item,
+  )
+  @JoinColumn({ name: 'project_fabric_id' })
+  project_variant_fabric_color: ProjectVariantFabricColorEntity[];
 }
