@@ -30,10 +30,24 @@ export class ProjectPlanningVariantService {
         name: true,
         total_item: true,
         item_unit: true,
+        project_fabric: {
+          id: true,
+          project_variant_id: true,
+          color_id: true,
+          project_fabric_id: true,
+          project_material_item: {
+            id: true,
+            name: true,
+            consumption: true,
+            consumption_unit: true,
+            type: true,
+            category: true,
+          },
+        },
       },
       relations: {
         size: true,
-        project_fabric: true,
+        project_fabric: { project_material_item: true },
       },
     });
     return data;
@@ -52,10 +66,24 @@ export class ProjectPlanningVariantService {
         name: true,
         total_item: true,
         item_unit: true,
+        project_fabric: {
+          id: true,
+          project_variant_id: true,
+          color_id: true,
+          project_fabric_id: true,
+          project_material_item: {
+            id: true,
+            name: true,
+            consumption: true,
+            consumption_unit: true,
+            type: true,
+            category: true,
+          },
+        },
       },
       relations: {
         size: true,
-        project_fabric: true,
+        project_fabric: { project_material_item: true },
       },
     });
     if (!data) {
