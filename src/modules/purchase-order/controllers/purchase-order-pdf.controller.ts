@@ -21,16 +21,14 @@ export class PurchaseOrderPdfController {
       phone_number: '0852 2010 0885',
     };
     const detail = await this.purchaseOrderService.findDetail(id);
-    const pdfBuffer = await this.purchaseOrderPdfService.generatePdf({
+    const html = await this.purchaseOrderPdfService.generatePdf({
       ...detail,
       company,
     });
 
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'inline; filename=purchase_order.pdf',
-    });
+    res.type('text/html');
 
-    res.send(pdfBuffer);
+    // Send the HTML content as the response
+    res.send(html);
   }
 }
