@@ -59,4 +59,15 @@ export class InvoiceController {
   // update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
   //   return this.invoiceService.update(+id, updateInvoiceDto);
   // }
+  @Get(':id/detail')
+  async findDetailPurchase(@Param('id') id: number) {
+    const company = {
+      name: 'Cloami',
+      address: 'Jl. Manglid No. 21A / 41A, Bandung',
+      phone_number: '0852 2010 0885',
+    };
+    const detail = await this.invoiceService.findDetail(id);
+
+    return { message: 'Successfully', data: { ...detail, company } };
+  }
 }
