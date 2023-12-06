@@ -12,6 +12,7 @@ import { ProjectMaterialItemEntity } from 'src/entities/project/project_material
 import { AppErrorException } from 'src/exceptions/app-exception';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
+import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 
 @Injectable()
 export class ProjectPlanningMaterialService {
@@ -21,6 +22,12 @@ export class ProjectPlanningMaterialService {
 
     @InjectRepository(ProjectMaterialItemEntity)
     private projectMaterialItemRepository: Repository<ProjectMaterialItemEntity>,
+
+    @InjectRepository(ProjectVendorMaterialEntity)
+    private projectVendorMaterialRepository: Repository<ProjectVendorMaterialEntity>,
+
+    @InjectRepository(ProjectVendorMaterialDetailEntity)
+    private projectVendorMaterialDetailRepository: Repository<ProjectVendorMaterialDetailEntity>,
 
     private connection: Connection,
   ) {}
@@ -38,6 +45,19 @@ export class ProjectPlanningMaterialService {
       createProjectMaterialSourceDto.material_source
     ) {
       await this.projectMaterialItemRepository.update(
+        { project_detail_id },
+        { deleted_at: new Date().toISOString(), deleted_by: user_id },
+      );
+      await this.projectDetailRepository.update(
+        { id: project_detail_id },
+        {
+          fabric_percentage_of_loss: null,
+          finished_goods_percentage_of_loss: null,
+          packaging_accessories_percentage_of_loss: null,
+          sewing_accessories_percentage_of_loss: null,
+        },
+      );
+      await this.projectVendorMaterialRepository.update(
         { project_detail_id },
         { deleted_at: new Date().toISOString(), deleted_by: user_id },
       );
