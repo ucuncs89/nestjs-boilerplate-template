@@ -72,6 +72,8 @@ import { ProjectProductionPriceController } from './production/controllers/proje
 import { ProjectProductionConfirmationService } from './production/services/project-production-confirmation.service';
 import { ProjectProductionConfirmationController } from './production/controllers/project-production-confirmation.controller';
 import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
+import { InvoiceService } from '../invoice/services/invoice.service';
+import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
 
 @Module({
   imports: [
@@ -96,6 +98,7 @@ import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchas
       ProjectVendorMaterialFabricDetailEntity,
       ProjectVendorMaterialAccessoriesSewingDetailEntity,
       ProjectVendorMaterialAccessoriesPackagingDetailEntity,
+      ProjectVendorMaterialFinishedGoodDetailEntity,
       ProjectSamplingStatusEntity,
       ProjectSamplingRevisiEntity,
       InvoiceEntity,
@@ -154,6 +157,7 @@ import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchas
     ProjectProductionShippingService,
     ProjectProductionPriceService,
     ProjectProductionConfirmationService,
+    InvoiceService,
   ],
 })
 export class RefactorProjectModule {}

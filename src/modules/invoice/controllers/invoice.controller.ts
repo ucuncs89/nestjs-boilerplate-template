@@ -39,7 +39,7 @@ export class InvoiceController {
       data.total_data,
       _page,
       _page_size,
-      `/project`,
+      `/invoice`,
     );
     return { message: 'Data nya belum fix', ...data, pagination };
   }
@@ -69,6 +69,9 @@ export class InvoiceController {
     };
     const detail = await this.invoiceService.findDetail(id);
 
-    return { message: 'Successfully', data: { ...detail, company } };
+    return {
+      message: 'Successfully belum ambil dari refactor-project',
+      data: { ...detail, company },
+    };
   }
 }

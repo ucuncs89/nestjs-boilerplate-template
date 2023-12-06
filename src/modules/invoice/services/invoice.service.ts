@@ -39,14 +39,7 @@ export class InvoiceService {
   ) {}
 
   async findAll(query: GetListInvoiceDto) {
-    const {
-      page,
-      page_size,
-      sort_by,
-      order_by,
-
-      keyword,
-    } = query;
+    const { page, page_size, sort_by, order_by, keyword } = query;
     let orderObj = {};
     switch (sort_by) {
       case 'name':
@@ -79,6 +72,7 @@ export class InvoiceService {
       order: orderObj,
       take: page_size,
       skip: page,
+      relations: { project: true },
     });
     return {
       data,
@@ -89,6 +83,40 @@ export class InvoiceService {
   async findOne(id: number) {
     const data = await this.invoiceRepository.findOne({
       where: { id, deleted_at: IsNull(), deleted_by: IsNull() },
+      select: {
+        id: true,
+        code: true,
+        customer_id: true,
+        company_name: true,
+        company_address: true,
+        company_phone_number: true,
+        ppn: true,
+        ppn_unit: true,
+        pph: true,
+        pph_unit: true,
+        discount: true,
+        bank_name: true,
+        bank_account_number: true,
+        bank_account_houlders_name: true,
+        payment_term: true,
+        payment_term_unit: true,
+        notes: true,
+        status: true,
+        delivery_date: true,
+        grand_total: true,
+        approval: {
+          id: true,
+          status: true,
+          status_desc: true,
+          invoice_id: true,
+        },
+      },
+      relations: {
+        approval: true,
+      },
+      order: {
+        approval: { id: 'ASC' },
+      },
     });
     if (!data) {
       throw new AppErrorNotFoundException();
@@ -405,5 +433,41 @@ export class InvoiceService {
       });
     }
     return arrResult;
+  }
+  async generateCodePurchaseOrder() {
+    const pad = '0000';
+    const currentDate = new Date();
+    const formattedDate = currentDate
+      .toISOString()
+      .slice(0, 10)
+      .replace(/-/g, '');
+    try {
+      const packaging = await this.invoiceRepository.find({
+        select: { id: true },
+        order: {
+          id: 'DESC',
+        },
+        take: 1,
+      });
+      const id = packaging[0] ? `${packaging[0].id + 1}` : '1';
+      return `INV-${formattedDate}-${
+        pad.substring(0, pad.length - id.length) + id
+      }`;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  async updateGrandTotal(invoice_id: number) {
+    const resultGrandTotal = await this.findDetail(invoice_id);
+    try {
+      return await this.invoiceRepository.update(
+        { id: invoice_id },
+        {
+          grand_total: resultGrandTotal.grand_total || null,
+        },
+      );
+    } catch (error) {
+      throw new AppErrorNotFoundException();
+    }
   }
 }

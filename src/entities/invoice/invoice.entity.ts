@@ -2,10 +2,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { InvoiceHistoryEntity } from './invoice_history.entity';
+import { InvoiceApprovalEntity } from './invoice_approval.entity';
+import { ProjectEntity } from '../project/project.entity';
 
 @Entity('invoice')
 export class InvoiceEntity {
@@ -14,6 +17,9 @@ export class InvoiceEntity {
 
   @Column({ type: 'varchar' })
   code: string;
+
+  @Column({ type: 'int', nullable: true })
+  project_id: number;
 
   @Column({ type: 'int' })
   customer_id: number;
@@ -63,6 +69,12 @@ export class InvoiceEntity {
   @Column({ type: 'varchar', nullable: true })
   status: string;
 
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  delivery_date: string;
+
+  @Column({ type: 'double precision', nullable: true })
+  grand_total: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
@@ -90,4 +102,15 @@ export class InvoiceEntity {
   )
   @JoinColumn({ name: 'invoice_id' })
   history: InvoiceHistoryEntity[];
+
+  @OneToMany(
+    () => InvoiceApprovalEntity,
+    (invoice: InvoiceApprovalEntity) => invoice.invoice,
+  )
+  @JoinColumn({ name: 'invoice_id' })
+  approval: InvoiceApprovalEntity[];
+
+  @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.invoice)
+  @JoinColumn({ name: 'project_id' })
+  public project: ProjectEntity;
 }
