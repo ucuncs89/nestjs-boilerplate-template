@@ -6,12 +6,20 @@ import {
   UseGuards,
   Query,
   Req,
+  Put,
+  Body,
+  Post,
 } from '@nestjs/common';
 import { PurchaseOrderService } from '../services/purchase-order.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { GetListPurchaseOrderDto } from '../dto/get-list-purchase-order.dto';
 import { Pagination } from 'src/utils/pagination';
+import {
+  ProjectApprovalDto,
+  PurchaseOrderDto,
+  StatusApprovalEnum,
+} from '../dto/purchase-order.dto';
 
 @ApiBearerAuth()
 @ApiTags('Purchase Order')
@@ -20,10 +28,6 @@ import { Pagination } from 'src/utils/pagination';
 export class PurchaseOrderController {
   constructor(private readonly purchaseOrderService: PurchaseOrderService) {}
 
-  // @Post()
-  // create(@Body() createPurchaseOrderDto: CreatePurchaseOrderDto) {
-  //   return this.purchaseOrderService.create(createPurchaseOrderDto);
-  // }
   @Get()
   async findAll(@Query() query: GetListPurchaseOrderDto) {
     const _page = query.page || 1;
@@ -67,5 +71,34 @@ export class PurchaseOrderController {
     const detail = await this.purchaseOrderService.findDetail(id);
 
     return { message: 'Successfully', data: { ...detail, company } };
+  }
+  @Put(':id')
+  async putPurchaseOrder(
+    @Req() req,
+    @Param('id') id: number,
+    @Body() purchaseOrderDto: PurchaseOrderDto,
+  ) {
+    const data = await this.purchaseOrderService.updatePurchaseOrder(
+      id,
+      purchaseOrderDto,
+      req.user.id,
+    );
+    return { message: 'Successfully', data };
+  }
+
+  @Post(':id/approval/:approval_id')
+  async updateApproval(
+    @Req() req,
+    @Param('id') id: number,
+    @Param('approval_id') approval_id: number,
+    @Body() projectApprovalDto: ProjectApprovalDto,
+  ) {
+    const data = await this.purchaseOrderService.updatePurchaseOrderApproval(
+      id,
+      approval_id,
+      projectApprovalDto.status,
+      req.user.id,
+    );
+    return { data };
   }
 }

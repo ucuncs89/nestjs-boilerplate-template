@@ -3,17 +3,18 @@ import { PurchaseOrderService } from '../services/purchase-order.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { PurchaseOrderPdfService } from '../services/purchase-order-pdf.service';
+import { PurchaseOrderExcelService } from '../services/purchase-order-excel.service';
 
 @ApiBearerAuth()
 @ApiTags('Purchase Order')
 // @UseGuards(JwtAuthGuard)
 @Controller('purchase-order')
-export class PurchaseOrderPdfController {
+export class PurchaseOrderExcelController {
   constructor(
     private readonly purchaseOrderService: PurchaseOrderService,
-    private readonly purchaseOrderPdfService: PurchaseOrderPdfService,
+    private readonly purchaseOrderExcelService: PurchaseOrderExcelService,
   ) {}
-  @Get(':id/detail/download-pdf')
+  @Get(':id/detail/download-excel')
   async findDetailPurchase(@Res() res, @Param('id') id: number): Promise<void> {
     const company = {
       name: 'Cloami',
@@ -21,14 +22,20 @@ export class PurchaseOrderPdfController {
       phone_number: '0852 2010 0885',
     };
     const detail = await this.purchaseOrderService.findDetail(id);
-    const html = await this.purchaseOrderPdfService.generatePdf({
+    console.log({ ...detail, company });
+    const excelBuffer = await this.purchaseOrderExcelService.generateExcel({
       ...detail,
       company,
     });
 
-    res.type('text/html');
-
-    // Send the HTML content as the response
-    res.send(html);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=purchase_order.xlsx',
+    );
+    res.send(excelBuffer);
   }
 }

@@ -71,6 +71,7 @@ import { ProjectProductionPriceService } from './production/services/project-pro
 import { ProjectProductionPriceController } from './production/controllers/project-production-price.controller';
 import { ProjectProductionConfirmationService } from './production/services/project-production-confirmation.service';
 import { ProjectProductionConfirmationController } from './production/controllers/project-production-confirmation.controller';
+import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
 
 @Module({
   imports: [
@@ -99,6 +100,7 @@ import { ProjectProductionConfirmationController } from './production/controller
       ProjectSamplingRevisiEntity,
       InvoiceEntity,
       ProjectInvoiceEntity,
+      PurchaseOrderApprovalEntity,
     ]),
     RabbitMQModule,
   ],
