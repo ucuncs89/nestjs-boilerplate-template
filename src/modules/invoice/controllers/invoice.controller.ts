@@ -59,6 +59,7 @@ export class InvoiceController {
   // update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
   //   return this.invoiceService.update(+id, updateInvoiceDto);
   // }
+
   @Get(':id/detail')
   async findDetailPurchase(@Param('id') id: number) {
     const company = {
