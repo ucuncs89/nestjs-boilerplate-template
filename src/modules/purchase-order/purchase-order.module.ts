@@ -9,12 +9,16 @@ import { ProjectVendorMaterialFabricEntity } from 'src/entities/project/project_
 import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
 import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
-import { PurchaseOrderPdfService } from './services/purcahse-order-pdf.service';
+import { PurchaseOrderPdfService } from './services/purchase-order-pdf.service';
 import { PurchaseOrderPdfController } from './controllers/purchase-order-pdf.controller';
+import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
+import { PurchaseOrderExcelController } from './controllers/purchase-order-excel.controller';
+import { PurchaseOrderExcelService } from './services/purchase-order-excel.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      PurchaseOrderApprovalEntity,
       PurchaseOrderEntity,
       ProjectPurchaseOrderEntity,
       ProjectVendorMaterialFabricDetailEntity,
@@ -22,9 +26,18 @@ import { PurchaseOrderPdfController } from './controllers/purchase-order-pdf.con
       ProjectVendorMaterialAccessoriesSewingDetailEntity,
       ProjectVendorMaterialAccessoriesPackagingDetailEntity,
       ProjectVendorProductionDetailEntity,
+      PurchaseOrderExcelController,
     ]),
   ],
-  controllers: [PurchaseOrderController, PurchaseOrderPdfController],
-  providers: [PurchaseOrderService, PurchaseOrderPdfService],
+  controllers: [
+    PurchaseOrderController,
+    PurchaseOrderPdfController,
+    PurchaseOrderExcelController,
+  ],
+  providers: [
+    PurchaseOrderService,
+    PurchaseOrderPdfService,
+    PurchaseOrderExcelService,
+  ],
 })
 export class PurchaseOrderModule {}

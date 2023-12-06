@@ -24,7 +24,7 @@
     <title>{{title}}</title>
   </head>
 
-  <body class='p-4' id='body'>
+  <body class='p-4' id='body' onload='download()'>
     <div class='container-fluid'>
       <div class='row'>
         <div class='col-12'>
@@ -179,13 +179,12 @@
       referrerpolicy='no-referrer'
     ></script>
     <script>
-      (function () { setTimeout(function () { var element =
-      document.getElementById("body"); const pdfOptions = { margin: 10,
-      filename: "generated.pdf", image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 }, jsPDF: { unit: "mm", format: "a4", orientation:
-      "landscape" }, pagebreak: { mode: "avoid-all", before: "#page-break-row"
-      }, }; var worker = html2pdf().from(element).set(pdfOptions).save(); },
-      1000); })();
+      async function download() { var element = document.getElementById("body");
+      const pdfOptions = { margin: 10, filename: "generated.pdf", image: { type:
+      "jpeg", quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: "mm",
+      format: "a4", orientation: "landscape" }, pagebreak: { mode: "avoid-all",
+      before: "#page-break-row" }, }; await
+      html2pdf().from(element).set(pdfOptions).save(); return window.close(); }
     </script>
   </body>
 

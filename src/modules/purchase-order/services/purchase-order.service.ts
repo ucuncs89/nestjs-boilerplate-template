@@ -5,12 +5,21 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrderEntity } from 'src/entities/purchase-order/purchase_order.entity';
 import { ILike, IsNull, Not, Repository } from 'typeorm';
 import { GetListPurchaseOrderDto } from '../dto/get-list-purchase-order.dto';
-import { AppErrorNotFoundException } from 'src/exceptions/app-exception';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
 import { ProjectPurchaseOrderEntity } from 'src/entities/project/project_purchase_order.entity';
 import { ProjectVendorMaterialFabricDetailEntity } from 'src/entities/project/project_vendor_material_fabric_detail.entity';
 import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
 import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+import {
+  PurchaseOrderDto,
+  StatusApprovalEnum,
+} from '../dto/purchase-order.dto';
+import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
+import { error } from 'console';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -32,6 +41,9 @@ export class PurchaseOrderService {
 
     @InjectRepository(ProjectVendorProductionDetailEntity)
     private projectVendorProductionDetailEntityRepository: Repository<ProjectVendorProductionDetailEntity>,
+
+    @InjectRepository(PurchaseOrderApprovalEntity)
+    private purchaseOrderApprovalRepository: Repository<PurchaseOrderApprovalEntity>,
   ) {}
   create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
     return 'This action adds a new purchaseOrder';
@@ -116,16 +128,24 @@ export class PurchaseOrderService {
         status: true,
         delivery_date: true,
         grand_total: true,
+        approval: {
+          id: true,
+          status: true,
+          status_desc: true,
+          purchase_order_id: true,
+        },
+      },
+      relations: {
+        approval: true,
+      },
+      order: {
+        approval: { id: 'ASC' },
       },
     });
     if (!data) {
       throw new AppErrorNotFoundException();
     }
     return data;
-  }
-
-  update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
-    return `This action updates a #${id} purchaseOrder`;
   }
 
   async remove(id: number, user_id) {
@@ -425,6 +445,60 @@ export class PurchaseOrderService {
       );
     } catch (error) {
       throw new AppErrorNotFoundException();
+    }
+  }
+  async updatePurchaseOrder(
+    id,
+    purchaseOrderDto: PurchaseOrderDto,
+    user_id: number,
+  ) {
+    try {
+      const data = await this.purchaseOrderRepository.update(
+        {
+          id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        {
+          company_address: purchaseOrderDto.company_address,
+          company_phone_number: purchaseOrderDto.company_phone_number,
+          ppn: purchaseOrderDto.ppn,
+          pph: purchaseOrderDto.pph,
+          discount: purchaseOrderDto.discount,
+          bank_name: purchaseOrderDto.bank_name,
+          bank_account_houlders_name:
+            purchaseOrderDto.bank_account_houlders_name,
+          bank_account_number: purchaseOrderDto.bank_account_number,
+          payment_term: purchaseOrderDto.payment_term,
+          notes: purchaseOrderDto.notes,
+          updated_at: new Date().toISOString(),
+          updated_by: user_id,
+        },
+      );
+      return data;
+    } catch (error) {
+      console.log(error);
+
+      throw new AppErrorException(error);
+    }
+  }
+  async updatePurchaseOrderApproval(
+    purchase_order_id: number,
+    approval_id: number,
+    status: StatusApprovalEnum,
+    user_id: number,
+  ) {
+    try {
+      const data = await this.purchaseOrderApprovalRepository.update(
+        {
+          id: approval_id,
+          purchase_order_id,
+        },
+        { status, updated_by: user_id, updated_at: new Date().toISOString() },
+      );
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
     }
   }
 }
