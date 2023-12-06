@@ -47,6 +47,7 @@ export class ProjectInvoiceProductionController {
     @I18n() i18n: I18nContext,
   ) {
     const data = await this.projectInvoiceProductionService.createInvoice(
+      project_id,
       detail_id,
       projectInvoiceProductionDto,
       req.user.id,

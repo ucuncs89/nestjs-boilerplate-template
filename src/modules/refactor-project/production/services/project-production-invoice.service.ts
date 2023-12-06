@@ -10,6 +10,8 @@ import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
 import { ProjectInvoiceEntity } from 'src/entities/project/project_invoice.entity';
 import { InvoiceHistoryEntity } from 'src/entities/invoice/invoice_history.entity';
 import { ProjectProductionInvoiceDto } from '../dto/project-production-invoice.dto';
+import { InvoiceApprovalEntity } from 'src/entities/invoice/invoice_approval.entity';
+import { InvoiceService } from 'src/modules/invoice/services/invoice.service';
 
 @Injectable()
 export class ProjectProductionInvoiceService {
@@ -19,21 +21,25 @@ export class ProjectProductionInvoiceService {
 
     @InjectRepository(ProjectInvoiceEntity)
     private projectInvoiceRepository: Repository<ProjectInvoiceEntity>,
+    private invoiceService: InvoiceService,
     private connection: Connection,
   ) {}
   async createInvoice(
+    project_id,
     project_detail_id,
     projectProductionInvoiceDto: ProjectProductionInvoiceDto,
     user_id,
   ) {
+    const code = await this.invoiceService.generateCodePurchaseOrder();
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
       const invoice = await queryRunner.manager.insert(InvoiceEntity, {
         ...projectProductionInvoiceDto,
-        code: 'belum',
+        code,
         status: 'Submitted',
+        project_id,
       });
       await queryRunner.manager.insert(ProjectInvoiceEntity, {
         project_detail_id,
@@ -47,12 +53,29 @@ export class ProjectProductionInvoiceService {
         created_at: new Date().toISOString(),
         created_by: user_id,
       });
+      await queryRunner.manager.insert(InvoiceApprovalEntity, [
+        {
+          invoice_id: invoice.raw[0].id,
+          status_desc: 'Made by',
+        },
+        {
+          invoice_id: invoice.raw[0].id,
+          status_desc: 'Sent by the finance team',
+        },
+        {
+          invoice_id: invoice.raw[0].id,
+          status_desc: 'Approved by',
+        },
+      ]);
       await queryRunner.commitTransaction();
+      this.invoiceService.updateGrandTotal(invoice.raw[0].id);
       return {
         id: invoice.raw[0].id,
         ...projectProductionInvoiceDto,
       };
     } catch (error) {
+      console.log(error);
+
       await queryRunner.rollbackTransaction();
 
       throw new AppErrorException(error);
