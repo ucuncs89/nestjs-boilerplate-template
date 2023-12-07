@@ -240,7 +240,6 @@ export class ProjectDetailService {
               { ...materialItem, type: materialItem.type },
               user_id,
             );
-          console.log(data);
 
           newMaterialItem.push(data);
         }
@@ -253,7 +252,7 @@ export class ProjectDetailService {
             { ...variant },
             user_id,
           );
-          console.log(data);
+
           newVariant.push(data);
         }
       }
