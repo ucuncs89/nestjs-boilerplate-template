@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PurchaseOrderEntity } from './purchase_order.entity';
+import { UsersEntity } from '../users/users.entity';
 
 @Entity('purchase_order_approval')
 export class PurchaseOrderApprovalEntity {
@@ -51,6 +52,16 @@ export class PurchaseOrderApprovalEntity {
   )
   @JoinColumn({ name: 'purchase_order_id' })
   public purchase_order: PurchaseOrderEntity;
+
+  @ManyToOne(
+    () => UsersEntity,
+    (users: UsersEntity) => users.purchase_order_approval,
+    {
+      cascade: true,
+    },
+  )
+  @JoinColumn({ name: 'updated_by' })
+  public users: UsersEntity;
 }
 // status : Approved, Rejected
 // status_desc : Made by, Sent by the finance team, Approved by

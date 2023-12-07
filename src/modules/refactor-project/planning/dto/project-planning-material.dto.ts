@@ -89,5 +89,5 @@ export class ProjectMaterialItemDto {
 }
 export class GetListProjectMaterialDto {
   @ApiProperty({ required: false, enum: ProjectMaterialItemEnum })
-  type: ProjectMaterialItemEnum;
+  type?: ProjectMaterialItemEnum;
 }

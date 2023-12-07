@@ -2,13 +2,16 @@ import {
   Column,
   Entity,
   Generated,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { RolesEntity } from '../roles/roles.entity';
 import { UsersDetailEntity } from './users_detail.entity';
+import { PurchaseOrderApprovalEntity } from '../purchase-order/purchase_order_approval.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -83,4 +86,11 @@ export class UsersEntity {
     name: 'user_id',
   })
   user_detail: UsersEntity;
+
+  @OneToMany(
+    () => PurchaseOrderApprovalEntity,
+    (approval: PurchaseOrderApprovalEntity) => approval.users,
+  )
+  @JoinColumn({ name: 'updated_by' })
+  purchase_order_approval: PurchaseOrderApprovalEntity[];
 }

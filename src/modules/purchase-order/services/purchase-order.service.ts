@@ -133,10 +133,20 @@ export class PurchaseOrderService {
           status: true,
           status_desc: true,
           purchase_order_id: true,
+          created_by: true,
+          created_at: true,
+          updated_at: true,
+          updated_by: true,
+          users: {
+            id: true,
+            full_name: true,
+          },
         },
       },
       relations: {
-        approval: true,
+        approval: {
+          users: true,
+        },
       },
       order: {
         approval: { id: 'ASC' },

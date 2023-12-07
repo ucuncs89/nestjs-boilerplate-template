@@ -22,7 +22,7 @@ export class PurchaseOrderExcelController {
       phone_number: '0852 2010 0885',
     };
     const detail = await this.purchaseOrderService.findDetail(id);
-    console.log({ ...detail, company });
+
     const excelBuffer = await this.purchaseOrderExcelService.generateExcel({
       ...detail,
       company,

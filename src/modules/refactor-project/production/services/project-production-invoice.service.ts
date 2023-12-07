@@ -74,8 +74,6 @@ export class ProjectProductionInvoiceService {
         ...projectProductionInvoiceDto,
       };
     } catch (error) {
-      console.log(error);
-
       await queryRunner.rollbackTransaction();
 
       throw new AppErrorException(error);

@@ -44,10 +44,7 @@ export class ProjectPlanningMaterialService {
       oldDetail.material_source !==
       createProjectMaterialSourceDto.material_source
     ) {
-      await this.projectMaterialItemRepository.update(
-        { project_detail_id },
-        { deleted_at: new Date().toISOString(), deleted_by: user_id },
-      );
+      await this.projectMaterialItemRepository.delete({ project_detail_id });
       await this.projectDetailRepository.update(
         { id: project_detail_id },
         {
@@ -157,15 +154,17 @@ export class ProjectPlanningMaterialService {
         deleted_at: IsNull(),
         deleted_by: IsNull(),
         project_detail_id,
-        type: getListProjectMaterialDto.type
-          ? getListProjectMaterialDto.type
-          : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
+        type:
+          getListProjectMaterialDto.type != null
+            ? getListProjectMaterialDto.type
+            : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
       },
       order: {
         type: 'ASC',
         id: 'ASC',
       },
     });
+
     return data;
   }
 
