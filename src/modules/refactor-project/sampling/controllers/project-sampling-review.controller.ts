@@ -6,13 +6,13 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectSamplingConfirmDto } from '../dto/project-sampling-confirm.dto';
 
 @ApiBearerAuth()
-@ApiTags('Project Sampling')
+@ApiTags('refactor-project Sampling')
 @UseGuards(JwtAuthGuard)
-@Controller('project')
+@Controller('refactor-project/sampling')
 export class ProjectSamplingReviewController {
   constructor(private readonly projectDetailService: ProjectDetailService) {}
 
-  @Post('sampling/:project_id/detail/:detail_id/confirmation')
+  @Post(':project_id/detail/:detail_id/confirmation')
   async createConfirm(
     @Req() req,
     @Param('project_id') project_id: number,

@@ -54,10 +54,7 @@ export class ProjectPlanningMaterialService {
           sewing_accessories_percentage_of_loss: null,
         },
       );
-      await this.projectVendorMaterialRepository.update(
-        { project_detail_id },
-        { deleted_at: new Date().toISOString(), deleted_by: user_id },
-      );
+      await this.projectVendorMaterialRepository.delete({ project_detail_id });
       if (createProjectMaterialSourceDto.material_source === 'Finished goods') {
         await this.createMaterialItemOne(
           project_detail_id,
