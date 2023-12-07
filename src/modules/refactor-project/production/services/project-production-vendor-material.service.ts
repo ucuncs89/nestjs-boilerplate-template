@@ -39,7 +39,7 @@ export class ProjectProductionVendorMaterialService {
         deleted_by: IsNull(),
         type: getListProjectMaterialDto.type
           ? getListProjectMaterialDto.type
-          : In(['Fabric', 'Sewing', 'Packaging']),
+          : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
         vendor_material: {
           deleted_at: IsNull(),
           deleted_by: IsNull(),

@@ -159,7 +159,7 @@ export class ProjectPlanningMaterialService {
         project_detail_id,
         type: getListProjectMaterialDto.type
           ? getListProjectMaterialDto.type
-          : In(['Fabric', 'Sewing', 'Packaging']),
+          : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
       },
       order: {
         type: 'ASC',
