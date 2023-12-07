@@ -68,8 +68,6 @@ export class VendorsExcelService {
           : null,
       };
       if (!findByName) {
-        // console.log(payloadVendor);
-
         await this.vendorsService.create(payloadVendor, user_id, i18n);
       } else {
         await this.vendorsService.updateVendorExcel(

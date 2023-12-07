@@ -286,7 +286,6 @@ export class ProjectProductionVendorProductionService {
       return [];
     }
     const arrIds = findVendor.map((v) => v.id);
-    console.log(arrIds);
 
     const dataVendorProduction = await this
       .projectVendorProductionDetailRepository.query(`
