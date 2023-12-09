@@ -23,6 +23,7 @@ import { ProjectPlanningPriceService } from '../services/project-planning-price.
 import { ProjectPlanningVendorMaterialService } from '../services/project-planning-vendor-material.service';
 import { ProjectPlanningSetSamplingService } from '../services/project-planning-set-sampling.service';
 import { ProjectPlanningConfirmDto } from '../dto/project-planning-confirm.dto';
+import { ProjectPlanningConfirmService } from '../services/project-planning-confirm.service';
 
 @ApiBearerAuth()
 @ApiTags('refactor-project Planning')
@@ -39,6 +40,7 @@ export class ProjectPlanningConfirmReviewController {
     private readonly projectPlanningPriceService: ProjectPlanningPriceService,
     private readonly projectPlanningVendorMaterialService: ProjectPlanningVendorMaterialService,
     private readonly projectPlanningSetSamplingService: ProjectPlanningSetSamplingService,
+    private readonly projectPlanningConfirmService: ProjectPlanningConfirmService,
   ) {}
 
   @Post(':project_id/detail/:detail_id/confirmation')
@@ -94,8 +96,20 @@ export class ProjectPlanningConfirmReviewController {
         { type: ProjectMaterialItemEnum.Packaging },
         req.user.id,
       );
+    const finished_goods =
+      await this.projectPlanningMaterialService.listMaterialItem(
+        detail_id,
+        { type: ProjectMaterialItemEnum.Finishedgoods },
+        req.user.id,
+      );
     return {
-      data: { ...detail, fabric, accessories_sewing, accessories_packaging },
+      data: {
+        ...detail,
+        fabric,
+        accessories_sewing,
+        accessories_packaging,
+        finished_goods,
+      },
     };
   }
   @Get(':project_id/detail/:detail_id/review/variant')
@@ -213,6 +227,66 @@ export class ProjectPlanningConfirmReviewController {
         detail_id,
         { type: null },
         req.user.id,
+      );
+    return { data };
+  }
+
+  @Get(':project_id/detail/:detail_id/review/total-cost')
+  async getTotalCost(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const materialFabric =
+      await this.projectPlanningVendorMaterialService.findVendorMaterialItem(
+        detail_id,
+        { type: ProjectMaterialItemEnum.Fabric },
+        req.user.id,
+      );
+    const materialSewing =
+      await this.projectPlanningVendorMaterialService.findVendorMaterialItem(
+        detail_id,
+        { type: ProjectMaterialItemEnum.Sewing },
+        req.user.id,
+      );
+    const materialPackaging =
+      await this.projectPlanningVendorMaterialService.findVendorMaterialItem(
+        detail_id,
+        { type: ProjectMaterialItemEnum.Packaging },
+        req.user.id,
+      );
+    const materialFinishedGoods =
+      await this.projectPlanningVendorMaterialService.findVendorMaterialItem(
+        detail_id,
+        { type: ProjectMaterialItemEnum.Finishedgoods },
+        req.user.id,
+      );
+    const sumQuantity = await this.projectService.sumProjectSizeQuantity(
+      project_id,
+    );
+    const listProduction =
+      await this.projectPlanningVendorProductionService.findVendorProduction(
+        detail_id,
+      );
+    const projectPrice =
+      await this.projectPlanningPriceService.findProjectPrice(detail_id);
+    const projectDetail = await this.projectDetailService.findById(detail_id);
+    const listDelivery =
+      await this.projectPlanningShippingService.findByProjectDetailId(
+        detail_id,
+      );
+    const data =
+      await this.projectPlanningConfirmService.findAndCalculateTotalCost(
+        materialFabric,
+        materialSewing,
+        materialPackaging,
+        materialFinishedGoods,
+        sumQuantity,
+        listProduction,
+        projectPrice,
+        projectDetail,
+        listDelivery,
       );
     return { data };
   }

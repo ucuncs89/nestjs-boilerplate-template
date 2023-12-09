@@ -74,6 +74,7 @@ import { ProjectProductionConfirmationController } from './production/controller
 import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
 import { InvoiceService } from '../invoice/services/invoice.service';
 import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
+import { ProjectPlanningConfirmService } from './planning/services/project-planning-confirm.service';
 
 @Module({
   imports: [
@@ -158,6 +159,7 @@ import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/proj
     ProjectProductionPriceService,
     ProjectProductionConfirmationService,
     InvoiceService,
+    ProjectPlanningConfirmService,
   ],
 })
 export class RefactorProjectModule {}
