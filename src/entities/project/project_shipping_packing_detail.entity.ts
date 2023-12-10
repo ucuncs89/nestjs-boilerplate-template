@@ -2,30 +2,24 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectShippingPackingEntity } from './project_shipping_packing.entity';
 
-@Entity('project_shipping')
-export class ProjectShippingEntity {
+@Entity('project_shipping_packing_detail')
+export class ProjectShippingPackingDetailEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'int' })
-  project_detail_id: number;
+  project_shipping_packing_id: number;
 
   @Column({ type: 'varchar' })
-  shipping_name: string;
+  size_ratio: string;
 
-  @Column({ type: 'varchar' })
-  shipping_vendor_name: string;
-
-  @Column({ type: 'timestamp with time zone' })
-  shipping_date: string;
-
-  @Column({ type: 'int', nullable: true })
-  shipping_cost?: number;
+  @Column({ type: 'int', default: 0 })
+  number_of_item: number;
 
   @Column({
     type: 'timestamp with time zone',
@@ -48,11 +42,11 @@ export class ProjectShippingEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
-  @OneToMany(
+  @ManyToOne(
     () => ProjectShippingPackingEntity,
-    (shipping_packing: ProjectShippingPackingEntity) =>
-      shipping_packing.shipping,
+    (packing: ProjectShippingPackingEntity) => packing.detail,
+    { cascade: true },
   )
-  @JoinColumn({ name: 'project_shipping_id' })
-  packing: ProjectShippingPackingEntity[];
+  @JoinColumn({ name: 'project_shipping_packing_id' })
+  public packing: ProjectShippingPackingEntity;
 }
