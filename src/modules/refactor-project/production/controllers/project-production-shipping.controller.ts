@@ -14,7 +14,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectProductionShippingService } from '../services/project-production-shipping.service';
-import { ProjectProductionShippingDto } from '../dto/project-production-shipping.dto';
+import {
+  ProjectProductionShippingDto,
+  ProjectProductionShippingPackingDto,
+} from '../dto/project-production-shipping.dto';
 
 @ApiBearerAuth()
 @ApiTags('refactor-project Production')
@@ -94,6 +97,94 @@ export class ProjectProductionShippingController {
   ) {
     const data = await this.projectProductionShippingService.deleteShipping(
       shipping_id,
+    );
+    return { data };
+  }
+
+  @Post(':project_id/detail/:detail_id/shipping/:shipping_id/packing')
+  async createProjectShippingPacking(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @Body()
+    projectProductionShippingPackingDto: ProjectProductionShippingPackingDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectProductionShippingService.createShippingPacking(
+        shipping_id,
+        projectProductionShippingPackingDto,
+        req.user.id,
+      );
+    return { data };
+  }
+  @Get(':project_id/detail/:detail_id/shipping-packing')
+  async listProjectShippingPacking(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectProductionShippingService.findShippingPacking(
+        detail_id,
+      );
+    return { data };
+  }
+  @Get(
+    ':project_id/detail/:detail_id/shipping/:shipping_id/packing/:packing_id',
+  )
+  async getOneProjectShippingPacking(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @Param('packing_id') packing_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectProductionShippingService.findOnePacking(
+      shipping_id,
+      packing_id,
+    );
+    return { data };
+  }
+  @Put(
+    ':project_id/detail/:detail_id/shipping/:shipping_id/packing/:packing_id',
+  )
+  async updateProjectShippingPacking(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @Param('packing_id') packing_id: number,
+    @Body()
+    projectProductionShippingPackingDto: ProjectProductionShippingPackingDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectProductionShippingService.updateShippingPacking(
+        packing_id,
+        projectProductionShippingPackingDto,
+        req.user.id,
+      );
+    return { data };
+  }
+
+  @Delete(
+    ':project_id/detail/:detail_id/shipping/:shipping_id/packing/:packing_id',
+  )
+  async deleteProjectShippingPacking(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @Param('packing_id') packing_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectProductionShippingService.deletePacking(
+      shipping_id,
+      packing_id,
     );
     return { data };
   }

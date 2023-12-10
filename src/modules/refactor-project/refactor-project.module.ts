@@ -75,6 +75,7 @@ import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchas
 import { InvoiceService } from '../invoice/services/invoice.service';
 import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
 import { ProjectPlanningConfirmService } from './planning/services/project-planning-confirm.service';
+import { ProjectShippingPackingEntity } from 'src/entities/project/project_shipping_packing.entity';
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { ProjectPlanningConfirmService } from './planning/services/project-plann
       InvoiceEntity,
       ProjectInvoiceEntity,
       PurchaseOrderApprovalEntity,
+      ProjectShippingPackingEntity,
     ]),
     RabbitMQModule,
   ],
