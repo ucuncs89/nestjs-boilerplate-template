@@ -5,7 +5,7 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { Connection, IsNull, Repository } from 'typeorm';
+import { Connection, In, IsNull, Repository } from 'typeorm';
 import {
   ProjectProductionShippingDto,
   ProjectProductionShippingPackingDto,
@@ -21,6 +21,9 @@ export class ProjectProductionShippingService {
 
     @InjectRepository(ProjectShippingPackingEntity)
     private projectShippingPackingRepository: Repository<ProjectShippingPackingEntity>,
+
+    @InjectRepository(ProjectShippingPackingDetailEntity)
+    private projectShippingPackingDetailRepository: Repository<ProjectShippingPackingDetailEntity>,
 
     private connection: Connection,
   ) {}
@@ -235,5 +238,63 @@ export class ProjectProductionShippingService {
       relations: { packing: { detail: true } },
     });
     return data;
+  }
+  async findShippingPackingListDetail(shipping_id: number, style_name: string) {
+    const packing = await this.projectShippingPackingRepository.find({
+      where: { project_shipping_id: shipping_id },
+    });
+    if (packing.length < 1) {
+      return [];
+    }
+    const arrIds = packing.map((v) => v.id);
+    const packingDetail =
+      await this.projectShippingPackingDetailRepository.find({
+        where: { project_shipping_packing_id: In(arrIds) },
+        relations: { packing: true },
+      });
+    if (packingDetail.length < 1) {
+      return [];
+    }
+    const arrResult = [];
+    let no = 1;
+    let grand_total = 0;
+    for (const detail of packingDetail) {
+      arrResult.push({
+        no: no++,
+        style_name,
+        variant: detail.packing.variant_name,
+        size: detail.size_ratio,
+        quantity: detail.number_of_item,
+      });
+      grand_total += detail.number_of_item;
+    }
+    return { data: arrResult, grand_total };
+  }
+
+  async findPackingDeliverOrderList(shipping_id: number, style_name: string) {
+    const data = await this.projectShippingRepository.findOne({
+      where: { id: shipping_id, deleted_at: IsNull(), deleted_by: IsNull() },
+      relations: { packing: true },
+    });
+    if (!data) {
+      throw new AppErrorNotFoundException();
+    }
+    const arrResult = [];
+    let grand_total = 0;
+    if (data.packing.length > 0) {
+      let no = 1;
+      for (const detail of data.packing) {
+        arrResult.push({
+          no: no++,
+          style_name,
+          variant_name: detail.variant_name,
+          variant_id: detail.variant_id,
+          quantity: detail.total_item,
+        });
+        grand_total += detail.total_item;
+      }
+    }
+    delete data.packing;
+    return { ...data, detail: arrResult, grand_total };
   }
 }
