@@ -75,6 +75,15 @@ export class ProjectPlanningShippingService {
   }
   async findByProjectDetailId(project_detail_id) {
     const shipping = await this.projectShippingRepository.find({
+      select: {
+        id: true,
+        project_detail_id: true,
+        shipping_name: true,
+        shipping_vendor_name: true,
+        shipping_date: true,
+        shipping_cost: true,
+        created_at: true,
+      },
       where: {
         project_detail_id,
         deleted_at: IsNull(),
