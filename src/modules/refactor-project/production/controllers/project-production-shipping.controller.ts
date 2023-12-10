@@ -18,6 +18,7 @@ import {
   ProjectProductionShippingDto,
   ProjectProductionShippingPackingDto,
 } from '../dto/project-production-shipping.dto';
+import { ProjectService } from '../../general/services/project.service';
 
 @ApiBearerAuth()
 @ApiTags('refactor-project Production')
@@ -26,6 +27,7 @@ import {
 export class ProjectProductionShippingController {
   constructor(
     private readonly projectProductionShippingService: ProjectProductionShippingService,
+    private readonly projectService: ProjectService,
   ) {}
 
   @Get(':project_id/detail/:detail_id/shipping')
@@ -186,6 +188,47 @@ export class ProjectProductionShippingController {
       shipping_id,
       packing_id,
     );
+    return { data };
+  }
+
+  @Get(
+    ':project_id/detail/:detail_id/shipping/:shipping_id/packing-list-detail',
+  )
+  async getShippingPackingListDetail(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const project = await this.projectService.findOne(project_id, i18n);
+    const shipping =
+      await this.projectProductionShippingService.findDetailShipping(
+        shipping_id,
+      );
+    const data =
+      await this.projectProductionShippingService.findShippingPackingListDetail(
+        shipping_id,
+        project.style_name,
+      );
+    return { ...data, shipping_name: shipping.shipping_name };
+  }
+
+  @Get(':project_id/detail/:detail_id/shipping/:shipping_id/deliver-order')
+  async getShippingPackingDeliveryOrderList(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('detail_id') detail_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const project = await this.projectService.findOne(project_id, i18n);
+
+    const data =
+      await this.projectProductionShippingService.findPackingDeliverOrderList(
+        shipping_id,
+        project.style_name,
+      );
     return { data };
   }
 }
