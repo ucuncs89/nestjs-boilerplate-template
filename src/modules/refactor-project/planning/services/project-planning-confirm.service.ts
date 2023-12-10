@@ -7,7 +7,7 @@ import { ProjectVendorProductionEntity } from 'src/entities/project/project_vend
 @Injectable()
 export class ProjectPlanningConfirmService {
   async findAndCalculateTotalCost(
-    listFabricItem: any[],
+    listFabricItem?: any[],
     listSewingItem?: any[],
     listPackagingItem?: any[],
     listFinishedGoodsItem?: any[],
@@ -40,7 +40,6 @@ export class ProjectPlanningConfirmService {
       listDelivery,
       sumQuantity,
     );
-    let totalAdditionalPrice = 0;
 
     const totalMaterialCost =
       fabricCost.total_material_cost +
@@ -51,6 +50,11 @@ export class ProjectPlanningConfirmService {
       totalMaterialCost +
       productionCost.total_production_cost +
       deliveryCost.total_delivery_cost_all_items;
+    const totalAdditionalPrice = projectSelling.additional_price.reduce(
+      (sum, item) => sum + item.additional_price,
+      0,
+    );
+
     const profit_unit = {
       selling_price: projectSelling.selling_price_per_item,
       loss_percentage: projectSelling.loss_percentage,
@@ -59,26 +63,52 @@ export class ProjectPlanningConfirmService {
         totalCostOfGoodsSold -
         (totalCostOfGoodsSold * projectSelling.loss_percentage) / 100,
     };
-    if (projectSelling.additional_price.length > 1) {
-      totalAdditionalPrice = projectSelling.additional_price.reduce(
-        (sum, item) => sum + item.additional_price,
-        0,
-      );
-    }
+
+    const cost_of_goods_sold_all_item = {
+      item_request: sumQuantity,
+      total_cost_of_goods_sold: totalCostOfGoodsSold,
+      total_cost_of_goods_sold_all_item: totalCostOfGoodsSold * sumQuantity,
+    };
+
+    const sales_of_all_items = {
+      total_items: sumQuantity,
+      selling_price: projectSelling.selling_price_per_item,
+      total_sales: sumQuantity * projectSelling.selling_price_per_item,
+    };
+
     const additional_price = {
       detail: projectSelling.additional_price,
       total_additional_price: totalAdditionalPrice,
     };
+
+    const gross_profit_loss = {
+      total_sales: sales_of_all_items.total_sales,
+      total_cost_of_goods_sold_all_item:
+        cost_of_goods_sold_all_item.total_cost_of_goods_sold_all_item,
+      total_gross_profit:
+        sales_of_all_items.total_sales -
+        cost_of_goods_sold_all_item.total_cost_of_goods_sold_all_item,
+    };
+
+    const profit_loss = {
+      total_items: sumQuantity,
+      profit_unit: profit_unit.selling_price,
+      delivery_cost_all_item: deliveryCost.total_delivery_cost_all_items,
+      additional_price: additional_price.total_additional_price,
+      total_profit_loss:
+        sumQuantity * profit_unit.selling_price -
+        deliveryCost.total_delivery_cost_all_items -
+        additional_price.total_additional_price,
+    };
+
     return {
-      fabricCost,
-      sewingCost,
-      packagingCost,
-      finishedGoodsCost,
-      productionCost,
-      sumQuantity,
-      deliveryCost,
-      projectSelling,
-      costofGoodsSold: {
+      fabric_cost: fabricCost,
+      sewing_cost: sewingCost,
+      packaging_cost: packagingCost,
+      finished_goods_cost: finishedGoodsCost,
+      production_cost: productionCost,
+      delivery_cost: deliveryCost,
+      cost_of_goods_sold: {
         total_fabric_cost: fabricCost.total_material_cost,
         total_sewing_cost: sewingCost.total_material_cost,
         total_packaging_cost: packagingCost.total_material_cost,
@@ -88,7 +118,11 @@ export class ProjectPlanningConfirmService {
         total_cost_of_goods_sold: totalCostOfGoodsSold,
       },
       profit_unit,
+      cost_of_goods_sold_all_item,
+      sales_of_all_items,
       additional_price,
+      gross_profit_loss,
+      profit_loss,
     };
   }
 
