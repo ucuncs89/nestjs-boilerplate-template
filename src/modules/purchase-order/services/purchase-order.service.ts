@@ -20,6 +20,7 @@ import {
 } from '../dto/purchase-order.dto';
 import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
 import { error } from 'console';
+import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -30,14 +31,8 @@ export class PurchaseOrderService {
     @InjectRepository(ProjectPurchaseOrderEntity)
     private projectPurchaseOrderRepository: Repository<ProjectPurchaseOrderEntity>,
 
-    @InjectRepository(ProjectVendorMaterialFabricDetailEntity)
-    private projectVendorMaterialFabricDetailRepository: Repository<ProjectVendorMaterialFabricDetailEntity>,
-
-    @InjectRepository(ProjectVendorMaterialAccessoriesSewingDetailEntity)
-    private projectVendorMaterialAccessoriesSewingDetailRepository: Repository<ProjectVendorMaterialAccessoriesSewingDetailEntity>,
-
-    @InjectRepository(ProjectVendorMaterialAccessoriesPackagingDetailEntity)
-    private projectVendorMaterialAccessoriesPackagingDetailRepository: Repository<ProjectVendorMaterialAccessoriesPackagingDetailEntity>,
+    @InjectRepository(ProjectVendorMaterialDetailEntity)
+    private projectVendorMaterialDetailRepository: Repository<ProjectVendorMaterialDetailEntity>,
 
     @InjectRepository(ProjectVendorProductionDetailEntity)
     private projectVendorProductionDetailEntityRepository: Repository<ProjectVendorProductionDetailEntity>,
@@ -198,24 +193,11 @@ export class PurchaseOrderService {
       });
     let costDetails = [];
     if (projectPurchaseOrder.vendor_type === 'Material') {
-      if (projectPurchaseOrder.material_type === 'Fabric') {
-        costDetails = await this.findCostDetailsMaterialFabric(
-          projectPurchaseOrder.project_detail_id,
-          purchaseOrder.vendor_id,
-        );
-      }
-      if (projectPurchaseOrder.material_type === 'Sewing') {
-        costDetails = await this.findCostDetailsMaterialSewing(
-          projectPurchaseOrder.project_detail_id,
-          purchaseOrder.vendor_id,
-        );
-      }
-      if (projectPurchaseOrder.material_type === 'Packaging') {
-        costDetails = await this.findCostDetailsMaterialPackaging(
-          projectPurchaseOrder.project_detail_id,
-          purchaseOrder.vendor_id,
-        );
-      }
+      costDetails = await this.findCostDetailsMaterialDetail(
+        projectPurchaseOrder.project_detail_id,
+        purchaseOrder.vendor_id,
+        projectPurchaseOrder.material_type,
+      );
     } else if (projectPurchaseOrder.vendor_type === 'Production') {
       costDetails = await this.findCostDetailsProduction(
         projectPurchaseOrder.project_detail_id,
@@ -239,16 +221,18 @@ export class PurchaseOrderService {
       grand_total: resultGrandTotal,
     };
   }
-  async findCostDetailsMaterialFabric(
+  async findCostDetailsMaterialDetail(
     project_detail_id: number,
     vendor_id: number,
+    type: string,
   ) {
     const arrResult = [];
     const vendorMaterialDetail =
-      await this.projectVendorMaterialFabricDetailRepository.find({
+      await this.projectVendorMaterialDetailRepository.find({
         where: {
           vendor_id,
-          vendor_material_fabric: {
+          type,
+          vendor_material: {
             project_detail_id,
           },
         },
@@ -266,8 +250,8 @@ export class PurchaseOrderService {
           },
         },
         relations: {
-          vendor_material_fabric: {
-            project_fabric: true,
+          vendor_material: {
+            project_material_item: true,
             project_variant: {
               size: true,
               project_fabric: true,
@@ -276,65 +260,10 @@ export class PurchaseOrderService {
         },
       });
     for (const data of vendorMaterialDetail) {
-      const description = data.vendor_material_fabric.project_fabric.name;
-      const variant = data.vendor_material_fabric.project_variant.name;
+      const description = data.vendor_material.project_material_item.name;
+      const variant = data.vendor_material.project_variant.name;
       const arrVariantSize = [];
-      for (const variant of data.vendor_material_fabric.project_variant.size) {
-        arrVariantSize.push(`${variant.size_ratio}=${variant.number_of_item}`);
-      }
-      arrResult.push({
-        id: data.id,
-        description: `${description}/${variant}(${arrVariantSize})`,
-        price: data.price,
-        unit: data.quantity_unit,
-        quantity: data.quantity,
-        total_price: data.total_price,
-      });
-    }
-    return arrResult;
-  }
-  async findCostDetailsMaterialSewing(
-    project_detail_id: number,
-    vendor_id: number,
-  ) {
-    const arrResult = [];
-    const vendorMaterialDetail =
-      await this.projectVendorMaterialAccessoriesSewingDetailRepository.find({
-        where: {
-          vendor_id,
-          vendor_material_sewing: {
-            project_detail_id,
-          },
-        },
-        select: {
-          id: true,
-          vendor_id: true,
-          price: true,
-          price_unit: true,
-          quantity: true,
-          quantity_unit: true,
-          total_price: true,
-          vendors: {
-            id: true,
-            company_name: true,
-          },
-        },
-        relations: {
-          vendor_material_sewing: {
-            project_accessories_sewing: true,
-            project_variant: {
-              size: true,
-              project_fabric: true,
-            },
-          },
-        },
-      });
-    for (const data of vendorMaterialDetail) {
-      const description =
-        data.vendor_material_sewing.project_accessories_sewing.name;
-      const variant = data.vendor_material_sewing.project_variant.name;
-      const arrVariantSize = [];
-      for (const variant of data.vendor_material_sewing.project_variant.size) {
+      for (const variant of data.vendor_material.project_variant.size) {
         arrVariantSize.push(`${variant.size_ratio}=${variant.number_of_item}`);
       }
       arrResult.push({
@@ -349,64 +278,6 @@ export class PurchaseOrderService {
     return arrResult;
   }
 
-  async findCostDetailsMaterialPackaging(
-    project_detail_id: number,
-    vendor_id: number,
-  ) {
-    const arrResult = [];
-    const vendorMaterialDetail =
-      await this.projectVendorMaterialAccessoriesPackagingDetailRepository.find(
-        {
-          where: {
-            vendor_id,
-            vendor_material_packaging: {
-              project_detail_id,
-            },
-          },
-          select: {
-            id: true,
-            vendor_id: true,
-            price: true,
-            price_unit: true,
-            quantity: true,
-            quantity_unit: true,
-            total_price: true,
-            vendors: {
-              id: true,
-              company_name: true,
-            },
-          },
-          relations: {
-            vendor_material_packaging: {
-              project_accessories_packaging: true,
-              project_variant: {
-                size: true,
-                project_fabric: true,
-              },
-            },
-          },
-        },
-      );
-    for (const data of vendorMaterialDetail) {
-      const description =
-        data.vendor_material_packaging.project_accessories_packaging.name;
-      const variant = data.vendor_material_packaging.project_variant.name;
-      const arrVariantSize = [];
-      for (const variant of data.vendor_material_packaging.project_variant
-        .size) {
-        arrVariantSize.push(`${variant.size_ratio}=${variant.number_of_item}`);
-      }
-      arrResult.push({
-        id: data.id,
-        description: `${description}/${variant}(${arrVariantSize})`,
-        price: data.price,
-        unit: data.quantity_unit,
-        quantity: data.quantity,
-        total_price: data.total_price,
-      });
-    }
-    return arrResult;
-  }
   async findCostDetailsProduction(
     project_detail_id: number,
     vendor_id: number,
