@@ -456,6 +456,7 @@ export class ProjectDetailService {
             await queryRunner.manager.insert(
               ProjectVendorProductionDetailEntity,
               {
+                project_vendor_production_id: insert.raw[0].id,
                 vendor_id: detail.vendor_id,
                 vendor_name: detail.vendor_name,
                 price: detail.price,
