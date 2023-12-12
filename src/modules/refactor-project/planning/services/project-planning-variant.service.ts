@@ -7,7 +7,7 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { Connection, IsNull, Repository } from 'typeorm';
+import { Connection, In, IsNull, Repository } from 'typeorm';
 import { ProjectVariantDto } from '../dto/project-planning-variant.dto';
 import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
@@ -17,6 +17,9 @@ export class ProjectPlanningVariantService {
   constructor(
     @InjectRepository(ProjectVariantEntity)
     private projectVariantRepository: Repository<ProjectVariantEntity>,
+
+    @InjectRepository(ProjectVariantSizeEntity)
+    private projectVariantSizeRepository: Repository<ProjectVariantSizeEntity>,
 
     private connection: Connection,
   ) {}
@@ -270,5 +273,45 @@ export class ProjectPlanningVariantService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async calculateSizeRemaining(
+    projectVariant: ProjectVariantEntity[],
+    projectSize,
+  ) {
+    const arrIds = projectVariant.map((item) => item.id);
+    let projectVariantSize = [];
+    if (projectVariant.length > 0) {
+      projectVariantSize = await this.projectVariantSizeRepository.query(`select
+      pvs.size_ratio,
+      sum(pvs.number_of_item) as sum_number_of_item_variant,
+      pvs.size_unit
+    from
+      project_variant_size pvs
+    where 
+      pvs.project_variant_id in (${arrIds})
+    group by
+      pvs.size_ratio,
+      pvs.size_unit`);
+    }
+    const mergedVariantSize = projectSize.data.map((size) => {
+      const matchingProjectVariant = projectVariantSize.find(
+        (variant) => variant.size_ratio === size.size_ratio,
+      );
+
+      if (matchingProjectVariant) {
+        return {
+          ...size,
+          ...matchingProjectVariant,
+          remaining_of_item:
+            size.number_of_item -
+            parseInt(matchingProjectVariant.sum_number_of_item_variant),
+        };
+      } else {
+        return { ...size, remaining_of_item: size.number_of_item };
+      }
+    });
+
+    return mergedVariantSize;
   }
 }

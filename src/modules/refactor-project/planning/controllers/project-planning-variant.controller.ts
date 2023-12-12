@@ -17,6 +17,7 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 
 import { ProjectPlanningVariantService } from '../services/project-planning-variant.service';
 import { ProjectVariantDto } from '../dto/project-planning-variant.dto';
+import { ProjectService } from '../../general/services/project.service';
 
 @ApiBearerAuth()
 @ApiTags('refactor-project Planning')
@@ -25,6 +26,7 @@ import { ProjectVariantDto } from '../dto/project-planning-variant.dto';
 export class ProjectPlanningVariantController {
   constructor(
     private readonly projectPlanningVariantService: ProjectPlanningVariantService,
+    private readonly projectService: ProjectService,
   ) {}
 
   @Post(':project_id/detail/:detail_id/variant')
@@ -51,11 +53,24 @@ export class ProjectPlanningVariantController {
     @Param('detail_id') detail_id: number,
     @I18n() i18n: I18nContext,
   ) {
+    let size_remaining;
+    const projectSize = await this.projectService.findSize(project_id);
     const data = await this.projectPlanningVariantService.findVariant(
       detail_id,
     );
+    if (projectSize.data.length < 1) {
+      size_remaining = [];
+    } else {
+      size_remaining =
+        await this.projectPlanningVariantService.calculateSizeRemaining(
+          data,
+          projectSize,
+        );
+    }
+
     return {
       data,
+      size_remaining,
     };
   }
 

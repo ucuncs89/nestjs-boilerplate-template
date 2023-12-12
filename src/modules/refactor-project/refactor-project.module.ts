@@ -77,6 +77,7 @@ import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/proj
 import { ProjectPlanningConfirmService } from './planning/services/project-planning-confirm.service';
 import { ProjectShippingPackingEntity } from 'src/entities/project/project_shipping_packing.entity';
 import { ProjectShippingPackingDetailEntity } from 'src/entities/project/project_shipping_packing_detail.entity';
+import { ProjectVariantSizeEntity } from 'src/entities/project/project_variant_size.entity';
 
 @Module({
   imports: [
@@ -109,6 +110,7 @@ import { ProjectShippingPackingDetailEntity } from 'src/entities/project/project
       PurchaseOrderApprovalEntity,
       ProjectShippingPackingEntity,
       ProjectShippingPackingDetailEntity,
+      ProjectVariantSizeEntity,
     ]),
     RabbitMQModule,
   ],
