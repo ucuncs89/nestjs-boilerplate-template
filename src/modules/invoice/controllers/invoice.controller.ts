@@ -10,8 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { InvoiceService } from '../services/invoice.service';
-import { CreateInvoiceDto } from '../dto/create-invoice.dto';
-import { UpdateInvoiceDto } from '../dto/update-invoice.dto';
+
 import { GetListInvoiceDto } from '../dto/get-list-invoice.dto';
 import { Pagination } from 'src/utils/pagination';
 
@@ -54,11 +53,6 @@ export class InvoiceController {
     const data = await this.invoiceService.remove(+id, req.user.id);
     return { message: 'Data nya belum fix', data };
   }
-
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
-  //   return this.invoiceService.update(+id, updateInvoiceDto);
-  // }
 
   @Get(':id/detail')
   async findDetailPurchase(@Param('id') id: number) {

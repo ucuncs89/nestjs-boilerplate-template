@@ -9,6 +9,9 @@ import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities
 import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
 import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/project/project_vendor_material_finished_good_detail.entity';
+import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
+import { ProjectPriceEntity } from 'src/entities/project/project_price.entity';
+import { ProjectDetailEntity } from 'src/entities/project/project_detail.entity';
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { ProjectVendorMaterialFinishedGoodDetailEntity } from 'src/entities/proj
       ProjectVendorMaterialAccessoriesPackagingDetailEntity,
       ProjectVendorProductionDetailEntity,
       ProjectVendorMaterialFinishedGoodDetailEntity,
+      ProjectVariantEntity,
+      ProjectPriceEntity,
+      ProjectDetailEntity,
     ]),
   ],
   controllers: [InvoiceController],
