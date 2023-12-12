@@ -8,7 +8,7 @@ export class ProjectVariantFabricColorDto {
   @ApiProperty()
   color_id: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   color_name?: string;
 
   @ApiProperty()

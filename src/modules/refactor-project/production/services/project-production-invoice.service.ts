@@ -30,7 +30,7 @@ export class ProjectProductionInvoiceService {
     projectProductionInvoiceDto: ProjectProductionInvoiceDto,
     user_id,
   ) {
-    const code = await this.invoiceService.generateCodePurchaseOrder();
+    const code = await this.invoiceService.generateCodeInvoice();
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
