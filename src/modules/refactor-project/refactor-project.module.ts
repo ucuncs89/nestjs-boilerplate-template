@@ -78,6 +78,9 @@ import { ProjectPlanningConfirmService } from './planning/services/project-plann
 import { ProjectShippingPackingEntity } from 'src/entities/project/project_shipping_packing.entity';
 import { ProjectShippingPackingDetailEntity } from 'src/entities/project/project_shipping_packing_detail.entity';
 import { ProjectVariantSizeEntity } from 'src/entities/project/project_variant_size.entity';
+import { ProjectRemarksEntity } from 'src/entities/project/project_remark.entity';
+import { ProjectRemarksService } from './general/services/project-remarks.service';
+import { ProjectRemarksController } from './general/controllers/project-remarks.controller';
 
 @Module({
   imports: [
@@ -111,6 +114,7 @@ import { ProjectVariantSizeEntity } from 'src/entities/project/project_variant_s
       ProjectShippingPackingEntity,
       ProjectShippingPackingDetailEntity,
       ProjectVariantSizeEntity,
+      ProjectRemarksEntity,
     ]),
     RabbitMQModule,
   ],
@@ -139,6 +143,7 @@ import { ProjectVariantSizeEntity } from 'src/entities/project/project_variant_s
     ProjectProductionShippingController,
     ProjectProductionPriceController,
     ProjectProductionConfirmationController,
+    ProjectRemarksController,
   ],
   providers: [
     ProjectDetailService,
@@ -166,6 +171,7 @@ import { ProjectVariantSizeEntity } from 'src/entities/project/project_variant_s
     ProjectProductionConfirmationService,
     InvoiceService,
     ProjectPlanningConfirmService,
+    ProjectRemarksService,
   ],
 })
 export class RefactorProjectModule {}
