@@ -443,4 +443,42 @@ export class ProjectService {
     });
     return data;
   }
+  async holdProject(project_id: number, user_id) {
+    const data = await this.projectRepository.update(
+      { id: project_id },
+      {
+        status: StatusProjectHistoryEnum.Hold,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
+    this.projectHistoryService.create(
+      {
+        status: StatusProjectHistoryEnum.Hold,
+      },
+      project_id,
+      user_id,
+      {},
+    );
+    return data;
+  }
+  async cancelProject(project_id: number, user_id: number) {
+    const data = await this.projectRepository.update(
+      { id: project_id },
+      {
+        status: StatusProjectHistoryEnum.Canceled,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
+    this.projectHistoryService.create(
+      {
+        status: StatusProjectHistoryEnum.Canceled,
+      },
+      project_id,
+      user_id,
+      {},
+    );
+    return data;
+  }
 }
