@@ -116,4 +116,18 @@ export class ProjectController {
     this.rabbitMQService.send('send-notification-project-deadline', {});
     return true;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/hold')
+  async postCancelProject(@Req() req, @Param('id') id: number) {
+    const data = await this.projectService.holdProject(id, req.user.id);
+    return { data };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/cancel')
+  async postHoldProject(@Req() req, @Param('id') id: number) {
+    const data = await this.projectService.cancelProject(id, req.user.id);
+    return { data };
+  }
 }
