@@ -9,10 +9,7 @@ export class UsersTokenEntity {
   user_id: number;
 
   @Column({ type: 'text' })
-  source_id: string;
-
-  @Column({ type: 'text' })
-  device: string;
+  token: string;
 
   @Column({
     type: 'timestamp with time zone',
