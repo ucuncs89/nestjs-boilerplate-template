@@ -12,12 +12,17 @@ import { JwtService } from '@nestjs/jwt';
 import { env } from 'process';
 import { UsersRolesEntity } from '../../../entities/users/users_roles.entity';
 import { GetUserListDto } from '../dto/get-user-list.dto';
+import { UserTokenDto } from '../dto/user-token.dto';
+import { UsersTokenEntity } from 'src/entities/users/users_token.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UsersEntity)
     private userRepository: Repository<UsersEntity>,
+
+    @InjectRepository(UsersTokenEntity)
+    private userTokenRepository: Repository<UsersTokenEntity>,
 
     private jwtService: JwtService,
     @Inject('cloami_rmq') private client: ClientProxy,
@@ -322,5 +327,31 @@ export class UsersService {
       data: result,
       total_data: total,
     };
+  }
+
+  async createUpdateUserToken(user_id, userTokenDto: UserTokenDto) {
+    const userToken = await this.userTokenRepository.findOne({
+      where: { token: userTokenDto.token },
+    });
+    if (!userToken) {
+      const token = this.userTokenRepository.create({
+        user_id,
+        token: userTokenDto.token,
+        created_at: new Date().toISOString(),
+      });
+      await this.userTokenRepository.save(token);
+      return token;
+    }
+    userToken.user_id = user_id;
+    userToken.created_at = new Date().toISOString();
+    this.userRepository.save(userToken);
+    return userToken;
+  }
+  async logoutDeleteUserToken(user_id, userTokenDto: UserTokenDto) {
+    const data = await this.userTokenRepository.delete({
+      user_id,
+      token: userTokenDto.token,
+    });
+    return data;
   }
 }

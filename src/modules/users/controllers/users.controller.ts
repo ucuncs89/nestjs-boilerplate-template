@@ -1,10 +1,19 @@
-import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Pagination } from '../../../utils/pagination';
 import { GetUserListDto } from '../dto/get-user-list.dto';
 import { UsersWorkspaceService } from '../services/users-workspace.service';
+import { UserTokenDto } from '../dto/user-token.dto';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -44,5 +53,24 @@ export class UsersController {
       arrUsersWorkspace,
     );
     return { message: 'Successfully please refetch users', data: syncData };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('token')
+  async postUserTokenFCM(@Req() req, @Body() userTokenDto: UserTokenDto) {
+    const data = await this.usersService.createUpdateUserToken(
+      req.user.id,
+      userTokenDto,
+    );
+    return { data };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logoutUser(@Req() req, @Body() userTokenDto: UserTokenDto) {
+    const data = await this.usersService.logoutDeleteUserToken(
+      req.user.id,
+      userTokenDto,
+    );
+    return { data };
   }
 }

@@ -12,6 +12,7 @@ import { UsersManageController } from './controllers/users-manage.controller';
 import { PermissionsEntity } from '../../entities/permission/permission.entity';
 import { UsersController } from './controllers/users.controller';
 import { UsersWorkspaceService } from './services/users-workspace.service';
+import { UsersTokenEntity } from 'src/entities/users/users_token.entity';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersWorkspaceService } from './services/users-workspace.service';
       UsersEntity,
       UsersPasswordEntity,
       PermissionsEntity,
+      UsersTokenEntity,
     ]),
     ClientsModule.register([
       {
