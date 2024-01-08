@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectVariantEntity } from './project_variant.entity';
-// import { ProjectMaterialItemEntity } from './project_material_item.entity';
 
 @Entity('project_variant_fabric_color')
 export class ProjectVariantFabricColorEntity {
@@ -32,12 +31,4 @@ export class ProjectVariantFabricColorEntity {
   )
   @JoinColumn({ name: 'project_variant_id' })
   public project_variant: ProjectVariantEntity;
-
-  // @ManyToOne(
-  //   () => ProjectMaterialItemEntity,
-  //   (project_variant: ProjectMaterialItemEntity) =>
-  //     project_variant.project_variant_fabric_color,
-  // )
-  // @JoinColumn({ name: 'project_fabric_id' })
-  // public project_material_item: ProjectMaterialItemEntity;
 }

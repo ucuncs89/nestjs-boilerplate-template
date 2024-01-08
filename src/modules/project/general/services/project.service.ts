@@ -2,10 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { UpdateProjectDto } from '../dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from 'src/entities/project/project.entity';
-import { Connection, Repository } from 'typeorm';
+import {
+  Between,
+  Connection,
+  ILike,
+  In,
+  IsNull,
+  LessThan,
+  Not,
+  Repository,
+} from 'typeorm';
 import { CreateProjectDto } from '../dto/create-project.dto';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
 import { ProjectDocumentEntity } from 'src/entities/project/project_document.entity';
+import { GetListProjectDto } from '../dto/get-list-project.dto';
 
 @Injectable()
 export class ProjectService {
@@ -48,7 +61,7 @@ export class ProjectService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager.update(ProjectEntity, id, {
+      const data = await queryRunner.manager.update(ProjectEntity, id, {
         style_name: createProjectDto.style_name,
         customer_id: createProjectDto.customer_id,
         deadline: createProjectDto.deadline,
@@ -77,12 +90,195 @@ export class ProjectService {
       );
 
       await queryRunner.commitTransaction();
-      return { id, ...createProjectDto };
+      return { id, ...createProjectDto, data };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
     } finally {
       await queryRunner.release();
     }
+  }
+  async findAll(query: GetListProjectDto) {
+    const {
+      page,
+      page_size,
+      sort_by,
+      order_by,
+      status,
+      keyword,
+      order_type,
+      deadline,
+    } = query;
+    let orderObj = {};
+    switch (sort_by) {
+      case 'name':
+        orderObj = {
+          style_name: order_by,
+        };
+      case 'created_at':
+        orderObj = {
+          id: order_by,
+        };
+        break;
+    }
+    let date_deadline;
+    const [results, total] = await this.projectRepository.findAndCount({
+      select: {
+        id: true,
+        code: true,
+        company: true,
+        status: true,
+        style_name: true,
+        deadline: true,
+        order_type: true,
+        target_price_for_customer: true,
+        department_id: true,
+        user_id: true,
+        created_at: true,
+        updated_at: true,
+        customers: {
+          id: true,
+          pic_full_name: true,
+          code: true,
+          company_name: true,
+        },
+        users: {
+          id: true,
+          full_name: true,
+          base_path: true,
+          path_picture: true,
+        },
+        departements: {
+          id: true,
+          code: true,
+          name: true,
+        },
+        categories: {
+          id: true,
+          name: true,
+        },
+      },
+      where: [
+        {
+          style_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
+          status: status ? status : Not(In(['Draft'])),
+          order_type: order_type ? order_type : Not(IsNull()),
+          deleted_at: IsNull(),
+          deadline:
+            deadline === 'WeekMore'
+              ? Between(
+                  new Date().toISOString(),
+                  new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                )
+              : deadline === 'Now'
+              ? LessThan(new Date().toISOString())
+              : Not(IsNull()),
+        },
+        {
+          code: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
+          status: status ? status : Not(In(['Draft'])),
+          order_type: order_type ? order_type : Not(IsNull()),
+          deleted_at: IsNull(),
+          deadline:
+            deadline === 'WeekMore'
+              ? Between(
+                  new Date().toISOString(),
+                  new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                )
+              : deadline === 'Now'
+              ? LessThan(new Date().toISOString())
+              : Not(IsNull()),
+        },
+      ],
+      relations: {
+        users: true,
+        departements: true,
+        categories: true,
+        customers: true,
+      },
+      order: orderObj,
+      take: page_size,
+      skip: page,
+    });
+    return {
+      results,
+      total_data: total,
+    };
+  }
+  async findOne(id: number, i18n) {
+    const data = await this.projectRepository.findOne({
+      select: {
+        id: true,
+        code: true,
+        company: true,
+        status: true,
+        style_name: true,
+        deadline: true,
+        order_type: true,
+        target_price_for_customer: true,
+        department_id: true,
+        user_id: true,
+        created_at: true,
+        updated_at: true,
+        customer_id: true,
+        category_id: true,
+        sub_category_id: true,
+        description: true,
+        size: {
+          id: true,
+          project_id: true,
+          size_ratio: true,
+        },
+        project_document: {
+          id: true,
+          project_id: true,
+          type: true,
+          base_url: true,
+          file_url: true,
+        },
+        customers: {
+          id: true,
+          pic_full_name: true,
+          code: true,
+          company_name: true,
+        },
+        users: {
+          id: true,
+          full_name: true,
+          base_path: true,
+          path_picture: true,
+        },
+        departements: {
+          id: true,
+          code: true,
+          name: true,
+        },
+        categories: {
+          id: true,
+          name: true,
+        },
+        sub_category: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: {
+        customers: true,
+        users: true,
+        departements: true,
+        categories: true,
+        size: true,
+        project_document: true,
+        sub_category: true,
+        variant: true,
+      },
+      where: {
+        id,
+      },
+    });
+    if (!data) {
+      throw new AppErrorNotFoundException();
+    }
+    return data;
   }
 }
