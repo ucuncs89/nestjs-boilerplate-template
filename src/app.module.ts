@@ -24,12 +24,10 @@ import { AccessoriesModule } from './modules/accessories/accessories.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ColorModule } from './modules/color/color.module';
 import { RegionModule } from './modules/region/region.module';
-import { ProjectModule } from './modules/project/project.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { MasterModule } from './modules/master/master.module';
 import { PurchaseOrderModule } from './modules/purchase-order/purchase-order.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
-import { RefactorProjectModule } from './modules/refactor-project/refactor-project.module';
 
 @Module({
   imports: [
@@ -69,12 +67,10 @@ import { RefactorProjectModule } from './modules/refactor-project/refactor-proje
     CategoryModule,
     ColorModule,
     RegionModule,
-    ProjectModule,
     NotificationsModule,
     MasterModule,
     PurchaseOrderModule,
     InvoiceModule,
-    RefactorProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],

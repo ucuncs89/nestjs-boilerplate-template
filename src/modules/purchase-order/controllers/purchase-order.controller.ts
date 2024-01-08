@@ -18,7 +18,6 @@ import { Pagination } from 'src/utils/pagination';
 import {
   ProjectApprovalDto,
   PurchaseOrderDto,
-  StatusApprovalEnum,
 } from '../dto/purchase-order.dto';
 
 @ApiBearerAuth()
@@ -78,12 +77,12 @@ export class PurchaseOrderController {
     @Param('id') id: number,
     @Body() purchaseOrderDto: PurchaseOrderDto,
   ) {
-    const data = await this.purchaseOrderService.updatePurchaseOrder(
-      id,
-      purchaseOrderDto,
-      req.user.id,
-    );
-    return { message: 'Successfully', data };
+    // const data = await this.purchaseOrderService.updatePurchaseOrder(
+    //   id,
+    //   purchaseOrderDto,
+    //   req.user.id,
+    // );
+    // return { message: 'Successfully', data };
   }
 
   @Post(':id/approval/:approval_id')
@@ -93,12 +92,12 @@ export class PurchaseOrderController {
     @Param('approval_id') approval_id: number,
     @Body() projectApprovalDto: ProjectApprovalDto,
   ) {
-    const data = await this.purchaseOrderService.updatePurchaseOrderApproval(
-      id,
-      approval_id,
-      projectApprovalDto.status,
-      req.user.id,
-    );
-    return { data };
+    // const data = await this.purchaseOrderService.updatePurchaseOrderApproval(
+    //   id,
+    //   approval_id,
+    //   projectApprovalDto.status,
+    //   req.user.id,
+    // );
+    // return { data };
   }
 }

@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { InvoiceHistoryEntity } from './invoice_history.entity';
 import { InvoiceApprovalEntity } from './invoice_approval.entity';
-import { ProjectEntity } from '../project/project.entity';
 
 @Entity('invoice')
 export class InvoiceEntity {
@@ -109,8 +108,4 @@ export class InvoiceEntity {
   )
   @JoinColumn({ name: 'invoice_id' })
   approval: InvoiceApprovalEntity[];
-
-  @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.invoice)
-  @JoinColumn({ name: 'project_id' })
-  public project: ProjectEntity;
 }
