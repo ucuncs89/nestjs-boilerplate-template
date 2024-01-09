@@ -17,8 +17,8 @@ import { ProjectSizeDto } from '../dto/create-project.dto';
 
 @ApiBearerAuth()
 @ApiTags('project')
-@Controller('project')
 @UseGuards(JwtAuthGuard)
+@Controller('project')
 export class ProjectSizeController {
   constructor(private readonly projectSizeService: ProjectSizeService) {}
 

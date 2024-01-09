@@ -24,11 +24,11 @@ export class ProjectVariantFabricColorEntity {
   @Column({ type: 'int' })
   project_fabric_id: number;
 
-  @ManyToOne(
-    () => ProjectVariantEntity,
-    (project_variant: ProjectVariantEntity) => project_variant.project_fabric,
-    { cascade: true },
-  )
-  @JoinColumn({ name: 'project_variant_id' })
-  public project_variant: ProjectVariantEntity;
+  // @ManyToOne(
+  //   () => ProjectVariantEntity,
+  //   (project_variant: ProjectVariantEntity) => project_variant.project_fabric,
+  //   { cascade: true },
+  // )
+  // @JoinColumn({ name: 'project_variant_id' })
+  // public project_variant: ProjectVariantEntity;
 }

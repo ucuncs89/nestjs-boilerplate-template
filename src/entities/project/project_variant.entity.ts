@@ -54,15 +54,15 @@ export class ProjectVariantEntity {
     (variant_size: ProjectVariantSizeEntity) => variant_size.project_variant,
   )
   @JoinColumn({ name: 'project_variant_id' })
-  size: ProjectVariantSizeEntity[];
+  project_variant_size: ProjectVariantSizeEntity[];
 
-  @OneToMany(
-    () => ProjectVariantFabricColorEntity,
-    (fabric_color: ProjectVariantFabricColorEntity) =>
-      fabric_color.project_variant,
-  )
-  @JoinColumn({ name: 'project_variant_id' })
-  project_fabric: ProjectVariantFabricColorEntity[];
+  // @OneToMany(
+  //   () => ProjectVariantFabricColorEntity,
+  //   (fabric_color: ProjectVariantFabricColorEntity) =>
+  //     fabric_color.project_variant,
+  // )
+  // @JoinColumn({ name: 'project_variant_id' })
+  // project_fabric: ProjectVariantFabricColorEntity[];
 
   @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.variant, {
     cascade: true,
