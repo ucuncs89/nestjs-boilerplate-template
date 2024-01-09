@@ -308,17 +308,83 @@ export class ProjectService {
   }
   async publishNewProject(project_id: number, user_id: number) {
     try {
-      const data = await this.projectRepository.update(
-        { id: project_id },
-        {
-          status: StatusProjectEnum.Project_Created,
-          updated_at: new Date().toISOString(),
-          updated_by: user_id,
-        },
+      const project = await this.projectRepository.findOne({
+        where: { id: project_id },
+      });
+      if (!project) {
+        throw new AppErrorNotFoundException();
+      }
+      const generateCode = await this.generateCodeProject(
+        project.company,
+        project.order_type,
       );
-      return data;
+      project.status = StatusProjectEnum.Project_Created;
+      project.updated_at = new Date().toISOString();
+      project.updated_by = user_id;
+      project.code = generateCode.codeProject;
+      project.sequential_number = generateCode.sequential_number;
+      await this.projectRepository.save(project);
+      return project;
     } catch (error) {
       throw new AppErrorException(error);
+    }
+  }
+
+  async generateCodeProject(company: string, order_type: string) {
+    let companyCode: string;
+    let typeProject: string;
+    switch (company) {
+      case 'Sami Teknologi Internasional':
+        companyCode = 'T';
+        break;
+      case 'Sami Kreasi Internasional':
+        companyCode = 'K';
+        break;
+      default:
+        companyCode = '';
+        break;
+    }
+    switch (order_type) {
+      case 'CMT':
+        typeProject = 'C';
+        break;
+      case 'FOB':
+        typeProject = 'F';
+        break;
+      case 'FABRIC':
+        typeProject = 'K';
+        break;
+      default:
+        typeProject = '';
+        break;
+    }
+    const today = new Date();
+    const year = today.getFullYear().toString().slice(-2);
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+
+    const pad = '0000';
+    try {
+      const project = await this.projectRepository.find({
+        where: {
+          status: Not('Draft'),
+        },
+        select: { id: true, sequential_number: true },
+        order: {
+          id: 'DESC',
+        },
+        take: 1,
+      });
+      const id = project[0]
+        ? `${parseInt(project[0].sequential_number) + 1}`
+        : '1';
+      return {
+        codeProject: `${companyCode}${year}${month}${typeProject}-${
+          pad.substring(0, pad.length - id.length) + id
+        }`,
+        sequential_number: id,
+      };
+    } catch (error) {
+      throw new Error(error);
     }
   }
 }

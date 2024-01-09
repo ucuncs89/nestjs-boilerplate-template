@@ -104,7 +104,7 @@ export class ProjectController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('id')
+  @Post(':id/publish')
   async publishNewProject(@Req() req, @Param('id') id: number) {
     const data = await this.projectService.publishNewProject(id, req.user.id);
     return { data };
