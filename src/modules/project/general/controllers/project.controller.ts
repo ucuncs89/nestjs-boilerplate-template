@@ -7,9 +7,13 @@ import {
   UseGuards,
   Req,
   Query,
+  Put,
 } from '@nestjs/common';
 import { ProjectService } from '../services/project.service';
-import { CreateProjectDto } from '../dto/create-project.dto';
+import {
+  CreateProjectDto,
+  ProjectMaterialSourceDto,
+} from '../dto/create-project.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
@@ -85,10 +89,26 @@ export class ProjectController {
     return { message: 'Successfully', data };
   }
 
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-  //   return this.projectService.update(+id, updateProjectDto);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/material-source')
+  async updateMaterialSource(
+    @Req() req,
+    @Param('id') id: number,
+    @Body() projectMaterialSourceDto: ProjectMaterialSourceDto,
+  ) {
+    return this.projectService.updateMaterialSource(
+      id,
+      projectMaterialSourceDto,
+      req.user.id,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('id')
+  async publishNewProject(@Req() req, @Param('id') id: number) {
+    const data = await this.projectService.publishNewProject(id, req.user.id);
+    return { data };
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

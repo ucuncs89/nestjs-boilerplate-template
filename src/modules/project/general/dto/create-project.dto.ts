@@ -82,3 +82,15 @@ export class CreateProjectDto {
   @ApiProperty()
   project_document?: ProjectDocumentsDto[];
 }
+
+export enum MaterialSourceTypeProjectEnum {
+  BuyFabrics = 'Buy Fabrics',
+  PurchaseFinishedGoods = 'Purchase finished goods',
+}
+
+export class ProjectMaterialSourceDto {
+  @ApiProperty({ enum: MaterialSourceTypeProjectEnum })
+  @IsEnum(MaterialSourceTypeProjectEnum)
+  @IsNotEmpty()
+  material_source: MaterialSourceTypeProjectEnum;
+}

@@ -12,13 +12,19 @@ import {
   Not,
   Repository,
 } from 'typeorm';
-import { CreateProjectDto } from '../dto/create-project.dto';
+import {
+  CreateProjectDto,
+  ProjectMaterialSourceDto,
+} from '../dto/create-project.dto';
 import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import { ProjectDocumentEntity } from 'src/entities/project/project_document.entity';
-import { GetListProjectDto } from '../dto/get-list-project.dto';
+import {
+  GetListProjectDto,
+  StatusProjectEnum,
+} from '../dto/get-list-project.dto';
 
 @Injectable()
 export class ProjectService {
@@ -280,5 +286,39 @@ export class ProjectService {
       throw new AppErrorNotFoundException();
     }
     return data;
+  }
+  async updateMaterialSource(
+    project_id: number,
+    projectMaterialSourceDto: ProjectMaterialSourceDto,
+    user_id: number,
+  ) {
+    try {
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        {
+          material_source: projectMaterialSourceDto.material_source,
+          updated_at: new Date().toISOString(),
+          updated_by: user_id,
+        },
+      );
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+  async publishNewProject(project_id: number, user_id: number) {
+    try {
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        {
+          status: StatusProjectEnum.Project_Created,
+          updated_at: new Date().toISOString(),
+          updated_by: user_id,
+        },
+      );
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
   }
 }
