@@ -10,6 +10,9 @@ import { ProjectSizeEntity } from 'src/entities/project/project_size.entity';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { ProjectVariantController } from './general/controllers/project-variant.controller';
 import { ProjectVariantService } from './general/services/project-variant.service';
+import { ProjectHistoryEntity } from 'src/entities/project/project_history.entity';
+import { ProjectHistoryController } from './general/controllers/project-history.controller';
+import { ProjectHistoryService } from './general/services/project-history.service';
 
 @Module({
   imports: [
@@ -17,6 +20,7 @@ import { ProjectVariantService } from './general/services/project-variant.servic
       ProjectEntity,
       ProjectSizeEntity,
       ProjectVariantEntity,
+      ProjectHistoryEntity,
     ]),
     RabbitMQModule,
   ],
@@ -24,7 +28,13 @@ import { ProjectVariantService } from './general/services/project-variant.servic
     ProjectController,
     ProjectSizeController,
     ProjectVariantController,
+    ProjectHistoryController,
   ],
-  providers: [ProjectService, ProjectSizeService, ProjectVariantService],
+  providers: [
+    ProjectService,
+    ProjectSizeService,
+    ProjectVariantService,
+    ProjectHistoryService,
+  ],
 })
 export class ProjectModule {}

@@ -7,7 +7,6 @@ import {
   UseGuards,
   Req,
   Query,
-  Put,
 } from '@nestjs/common';
 import { ProjectService } from '../services/project.service';
 import {
@@ -51,11 +50,6 @@ export class ProjectController {
       req.user.id,
       i18n,
     );
-    // this.rabbitMQService.send('send-notification-project-new', {
-    //   from_user_id: req.user.id,
-    //   from_user_fullname: req.user.full_name,
-    //   message: `${req.user.full_name} added a new project`,
-    // });
     return { data };
   }
   @UseGuards(JwtAuthGuard)
@@ -107,6 +101,11 @@ export class ProjectController {
   @Post(':id/publish')
   async publishNewProject(@Req() req, @Param('id') id: number) {
     const data = await this.projectService.publishNewProject(id, req.user.id);
+    this.rabbitMQService.send('send-notification-project-new', {
+      from_user_id: req.user.id,
+      from_user_fullname: req.user.full_name,
+      message: `${req.user.full_name} added a new project`,
+    });
     return { data };
   }
 

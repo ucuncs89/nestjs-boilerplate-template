@@ -25,6 +25,8 @@ import {
   GetListProjectDto,
   StatusProjectEnum,
 } from '../dto/get-list-project.dto';
+import { ProjectSizeEntity } from 'src/entities/project/project_size.entity';
+import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 
 @Injectable()
 export class ProjectService {
@@ -34,14 +36,27 @@ export class ProjectService {
     private connection: Connection,
   ) {}
   async generate(user_id: number) {
-    const findProject = await this.projectRepository.findOne({
-      where: {
-        created_by: user_id,
-        status: 'Draft',
-      },
-    });
-    if (!findProject) {
-      const data = this.projectRepository.create({
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const projectOlderDraft = await queryRunner.manager.findOne(
+        ProjectEntity,
+        { where: { created_by: user_id, status: 'Draft' } },
+      );
+
+      if (projectOlderDraft !== null) {
+        await queryRunner.manager.delete(ProjectEntity, {
+          id: projectOlderDraft.id,
+        });
+        await queryRunner.manager.delete(ProjectSizeEntity, {
+          project_id: projectOlderDraft.id,
+        });
+        await queryRunner.manager.delete(ProjectVariantEntity, {
+          project_id: projectOlderDraft.id,
+        });
+      }
+      const data = await queryRunner.manager.insert(ProjectEntity, {
         code: '',
         style_name: '',
         customer_id: 0,
@@ -51,10 +66,14 @@ export class ProjectService {
         created_by: user_id,
         status: 'Draft',
       });
-      await this.projectRepository.save(data);
-      return { id: data.id };
+      await queryRunner.commitTransaction();
+      return { id: data.raw[0].id };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
     }
-    return { id: findProject.id };
   }
 
   async createUpdate(
@@ -230,6 +249,7 @@ export class ProjectService {
         category_id: true,
         sub_category_id: true,
         description: true,
+        material_source: true,
         size: {
           id: true,
           project_id: true,
@@ -267,6 +287,15 @@ export class ProjectService {
           id: true,
           name: true,
         },
+        variant: {
+          id: true,
+          item_unit: true,
+          name: true,
+          project_id: true,
+          total_item: true,
+          deleted_at: true,
+          deleted_by: true,
+        },
       },
       relations: {
         customers: true,
@@ -280,6 +309,8 @@ export class ProjectService {
       },
       where: {
         id,
+        size: { deleted_at: IsNull(), deleted_by: IsNull() },
+        variant: { deleted_at: IsNull(), deleted_by: IsNull() },
       },
     });
     if (!data) {
