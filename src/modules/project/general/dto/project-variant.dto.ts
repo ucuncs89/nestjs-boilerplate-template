@@ -38,7 +38,7 @@ export class ProjectVariantDto {
   @Type(() => ProjectVariantSizeDto)
   size?: ProjectVariantSizeDto[];
 
-  project_detail_id?: number;
+  project_id?: number;
   created_by?: number;
   created_at?: string;
 }

@@ -25,6 +25,9 @@ import { ProjectCostingVendorProductionController } from './costing/controllers/
 import { ProjectCostingVendorProductionService } from './costing/services/project-costing-vendor-production.service';
 import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+import { ProjectShippingEntity } from 'src/entities/project/project_shipping.entity';
+import { ProjectCostingShippingController } from './costing/controllers/project-costing-shipping.controller';
+import { ProjectCostingShippingService } from './costing/services/project-costing-shipping.service';
 
 @Module({
   imports: [
@@ -37,6 +40,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
       ProjectVendorMaterialDetailEntity,
       ProjectVendorProductionEntity,
       ProjectVendorProductionDetailEntity,
+      ProjectShippingEntity,
     ]),
     RabbitMQModule,
   ],
@@ -49,6 +53,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
     ProjectCostingMaterialController,
     ProjectCostingVendorMaterialController,
     ProjectCostingVendorProductionController,
+    ProjectCostingShippingController,
   ],
   providers: [
     ProjectService,
@@ -59,6 +64,7 @@ import { ProjectVendorProductionDetailEntity } from 'src/entities/project/projec
     ProjectCostingMaterialService,
     ProjectCostingVendorMaterialService,
     ProjectCostingVendorProductionService,
+    ProjectCostingShippingService,
   ],
 })
 export class ProjectModule {}
