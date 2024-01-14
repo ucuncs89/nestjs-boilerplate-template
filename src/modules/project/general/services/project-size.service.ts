@@ -61,8 +61,6 @@ export class ProjectSizeService {
       );
       return data;
     } catch (error) {
-      console.log(error);
-
       throw new AppErrorException(error);
     }
   }

@@ -13,6 +13,18 @@ import { ProjectVariantService } from './general/services/project-variant.servic
 import { ProjectHistoryEntity } from 'src/entities/project/project_history.entity';
 import { ProjectHistoryController } from './general/controllers/project-history.controller';
 import { ProjectHistoryService } from './general/services/project-history.service';
+import { ProjectCostingMaterialController } from './costing/controllers/project-costing-material.controller';
+import { ProjectCostingController } from './costing/controllers/project-costing.controller';
+import { ProjectCostingService } from './costing/services/project-costing.service';
+import { ProjectCostingMaterialService } from './costing/services/project-costing-material.service';
+import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
+import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
+import { ProjectCostingVendorMaterialController } from './costing/controllers/project-costing-vendor-material.controller';
+import { ProjectCostingVendorMaterialService } from './costing/services/project-costing-vendor-material.service';
+import { ProjectCostingVendorProductionController } from './costing/controllers/project-costing-vendor-production.controller';
+import { ProjectCostingVendorProductionService } from './costing/services/project-costing-vendor-production.service';
+import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
+import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
 
 @Module({
   imports: [
@@ -21,6 +33,10 @@ import { ProjectHistoryService } from './general/services/project-history.servic
       ProjectSizeEntity,
       ProjectVariantEntity,
       ProjectHistoryEntity,
+      ProjectMaterialItemEntity,
+      ProjectVendorMaterialDetailEntity,
+      ProjectVendorProductionEntity,
+      ProjectVendorProductionDetailEntity,
     ]),
     RabbitMQModule,
   ],
@@ -29,12 +45,20 @@ import { ProjectHistoryService } from './general/services/project-history.servic
     ProjectSizeController,
     ProjectVariantController,
     ProjectHistoryController,
+    ProjectCostingController,
+    ProjectCostingMaterialController,
+    ProjectCostingVendorMaterialController,
+    ProjectCostingVendorProductionController,
   ],
   providers: [
     ProjectService,
     ProjectSizeService,
     ProjectVariantService,
     ProjectHistoryService,
+    ProjectCostingService,
+    ProjectCostingMaterialService,
+    ProjectCostingVendorMaterialService,
+    ProjectCostingVendorProductionService,
   ],
 })
 export class ProjectModule {}

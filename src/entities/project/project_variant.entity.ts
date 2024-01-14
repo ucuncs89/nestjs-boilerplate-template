@@ -9,6 +9,7 @@ import {
 import { ProjectVariantSizeEntity } from './project_variant_size.entity';
 import { ProjectVariantFabricColorEntity } from './project_variant_fabric_color.entity';
 import { ProjectEntity } from './project.entity';
+import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
 // import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
 
 @Entity('project_variant')
@@ -70,11 +71,11 @@ export class ProjectVariantEntity {
   @JoinColumn({ name: 'project_id' })
   public project: ProjectEntity;
 
-  // @OneToMany(
-  //   () => ProjectVendorMaterialEntity,
-  //   (vendor_material: ProjectVendorMaterialEntity) =>
-  //     vendor_material.project_variant,
-  // )
-  // @JoinColumn({ name: 'project_variant_id' })
-  // vendor_material: ProjectVendorMaterialEntity[];
+  @OneToMany(
+    () => ProjectVendorMaterialEntity,
+    (vendor_material: ProjectVendorMaterialEntity) =>
+      vendor_material.project_variant,
+  )
+  @JoinColumn({ name: 'project_variant_id' })
+  vendor_material: ProjectVendorMaterialEntity[];
 }
