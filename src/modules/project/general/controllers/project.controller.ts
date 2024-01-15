@@ -4,24 +4,25 @@ import {
   Post,
   Body,
   Param,
-  Delete,
   UseGuards,
   Req,
   Query,
-  Put,
 } from '@nestjs/common';
 import { ProjectService } from '../services/project.service';
-import { CreateProjectDto } from '../dto/create-project.dto';
-import { UpdateProjectDto } from '../dto/update-project.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  CreateProjectDto,
+  ProjectMaterialSourceDto,
+} from '../dto/create-project.dto';
+import { ApiBearerAuth, ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { GetListProjectDto } from '../dto/get-list-project.dto';
-import { Pagination } from 'src/utils/pagination';
 import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';
-import { RolesGuard } from 'src/modules/roles/roles.guard';
-import { Role } from 'src/modules/roles/enum/role.enum';
-import { HasRoles } from 'src/modules/roles/has-roles.decorator';
+import {
+  GetListProjectDto,
+  StatusProjectEnum,
+} from '../dto/get-list-project.dto';
+import { Pagination } from 'src/utils/pagination';
+import { ProjectHistoryService } from '../services/project-history.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -30,28 +31,32 @@ export class ProjectController {
   constructor(
     private readonly projectService: ProjectService,
     private readonly rabbitMQService: RabbitMQService,
+    private readonly projectHistoryService: ProjectHistoryService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post()
-  async create(
+  @Post('generate')
+  async generate(@Req() req) {
+    const data = await this.projectService.generate(req.user.id);
+    return { data };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/create')
+  async createOne(
     @Req() req,
+    @Param('id') id: number,
     @Body() createProjectDto: CreateProjectDto,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectService.create(
+    const data = await this.projectService.createUpdate(
+      id,
       createProjectDto,
       req.user.id,
       i18n,
     );
-    this.rabbitMQService.send('send-notification-project-new', {
-      from_user_id: req.user.id,
-      from_user_fullname: req.user.full_name,
-      message: `${req.user.full_name} added a new project`,
-    });
     return { data };
   }
-
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Query() query: GetListProjectDto) {
@@ -83,37 +88,101 @@ export class ProjectController {
     return { message: 'Successfully', data };
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @HasRoles(
-    Role.SUPERADMIN,
-    Role.DEVELOPMENT,
-    Role.PROJECT_MANAGEMENT,
-    Role.ADMIN,
-  )
-  @Put(':id')
-  async update(
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/material-source')
+  async updateMaterialSource(
     @Req() req,
-    @Param('id') id: string,
-    @Body() updateProjectDto: UpdateProjectDto,
+    @Param('id') id: number,
+    @Body() projectMaterialSourceDto: ProjectMaterialSourceDto,
   ) {
-    const data = await this.projectService.update(
-      +id,
-      updateProjectDto,
+    return this.projectService.updateMaterialSource(
+      id,
+      projectMaterialSourceDto,
       req.user.id,
     );
-    return { message: 'Successfully', data };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async remove(@Req() req, @Param('id') id: string) {
-    const data = await this.projectService.remove(+id, req.user.id);
-    return { message: 'Successfully', data };
+  @Post(':id/publish')
+  async publishNewProject(@Req() req, @Param('id') id: number) {
+    const data = await this.projectService.publishNewProject(id, req.user.id);
+    this.rabbitMQService.send('send-notification-project-new', {
+      from_user_id: req.user.id,
+      from_user_fullname: req.user.full_name,
+      message: `${req.user.full_name} added a new project`,
+    });
+    return { data };
   }
 
-  @Post('send-notification-deadline')
-  async sendProjectNotificationDeadline() {
-    this.rabbitMQService.send('send-notification-project-deadline', {});
-    return true;
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/hold')
+  @ApiBody({
+    description: 'Object with hold_description property',
+    schema: {
+      type: 'object',
+      properties: {
+        hold_description: {
+          type: 'string',
+          nullable: true,
+          required: ['false'],
+        },
+      },
+    },
+  })
+  async postHoldProject(
+    @Body('hold_description') hold_description: string,
+    @Req() req,
+    @Param('id') id: number,
+  ) {
+    const data = await this.projectService.holdProject(
+      id,
+      hold_description,
+      req.user.id,
+    );
+    if (data) {
+      this.projectHistoryService.create(
+        { status: StatusProjectEnum.Hold },
+        id,
+        req.user.id,
+        {},
+      );
+    }
+    return { data };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/cancel')
+  @ApiBody({
+    description: 'Object with hold_description property',
+    schema: {
+      type: 'object',
+      properties: {
+        cancel_description: {
+          type: 'string',
+          nullable: true,
+          required: ['false'],
+        },
+      },
+    },
+  })
+  async postCancelProject(
+    @Req() req,
+    @Body('cancel_description') cancel_description: string,
+    @Param('id') id: number,
+  ) {
+    const data = await this.projectService.cancelProject(
+      id,
+      cancel_description,
+      req.user.id,
+    );
+    if (data) {
+      this.projectHistoryService.create(
+        { status: StatusProjectEnum.Canceled },
+        id,
+        req.user.id,
+        {},
+      );
+    }
+    return { data };
   }
 }

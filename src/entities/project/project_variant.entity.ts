@@ -2,15 +2,15 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectVariantSizeEntity } from './project_variant_size.entity';
 import { ProjectVariantFabricColorEntity } from './project_variant_fabric_color.entity';
-import { ProjectVendorMaterialFabricEntity } from './project_vendor_material_fabric.entity';
-import { ProjectVendorMaterialAccessoriesSewingEntity } from './project_vendor_material_accessories_sewing.entity';
-import { ProjectVendorMaterialAccessoriesPackagingEntity } from './project_vendor_material_accessories_packaging.entity';
+import { ProjectEntity } from './project.entity';
 import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
+// import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
 
 @Entity('project_variant')
 export class ProjectVariantEntity {
@@ -18,7 +18,7 @@ export class ProjectVariantEntity {
   id: number;
 
   @Column({ type: 'int' })
-  project_detail_id: number;
+  project_id: number;
 
   @Column({ type: 'varchar' })
   name: string;
@@ -55,40 +55,21 @@ export class ProjectVariantEntity {
     (variant_size: ProjectVariantSizeEntity) => variant_size.project_variant,
   )
   @JoinColumn({ name: 'project_variant_id' })
-  size: ProjectVariantSizeEntity[];
+  project_variant_size: ProjectVariantSizeEntity[];
 
-  @OneToMany(
-    () => ProjectVariantFabricColorEntity,
-    (fabric_color: ProjectVariantFabricColorEntity) =>
-      fabric_color.project_variant,
-  )
-  @JoinColumn({ name: 'project_variant_id' })
-  project_fabric: ProjectVariantFabricColorEntity[];
+  // @OneToMany(
+  //   () => ProjectVariantFabricColorEntity,
+  //   (fabric_color: ProjectVariantFabricColorEntity) =>
+  //     fabric_color.project_variant,
+  // )
+  // @JoinColumn({ name: 'project_variant_id' })
+  // project_fabric: ProjectVariantFabricColorEntity[];
 
-  @OneToMany(
-    () => ProjectVendorMaterialFabricEntity,
-    (vendor_material_fabric: ProjectVendorMaterialFabricEntity) =>
-      vendor_material_fabric.project_variant,
-  )
-  @JoinColumn({ name: 'project_variant_id' })
-  vendor_material_fabric: ProjectVendorMaterialFabricEntity[];
-
-  @OneToMany(
-    () => ProjectVendorMaterialAccessoriesSewingEntity,
-    (vendor_material_sewing: ProjectVendorMaterialAccessoriesSewingEntity) =>
-      vendor_material_sewing.project_variant,
-  )
-  @JoinColumn({ name: 'project_variant_id' })
-  vendor_material_sewing: ProjectVendorMaterialAccessoriesSewingEntity[];
-
-  @OneToMany(
-    () => ProjectVendorMaterialAccessoriesPackagingEntity,
-    (
-      vendor_material_packaging: ProjectVendorMaterialAccessoriesPackagingEntity,
-    ) => vendor_material_packaging.project_variant,
-  )
-  @JoinColumn({ name: 'project_variant_id' })
-  vendor_material_packaging: ProjectVendorMaterialFabricEntity[];
+  @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.variant, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'project_id' })
+  public project: ProjectEntity;
 
   @OneToMany(
     () => ProjectVendorMaterialEntity,

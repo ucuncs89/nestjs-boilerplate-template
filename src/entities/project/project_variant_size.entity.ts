@@ -26,7 +26,8 @@ export class ProjectVariantSizeEntity {
 
   @ManyToOne(
     () => ProjectVariantEntity,
-    (project_variant: ProjectVariantEntity) => project_variant.size,
+    (project_variant: ProjectVariantEntity) =>
+      project_variant.project_variant_size,
     { cascade: true },
   )
   @JoinColumn({ name: 'project_variant_id' })

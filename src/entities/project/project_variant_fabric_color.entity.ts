@@ -1,12 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { ProjectVariantEntity } from './project_variant.entity';
-import { ProjectMaterialItemEntity } from './project_material_item.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('project_variant_fabric_color')
 export class ProjectVariantFabricColorEntity {
@@ -25,19 +17,11 @@ export class ProjectVariantFabricColorEntity {
   @Column({ type: 'int' })
   project_fabric_id: number;
 
-  @ManyToOne(
-    () => ProjectVariantEntity,
-    (project_variant: ProjectVariantEntity) => project_variant.project_fabric,
-    { cascade: true },
-  )
-  @JoinColumn({ name: 'project_variant_id' })
-  public project_variant: ProjectVariantEntity;
-
-  @ManyToOne(
-    () => ProjectMaterialItemEntity,
-    (project_variant: ProjectMaterialItemEntity) =>
-      project_variant.project_variant_fabric_color,
-  )
-  @JoinColumn({ name: 'project_fabric_id' })
-  public project_material_item: ProjectMaterialItemEntity;
+  // @ManyToOne(
+  //   () => ProjectVariantEntity,
+  //   (project_variant: ProjectVariantEntity) => project_variant.project_fabric,
+  //   { cascade: true },
+  // )
+  // @JoinColumn({ name: 'project_variant_id' })
+  // public project_variant: ProjectVariantEntity;
 }

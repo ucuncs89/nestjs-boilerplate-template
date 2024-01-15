@@ -18,9 +18,6 @@ export class ProjectSizeEntity {
   @Column({ type: 'varchar' })
   size_ratio: string;
 
-  @Column({ type: 'int', nullable: true })
-  number_of_item: number;
-
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

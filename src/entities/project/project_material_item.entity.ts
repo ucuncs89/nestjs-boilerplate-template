@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
-import { ProjectVariantFabricColorEntity } from './project_variant_fabric_color.entity';
 
 @Entity('project_material_item')
 export class ProjectMaterialItemEntity {
@@ -14,7 +13,7 @@ export class ProjectMaterialItemEntity {
   id: number;
 
   @Column({ type: 'int' })
-  project_detail_id: number;
+  project_id: number;
 
   @Column({ type: 'int' })
   relation_id: number;
@@ -35,16 +34,19 @@ export class ProjectMaterialItemEntity {
   cut_shape: string;
 
   @Column({ type: 'double precision', nullable: true })
+  allowance: number;
+
+  @Column({ type: 'double precision', nullable: true })
   consumption: number;
 
   @Column({ type: 'varchar', nullable: true })
   consumption_unit: string;
 
   @Column({ type: 'double precision', nullable: true })
-  heavy: number;
+  width: number;
 
   @Column({ type: 'varchar', nullable: true })
-  heavy_unit: string;
+  width_unit: string;
 
   @Column({ type: 'double precision', nullable: true })
   long: number;
@@ -53,16 +55,31 @@ export class ProjectMaterialItemEntity {
   long_unit: string;
 
   @Column({ type: 'double precision', nullable: true })
-  wide: number;
+  weight: number;
 
   @Column({ type: 'varchar', nullable: true })
-  wide_unit: string;
+  weight_unit: string;
+
+  @Column({ type: 'double precision', nullable: true })
+  length: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  length_unit: string;
 
   @Column({ type: 'double precision', nullable: true })
   diameter: number;
 
   @Column({ type: 'varchar', nullable: true })
   diameter_unit: string;
+
+  @Column({ type: 'varchar' })
+  section_type: string;
+
+  @Column({ type: 'double precision', nullable: true })
+  avg_price: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  total_price: number;
 
   @Column({
     type: 'timestamp with time zone',
@@ -92,12 +109,4 @@ export class ProjectMaterialItemEntity {
   )
   @JoinColumn({ name: 'project_material_item_id' })
   vendor_material: ProjectVendorMaterialEntity[];
-
-  @OneToMany(
-    () => ProjectVariantFabricColorEntity,
-    (vendor_material_material: ProjectVariantFabricColorEntity) =>
-      vendor_material_material.project_material_item,
-  )
-  @JoinColumn({ name: 'project_fabric_id' })
-  project_variant_fabric_color: ProjectVariantFabricColorEntity[];
 }

@@ -1,10 +1,10 @@
-import { Controller, Get, Param, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { I18n, I18nContext } from 'nestjs-i18n';
-import { Pagination } from 'src/utils/pagination';
-import { GetListProjectHistoryDto } from '../dto/get-list-project-history.dto';
 import { ProjectHistoryService } from '../services/project-history.service';
+import { I18n, I18nContext } from 'nestjs-i18n';
+import { GetListProjectHistoryDto } from '../dto/get-list-project-history.dto';
+import { Pagination } from 'src/utils/pagination';
 
 @ApiBearerAuth()
 @ApiTags('project')
