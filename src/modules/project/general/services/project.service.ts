@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProjectDto } from '../dto/create-project.dto';
 import { UpdateProjectDto } from '../dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from 'src/entities/project/project.entity';
@@ -10,78 +9,113 @@ import {
   In,
   IsNull,
   LessThan,
-  MoreThan,
   Not,
-  Raw,
   Repository,
 } from 'typeorm';
-import { ProjectDocumentEntity } from 'src/entities/project/project_document.entity';
-import { ProjectSizeEntity } from 'src/entities/project/project_size.entity';
+import {
+  CreateProjectDto,
+  ProjectMaterialSourceDto,
+} from '../dto/create-project.dto';
 import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { GetListProjectDto } from '../dto/get-list-project.dto';
-import { ProjectHistoryService } from './project-history.service';
-import { StatusProjectHistoryEnum } from '../dto/create-project-history.dto';
+import { ProjectDocumentEntity } from 'src/entities/project/project_document.entity';
+import {
+  GetListProjectDto,
+  StatusProjectEnum,
+} from '../dto/get-list-project.dto';
+import { ProjectSizeEntity } from 'src/entities/project/project_size.entity';
+import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectRepository(ProjectEntity)
     private projectRepository: Repository<ProjectEntity>,
-
-    @InjectRepository(ProjectSizeEntity)
-    private projectSizeRepository: Repository<ProjectSizeEntity>,
-
     private connection: Connection,
-    private projectHistoryService: ProjectHistoryService,
   ) {}
-  async create(createProjectDto: CreateProjectDto, user_id, i18n) {
-    const generateCodeProject = await this.generateCodeProject(
-      createProjectDto.company,
-      createProjectDto.order_type,
-    );
+  async generate(user_id: number) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const project = await queryRunner.manager.insert(ProjectEntity, {
-        ...createProjectDto,
+      const projectOlderDraft = await queryRunner.manager.findOne(
+        ProjectEntity,
+        { where: { created_by: user_id, status: 'Draft' } },
+      );
+
+      if (projectOlderDraft !== null) {
+        await queryRunner.manager.delete(ProjectEntity, {
+          id: projectOlderDraft.id,
+        });
+        await queryRunner.manager.delete(ProjectSizeEntity, {
+          project_id: projectOlderDraft.id,
+        });
+        await queryRunner.manager.delete(ProjectVariantEntity, {
+          project_id: projectOlderDraft.id,
+        });
+      }
+      const data = await queryRunner.manager.insert(ProjectEntity, {
+        code: '',
+        style_name: '',
+        customer_id: 0,
+        deadline: '1970-01-01',
+        order_type: '',
+        created_at: '1970-01-01',
         created_by: user_id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        code: `${generateCodeProject.codeProject}${generateCodeProject.sequential_number}`,
-        sequential_number: generateCodeProject.sequential_number,
-        department_id: createProjectDto.departement_id,
+        status: 'Draft',
+      });
+      await queryRunner.commitTransaction();
+      return { id: data.raw[0].id };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async createUpdate(
+    id: number,
+    createProjectDto: CreateProjectDto,
+    user_id,
+    i18n,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const data = await queryRunner.manager.update(ProjectEntity, id, {
+        style_name: createProjectDto.style_name,
+        customer_id: createProjectDto.customer_id,
+        deadline: createProjectDto.deadline,
+        order_type: createProjectDto.order_type,
+        description: createProjectDto.description,
+        company: createProjectDto.company,
+        user_id: createProjectDto.user_id,
         target_price_for_customer: createProjectDto.target_price_for_buyer,
+        department_id: createProjectDto.departement_id,
+        category_id: createProjectDto.category_id,
+        sub_category_id: createProjectDto.sub_category_id,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+        created_at: new Date().toISOString(),
+        created_by: user_id,
       });
       for (const documents of createProjectDto.project_document) {
-        documents.project_id = project.raw[0].id;
+        documents.project_id = id;
       }
-      for (const size of createProjectDto.size) {
-        size.project_id = project.raw[0].id;
-      }
-
+      await queryRunner.manager.delete(ProjectDocumentEntity, {
+        project_id: id,
+      });
       await queryRunner.manager.insert(
         ProjectDocumentEntity,
         createProjectDto.project_document,
       );
 
-      await queryRunner.manager.insert(
-        ProjectSizeEntity,
-        createProjectDto.size,
-      );
       await queryRunner.commitTransaction();
-      this.projectHistoryService.create(
-        {
-          status: StatusProjectHistoryEnum.Project_Created,
-        },
-        project.raw[0].id,
-        user_id,
-        i18n,
-      );
-      return { ...createProjectDto, id: project.raw[0].id };
+      return { id, ...createProjectDto, data };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
@@ -152,7 +186,7 @@ export class ProjectService {
       where: [
         {
           style_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
-          status: status ? status : Not(In([])),
+          status: status ? status : Not(In(['Draft'])),
           order_type: order_type ? order_type : Not(IsNull()),
           deleted_at: IsNull(),
           deadline:
@@ -167,7 +201,7 @@ export class ProjectService {
         },
         {
           code: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
-          status: status ? status : Not(In([])),
+          status: status ? status : Not(In(['Draft'])),
           order_type: order_type ? order_type : Not(IsNull()),
           deleted_at: IsNull(),
           deadline:
@@ -196,7 +230,6 @@ export class ProjectService {
       total_data: total,
     };
   }
-
   async findOne(id: number, i18n) {
     const data = await this.projectRepository.findOne({
       select: {
@@ -216,11 +249,11 @@ export class ProjectService {
         category_id: true,
         sub_category_id: true,
         description: true,
+        material_source: true,
         size: {
           id: true,
           project_id: true,
           size_ratio: true,
-          number_of_item: true,
         },
         project_document: {
           id: true,
@@ -254,6 +287,15 @@ export class ProjectService {
           id: true,
           name: true,
         },
+        variant: {
+          id: true,
+          item_unit: true,
+          name: true,
+          project_id: true,
+          total_item: true,
+          deleted_at: true,
+          deleted_by: true,
+        },
       },
       relations: {
         customers: true,
@@ -263,9 +305,12 @@ export class ProjectService {
         size: true,
         project_document: true,
         sub_category: true,
+        variant: true,
       },
       where: {
         id,
+        size: { deleted_at: IsNull(), deleted_by: IsNull() },
+        variant: { deleted_at: IsNull(), deleted_by: IsNull() },
       },
     });
     if (!data) {
@@ -273,89 +318,47 @@ export class ProjectService {
     }
     return data;
   }
-
-  async update(id: number, updateProjectDto: UpdateProjectDto, user_id) {
-    const project = await this.projectRepository.findOne({
-      where: {
-        id,
-      },
-      select: {
-        id: true,
-        deleted_at: true,
-        deleted_by: true,
-        status: true,
-        sequential_number: true,
-      },
-    });
-    if (!project) {
-      throw new AppErrorNotFoundException('Not Found');
-    }
-    const generateCodeProject = await this.generateCodeProject(
-      updateProjectDto.company,
-      updateProjectDto.order_type,
-    );
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  async updateMaterialSource(
+    project_id: number,
+    projectMaterialSourceDto: ProjectMaterialSourceDto,
+    user_id: number,
+  ) {
     try {
-      await queryRunner.manager.update(ProjectEntity, id, {
-        style_name: updateProjectDto.style_name,
-        customer_id: updateProjectDto.customer_id,
-        deadline: updateProjectDto.deadline,
-        order_type: updateProjectDto.order_type,
-        description: updateProjectDto.description,
-        company: updateProjectDto.company,
-        user_id: updateProjectDto.user_id,
-        target_price_for_customer: updateProjectDto.target_price_for_buyer,
-        department_id: updateProjectDto.departement_id,
-        category_id: updateProjectDto.category_id,
-        sub_category_id: updateProjectDto.sub_category_id,
-        updated_at: new Date().toISOString(),
-        updated_by: user_id,
-        code: `${generateCodeProject.codeProject}${project.sequential_number}`,
-        sequential_number: generateCodeProject.sequential_number,
-      });
-      for (const documents of updateProjectDto.project_document) {
-        documents.project_id = id;
-      }
-      for (const size of updateProjectDto.size) {
-        size.project_id = id;
-      }
-      await queryRunner.manager.delete(ProjectDocumentEntity, {
-        project_id: id,
-      });
-
-      await queryRunner.manager.delete(ProjectSizeEntity, {
-        project_id: id,
-      });
-
-      await queryRunner.manager.insert(
-        ProjectDocumentEntity,
-        updateProjectDto.project_document,
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        {
+          material_source: projectMaterialSourceDto.material_source,
+          updated_at: new Date().toISOString(),
+          updated_by: user_id,
+        },
       );
-      await queryRunner.manager.insert(
-        ProjectSizeEntity,
-        updateProjectDto.size,
-      );
-      await queryRunner.commitTransaction();
-      return { id, ...updateProjectDto };
+      return data;
     } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw new AppErrorException(error.message);
-    } finally {
-      await queryRunner.release();
+      throw new AppErrorException(error);
     }
   }
-
-  async remove(id: number, user_id) {
-    const project = await this.projectRepository.findOne({ where: { id } });
-    if (!project) {
-      throw new AppErrorNotFoundException();
+  async publishNewProject(project_id: number, user_id: number) {
+    try {
+      const project = await this.projectRepository.findOne({
+        where: { id: project_id },
+      });
+      if (!project) {
+        throw new AppErrorNotFoundException();
+      }
+      const generateCode = await this.generateCodeProject(
+        project.company,
+        project.order_type,
+      );
+      project.status = StatusProjectEnum.Project_Created;
+      project.updated_at = new Date().toISOString();
+      project.updated_by = user_id;
+      project.code = generateCode.codeProject;
+      project.sequential_number = generateCode.sequential_number;
+      await this.projectRepository.save(project);
+      return project;
+    } catch (error) {
+      throw new AppErrorException(error);
     }
-    project.deleted_at = new Date().toISOString();
-    project.deleted_by = user_id;
-    await this.projectRepository.save(project);
-    return true;
   }
 
   async generateCodeProject(company: string, order_type: string) {
@@ -393,53 +396,58 @@ export class ProjectService {
     const pad = '0000';
     try {
       const project = await this.projectRepository.find({
-        select: { id: true },
+        where: {
+          status: Not('Draft'),
+        },
+        select: { id: true, sequential_number: true },
         order: {
           id: 'DESC',
         },
         take: 1,
       });
-      const id = project[0] ? `${project[0].id + 1}` : '1';
+      const id = project[0]
+        ? `${parseInt(project[0].sequential_number) + 1}`
+        : '1';
       return {
-        codeProject: `${companyCode}${year}${month}-${typeProject}`,
-        sequential_number: pad.substring(0, pad.length - id.length) + id,
+        codeProject: `${companyCode}${year}${month}${typeProject}-${
+          pad.substring(0, pad.length - id.length) + id
+        }`,
+        sequential_number: id,
       };
     } catch (error) {
       throw new Error(error);
     }
   }
-  async findSize(project_id: number) {
-    const data = await this.projectSizeRepository.find({
-      where: {
-        project_id,
-      },
-      select: {
-        id: true,
-        project_id: true,
-        size_ratio: true,
-        number_of_item: true,
-      },
-    });
-    const sumOfItems = data.reduce((acc, item) => acc + item.number_of_item, 0);
-    return { sum_total_item: sumOfItems, data };
-  }
-  async updateStatusProject(
+  async holdProject(
     project_id: number,
-    status: StatusProjectHistoryEnum,
-    user_id,
+    hold_description: string,
+    user_id: number,
   ) {
-    this.projectRepository.update(
+    const data = await this.projectRepository.update(
       { id: project_id },
-      { status, updated_at: new Date().toISOString(), updated_by: user_id },
+      {
+        hold_description,
+        status: StatusProjectEnum.Hold,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
     );
+    return data;
   }
-
-  async sumProjectSizeQuantity(project_id: number) {
-    const data = await this.projectSizeRepository.sum('number_of_item', {
-      project_id,
-      deleted_at: IsNull(),
-      deleted_by: IsNull(),
-    });
+  async cancelProject(
+    project_id: number,
+    cancel_description: string,
+    user_id: number,
+  ) {
+    const data = await this.projectRepository.update(
+      { id: project_id },
+      {
+        cancel_description,
+        status: StatusProjectEnum.Canceled,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
     return data;
   }
 }

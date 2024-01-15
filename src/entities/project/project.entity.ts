@@ -4,7 +4,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectDocumentEntity } from './project_document.entity';
@@ -14,7 +13,7 @@ import { DepartmentsEntity } from '../departments/departments.entity';
 import { CategoriesEntity } from '../categories/categories.entity';
 import { CustomersEntity } from '../customers/customers.entity';
 import { ProjectHistoryEntity } from './project_history.entity';
-import { InvoiceEntity } from '../invoice/invoice.entity';
+import { ProjectVariantEntity } from './project_variant.entity';
 
 @Entity('project')
 export class ProjectEntity {
@@ -62,6 +61,15 @@ export class ProjectEntity {
 
   @Column({ type: 'varchar', nullable: true })
   status: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  material_source: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  cancel_description: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  hold_description: string;
 
   @Column({
     type: 'timestamp with time zone',
@@ -154,7 +162,10 @@ export class ProjectEntity {
   @JoinColumn({ name: 'project_id' })
   project_history: ProjectHistoryEntity[];
 
-  @OneToMany(() => InvoiceEntity, (invoice: InvoiceEntity) => invoice.project)
+  @OneToMany(
+    () => ProjectVariantEntity,
+    (project_variant: ProjectVariantEntity) => project_variant.project,
+  )
   @JoinColumn({ name: 'project_id' })
-  invoice: InvoiceEntity[];
+  variant: ProjectVariantEntity[];
 }

@@ -9,33 +9,18 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { ProjectPurchaseOrderEntity } from 'src/entities/project/project_purchase_order.entity';
-import { ProjectVendorMaterialFabricDetailEntity } from 'src/entities/project/project_vendor_material_fabric_detail.entity';
-import { ProjectVendorMaterialAccessoriesSewingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_sewing_detail.entity';
-import { ProjectVendorMaterialAccessoriesPackagingDetailEntity } from 'src/entities/project/project_vendor_material_accessories_packaging_detail.entity';
-import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+
 import {
   PurchaseOrderDto,
   StatusApprovalEnum,
 } from '../dto/purchase-order.dto';
 import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
-import { error } from 'console';
-import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 
 @Injectable()
 export class PurchaseOrderService {
   constructor(
     @InjectRepository(PurchaseOrderEntity)
     private purchaseOrderRepository: Repository<PurchaseOrderEntity>,
-
-    @InjectRepository(ProjectPurchaseOrderEntity)
-    private projectPurchaseOrderRepository: Repository<ProjectPurchaseOrderEntity>,
-
-    @InjectRepository(ProjectVendorMaterialDetailEntity)
-    private projectVendorMaterialDetailRepository: Repository<ProjectVendorMaterialDetailEntity>,
-
-    @InjectRepository(ProjectVendorProductionDetailEntity)
-    private projectVendorProductionDetailEntityRepository: Repository<ProjectVendorProductionDetailEntity>,
 
     @InjectRepository(PurchaseOrderApprovalEntity)
     private purchaseOrderApprovalRepository: Repository<PurchaseOrderApprovalEntity>,
@@ -184,98 +169,100 @@ export class PurchaseOrderService {
     }
   }
   async findDetail(id: number) {
-    const purchaseOrder = await this.findOne(id);
-    const projectPurchaseOrder =
-      await this.projectPurchaseOrderRepository.findOne({
-        where: {
-          purchase_order_id: id,
-        },
-      });
-    let costDetails = [];
-    if (projectPurchaseOrder.vendor_type === 'Material') {
-      costDetails = await this.findCostDetailsMaterialDetail(
-        projectPurchaseOrder.project_detail_id,
-        purchaseOrder.vendor_id,
-        projectPurchaseOrder.material_type,
-      );
-    } else if (projectPurchaseOrder.vendor_type === 'Production') {
-      costDetails = await this.findCostDetailsProduction(
-        projectPurchaseOrder.project_detail_id,
-        purchaseOrder.vendor_id,
-        projectPurchaseOrder.material_type,
-      );
-    }
-    const subGrandTotal = costDetails.reduce((accumulator, currentItem) => {
-      return accumulator + currentItem.total_price;
-    }, 0);
-    const pph_result = (purchaseOrder.pph * subGrandTotal) / 100;
-    const ppn_result = (purchaseOrder.ppn * subGrandTotal) / 100;
-    const resultGrandTotal =
-      subGrandTotal + pph_result + ppn_result - purchaseOrder.discount;
-    return {
-      ...purchaseOrder,
-      cost_details: costDetails,
-      pph_result,
-      ppn_result,
-      total: subGrandTotal,
-      grand_total: resultGrandTotal,
-    };
+    // const purchaseOrder = await this.findOne(id);
+    // const projectPurchaseOrder =
+    //   await this.projectPurchaseOrderRepository.findOne({
+    //     where: {
+    //       purchase_order_id: id,
+    //     },
+    //   });
+    // let costDetails = [];
+    // if (projectPurchaseOrder.vendor_type === 'Material') {
+    //   costDetails = await this.findCostDetailsMaterialDetail(
+    //     projectPurchaseOrder.project_detail_id,
+    //     purchaseOrder.vendor_id,
+    //     projectPurchaseOrder.material_type,
+    //   );
+    // } else if (projectPurchaseOrder.vendor_type === 'Production') {
+    //   costDetails = await this.findCostDetailsProduction(
+    //     projectPurchaseOrder.project_detail_id,
+    //     purchaseOrder.vendor_id,
+    //     projectPurchaseOrder.material_type,
+    //   );
+    // }
+    // const subGrandTotal = costDetails.reduce((accumulator, currentItem) => {
+    //   return accumulator + currentItem.total_price;
+    // }, 0);
+    // const pph_result = (purchaseOrder.pph * subGrandTotal) / 100;
+    // const ppn_result = (purchaseOrder.ppn * subGrandTotal) / 100;
+    // const resultGrandTotal =
+    //   subGrandTotal + pph_result + ppn_result - purchaseOrder.discount;
+    // return {
+    //   ...purchaseOrder,
+    //   cost_details: costDetails,
+    //   pph_result,
+    //   ppn_result,
+    //   total: subGrandTotal,
+    //   grand_total: resultGrandTotal,
+    // };
+    return { data: 'belum karena diubah flow' };
   }
   async findCostDetailsMaterialDetail(
     project_detail_id: number,
     vendor_id: number,
     type: string,
   ) {
-    const arrResult = [];
-    const vendorMaterialDetail =
-      await this.projectVendorMaterialDetailRepository.find({
-        where: {
-          vendor_id,
-          type,
-          vendor_material: {
-            project_detail_id,
-          },
-        },
-        select: {
-          id: true,
-          vendor_id: true,
-          price: true,
-          price_unit: true,
-          quantity: true,
-          quantity_unit: true,
-          total_price: true,
-          vendors: {
-            id: true,
-            company_name: true,
-          },
-        },
-        relations: {
-          vendor_material: {
-            project_material_item: true,
-            project_variant: {
-              size: true,
-              project_fabric: true,
-            },
-          },
-        },
-      });
-    for (const data of vendorMaterialDetail) {
-      const description = data.vendor_material.project_material_item.name;
-      const variant = data.vendor_material.project_variant.name;
-      const arrVariantSize = [];
-      for (const variant of data.vendor_material.project_variant.size) {
-        arrVariantSize.push(`${variant.size_ratio}=${variant.number_of_item}`);
-      }
-      arrResult.push({
-        id: data.id,
-        description: `${description}/${variant}(${arrVariantSize})`,
-        price: data.price,
-        unit: data.quantity_unit,
-        quantity: data.quantity,
-        total_price: data.total_price,
-      });
-    }
-    return arrResult;
+    // const arrResult = [];
+    // const vendorMaterialDetail =
+    //   await this.projectVendorMaterialDetailRepository.find({
+    //     where: {
+    //       vendor_id,
+    //       type,
+    //       vendor_material: {
+    //         project_detail_id,
+    //       },
+    //     },
+    //     select: {
+    //       id: true,
+    //       vendor_id: true,
+    //       price: true,
+    //       price_unit: true,
+    //       quantity: true,
+    //       quantity_unit: true,
+    //       total_price: true,
+    //       vendors: {
+    //         id: true,
+    //         company_name: true,
+    //       },
+    //     },
+    //     relations: {
+    //       vendor_material: {
+    //         project_material_item: true,
+    //         project_variant: {
+    //           size: true,
+    //           project_fabric: true,
+    //         },
+    //       },
+    //     },
+    //   });
+    // for (const data of vendorMaterialDetail) {
+    //   const description = data.vendor_material.project_material_item.name;
+    //   const variant = data.vendor_material.project_variant.name;
+    //   const arrVariantSize = [];
+    //   for (const variant of data.vendor_material.project_variant.size) {
+    //     arrVariantSize.push(`${variant.size_ratio}=${variant.number_of_item}`);
+    //   }
+    //   arrResult.push({
+    //     id: data.id,
+    //     description: `${description}/${variant}(${arrVariantSize})`,
+    //     price: data.price,
+    //     unit: data.quantity_unit,
+    //     quantity: data.quantity,
+    //     total_price: data.total_price,
+    //   });
+    // }
+    // return arrResult;
+    return { data: 'belum' };
   }
 
   async findCostDetailsProduction(
@@ -283,101 +270,102 @@ export class PurchaseOrderService {
     vendor_id: number,
     type: string,
   ) {
-    const arrResult = [];
-    const vendorProductionDetail =
-      await this.projectVendorProductionDetailEntityRepository.find({
-        where: {
-          vendor_id,
-          vendor_production: {
-            project_detail_id,
-            activity_name: type,
-          },
-        },
-        select: {
-          id: true,
-          quantity: true,
-          quantity_unit: true,
-          price: true,
-          vendor_name: true,
-        },
-        relations: { vendor_production: true },
-      });
-    for (const data of vendorProductionDetail) {
-      const description = data.vendor_production.activity_name;
-      arrResult.push({
-        id: data.id,
-        description: `${description})`,
-        price: data.price / data.quantity,
-        unit: data.quantity_unit,
-        quantity: data.quantity,
-        total_price: data.price,
-      });
-    }
-    return arrResult;
+    // const arrResult = [];
+    // const vendorProductionDetail =
+    //   await this.projectVendorProductionDetailEntityRepository.find({
+    //     where: {
+    //       vendor_id,
+    //       vendor_production: {
+    //         project_detail_id,
+    //         activity_name: type,
+    //       },
+    //     },
+    //     select: {
+    //       id: true,
+    //       quantity: true,
+    //       quantity_unit: true,
+    //       price: true,
+    //       vendor_name: true,
+    //     },
+    //     relations: { vendor_production: true },
+    //   });
+    // for (const data of vendorProductionDetail) {
+    //   const description = data.vendor_production.activity_name;
+    //   arrResult.push({
+    //     id: data.id,
+    //     description: `${description})`,
+    //     price: data.price / data.quantity,
+    //     unit: data.quantity_unit,
+    //     quantity: data.quantity,
+    //     total_price: data.price,
+    //   });
+    // }
+    // return arrResult;
+    return { data: 'belum' };
   }
-  async updateGrandTotal(purchase_order_id) {
-    const resultGrandTotal = await this.findDetail(purchase_order_id);
-    try {
-      return await this.purchaseOrderRepository.update(
-        { id: purchase_order_id },
-        {
-          grand_total: resultGrandTotal.grand_total || null,
-        },
-      );
-    } catch (error) {
-      throw new AppErrorNotFoundException();
-    }
-  }
-  async updatePurchaseOrder(
-    id,
-    purchaseOrderDto: PurchaseOrderDto,
-    user_id: number,
-  ) {
-    try {
-      const data = await this.purchaseOrderRepository.update(
-        {
-          id,
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        },
-        {
-          company_address: purchaseOrderDto.company_address,
-          company_phone_number: purchaseOrderDto.company_phone_number,
-          ppn: purchaseOrderDto.ppn,
-          pph: purchaseOrderDto.pph,
-          discount: purchaseOrderDto.discount,
-          bank_name: purchaseOrderDto.bank_name,
-          bank_account_houlders_name:
-            purchaseOrderDto.bank_account_houlders_name,
-          bank_account_number: purchaseOrderDto.bank_account_number,
-          payment_term: purchaseOrderDto.payment_term,
-          notes: purchaseOrderDto.notes,
-          updated_at: new Date().toISOString(),
-          updated_by: user_id,
-        },
-      );
-      return data;
-    } catch (error) {
-      throw new AppErrorException(error);
-    }
-  }
-  async updatePurchaseOrderApproval(
-    purchase_order_id: number,
-    approval_id: number,
-    status: StatusApprovalEnum,
-    user_id: number,
-  ) {
-    try {
-      const data = await this.purchaseOrderApprovalRepository.update(
-        {
-          id: approval_id,
-          purchase_order_id,
-        },
-        { status, updated_by: user_id, updated_at: new Date().toISOString() },
-      );
-      return data;
-    } catch (error) {
-      throw new AppErrorException(error);
-    }
-  }
+  // async updateGrandTotal(purchase_order_id) {
+  //   const resultGrandTotal = await this.findDetail(purchase_order_id);
+  //   try {
+  //     return await this.purchaseOrderRepository.update(
+  //       { id: purchase_order_id },
+  //       {
+  //         grand_total: resultGrandTotal.grand_total || null,
+  //       },
+  //     );
+  //   } catch (error) {
+  //     throw new AppErrorNotFoundException();
+  //   }
+  // }
+  // async updatePurchaseOrder(
+  //   id,
+  //   purchaseOrderDto: PurchaseOrderDto,
+  //   user_id: number,
+  // ) {
+  //   try {
+  //     const data = await this.purchaseOrderRepository.update(
+  //       {
+  //         id,
+  //         deleted_at: IsNull(),
+  //         deleted_by: IsNull(),
+  //       },
+  //       {
+  //         company_address: purchaseOrderDto.company_address,
+  //         company_phone_number: purchaseOrderDto.company_phone_number,
+  //         ppn: purchaseOrderDto.ppn,
+  //         pph: purchaseOrderDto.pph,
+  //         discount: purchaseOrderDto.discount,
+  //         bank_name: purchaseOrderDto.bank_name,
+  //         bank_account_houlders_name:
+  //           purchaseOrderDto.bank_account_houlders_name,
+  //         bank_account_number: purchaseOrderDto.bank_account_number,
+  //         payment_term: purchaseOrderDto.payment_term,
+  //         notes: purchaseOrderDto.notes,
+  //         updated_at: new Date().toISOString(),
+  //         updated_by: user_id,
+  //       },
+  //     );
+  //     return data;
+  //   } catch (error) {
+  //     throw new AppErrorException(error);
+  //   }
+  // }
+  // async updatePurchaseOrderApproval(
+  //   purchase_order_id: number,
+  //   approval_id: number,
+  //   status: StatusApprovalEnum,
+  //   user_id: number,
+  // ) {
+  //   try {
+  //     const data = await this.purchaseOrderApprovalRepository.update(
+  //       {
+  //         id: approval_id,
+  //         purchase_order_id,
+  //       },
+  //       { status, updated_by: user_id, updated_at: new Date().toISOString() },
+  //     );
+  //     return data;
+  //   } catch (error) {
+  //     throw new AppErrorException(error);
+  //   }
+  // }
 }

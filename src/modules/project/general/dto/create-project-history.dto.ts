@@ -1,23 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty } from 'class-validator';
-
-export enum StatusProjectHistoryEnum {
-  Project_Created = 'Project Created',
-  Planning = 'Planning',
-  Sampling = 'Sampling',
-  Production = 'Production',
-  Delivery = 'Delivery',
-  Penagihan = 'Penagihan',
-  Complete = 'Complete',
-  Canceled = 'Canceled',
-  Hold = 'Hold',
-}
+import { StatusProjectEnum } from './get-list-project.dto';
 
 export class CreateProjecHistorytDto {
-  @ApiProperty({ enum: StatusProjectHistoryEnum })
-  @IsEnum(StatusProjectHistoryEnum)
+  @ApiProperty({ enum: StatusProjectEnum })
+  @IsEnum(StatusProjectEnum)
   @IsNotEmpty()
-  status: StatusProjectHistoryEnum;
+  status: StatusProjectEnum;
 
   project_id?: number;
 }

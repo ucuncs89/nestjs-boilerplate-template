@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ProjectShippingPackingEntity } from './project_shipping_packing.entity';
+// import { ProjectShippingPackingEntity } from './project_shipping_packing.entity';
 
 @Entity('project_shipping')
 export class ProjectShippingEntity {
@@ -13,7 +13,7 @@ export class ProjectShippingEntity {
   id: number;
 
   @Column({ type: 'int' })
-  project_detail_id: number;
+  project_id: number;
 
   @Column({ type: 'varchar' })
   shipping_name: string;
@@ -21,11 +21,14 @@ export class ProjectShippingEntity {
   @Column({ type: 'varchar' })
   shipping_vendor_name: string;
 
-  @Column({ type: 'timestamp with time zone' })
+  @Column({ type: 'date' })
   shipping_date: string;
 
   @Column({ type: 'int', nullable: true })
   shipping_cost?: number;
+
+  @Column({ type: 'varchar' })
+  section_type: string;
 
   @Column({
     type: 'timestamp with time zone',
@@ -48,11 +51,11 @@ export class ProjectShippingEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
-  @OneToMany(
-    () => ProjectShippingPackingEntity,
-    (shipping_packing: ProjectShippingPackingEntity) =>
-      shipping_packing.shipping,
-  )
-  @JoinColumn({ name: 'project_shipping_id' })
-  packing: ProjectShippingPackingEntity[];
+  // @OneToMany(
+  //   () => ProjectShippingPackingEntity,
+  //   (shipping_packing: ProjectShippingPackingEntity) =>
+  //     shipping_packing.shipping,
+  // )
+  // @JoinColumn({ name: 'project_shipping_id' })
+  // packing: ProjectShippingPackingEntity[];
 }

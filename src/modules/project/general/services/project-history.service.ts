@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateProjecHistorytDto } from '../dto/create-project-history.dto';
 import { ProjectHistoryEntity } from 'src/entities/project/project_history.entity';
 import { Repository } from 'typeorm';
+import { CreateProjecHistorytDto } from '../dto/create-project-history.dto';
 import { GetListProjectHistoryDto } from '../dto/get-list-project-history.dto';
 
 @Injectable()
@@ -17,13 +17,18 @@ export class ProjectHistoryService {
     user_id,
     i18n,
   ) {
-    const data = this.projectHistoryRepository.create({
-      status: createProjectDto.status,
-      project_id,
-      created_at: new Date().toISOString(),
-      created_by: user_id,
+    const projectHistory = await this.projectHistoryRepository.findOne({
+      where: { project_id, status: createProjectDto.status },
     });
-    this.projectHistoryRepository.save(data);
+    if (!projectHistory) {
+      const data = this.projectHistoryRepository.create({
+        status: createProjectDto.status,
+        project_id,
+        created_at: new Date().toISOString(),
+        created_by: user_id,
+      });
+      this.projectHistoryRepository.save(data);
+    }
   }
   async findAll(query: GetListProjectHistoryDto, project_id: number) {
     const { page, page_size, sort_by, order_by } = query;
@@ -56,5 +61,4 @@ export class ProjectHistoryService {
       total_data: total,
     };
   }
-  // async update(id: number, updateProjectDto: UpdateProjectDto, user_id) {}
 }

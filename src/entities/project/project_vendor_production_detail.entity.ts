@@ -30,6 +30,18 @@ export class ProjectVendorProductionDetailEntity {
   @Column({ type: 'double precision', nullable: true })
   price: number;
 
+  @Column({ type: 'double precision', nullable: true })
+  total_price: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  price_unit: string;
+
+  @Column({ type: 'date', nullable: true })
+  start_date: string;
+
+  @Column({ type: 'date', nullable: true })
+  end_date: string;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
@@ -53,9 +65,6 @@ export class ProjectVendorProductionDetailEntity {
 
   @Column({ type: 'boolean', nullable: true })
   production_is_completed: boolean;
-
-  @Column({ type: 'date', nullable: true })
-  production_due_date: string;
 
   @ManyToOne(
     () => ProjectVendorProductionEntity,

@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { ProjectPriceAdditionalEntity } from './project_price_additional.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('project_price')
 export class ProjectPriceEntity {
@@ -13,13 +6,16 @@ export class ProjectPriceEntity {
   id: number;
 
   @Column({ type: 'int' })
-  project_detail_id: number;
+  project_id: number;
 
   @Column({ type: 'double precision', nullable: true })
   selling_price_per_item: number;
 
   @Column({ type: 'double precision', nullable: true })
   loss_percentage: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  commission: number;
 
   @Column({
     type: 'timestamp with time zone',
@@ -41,11 +37,4 @@ export class ProjectPriceEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
-
-  @OneToMany(
-    () => ProjectPriceAdditionalEntity,
-    (fabric_color: ProjectPriceAdditionalEntity) => fabric_color.project_price,
-  )
-  @JoinColumn({ name: 'project_price_id' })
-  additional_price: ProjectPriceAdditionalEntity[];
 }

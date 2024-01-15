@@ -6,9 +6,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ProjectVendorMaterialDetailEntity } from './project_vendor_material_detail.entity';
 import { ProjectMaterialItemEntity } from './project_material_item.entity';
 import { ProjectVariantEntity } from './project_variant.entity';
+import { ProjectVendorMaterialDetailEntity } from './project_vendor_material_detail.entity';
 
 @Entity('project_vendor_material')
 export class ProjectVendorMaterialEntity {
@@ -16,13 +16,22 @@ export class ProjectVendorMaterialEntity {
   id: number;
 
   @Column({ type: 'int' })
-  project_detail_id: number;
+  project_id: number;
 
   @Column({ type: 'int' })
   project_variant_id: number;
 
   @Column({ type: 'int' })
   project_material_item_id: number;
+
+  @Column({ type: 'varchar' })
+  section_type: string;
+
+  @Column({ type: 'int', default: 0 })
+  total_item: number;
+
+  @Column({ type: 'int', default: 0 })
+  total_consumption: number;
 
   @Column({
     type: 'timestamp with time zone',
@@ -45,13 +54,6 @@ export class ProjectVendorMaterialEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
-  @OneToMany(
-    () => ProjectVendorMaterialDetailEntity,
-    (detail: ProjectVendorMaterialDetailEntity) => detail.vendor_material,
-  )
-  @JoinColumn({ name: 'project_vendor_material_id' })
-  detail: ProjectVendorMaterialDetailEntity[];
-
   @ManyToOne(
     () => ProjectMaterialItemEntity,
     (project_material_item: ProjectMaterialItemEntity) =>
@@ -68,4 +70,11 @@ export class ProjectVendorMaterialEntity {
   )
   @JoinColumn({ name: 'project_variant_id' })
   public project_variant: ProjectVariantEntity;
+
+  @OneToMany(
+    () => ProjectVendorMaterialDetailEntity,
+    (detail: ProjectVendorMaterialDetailEntity) => detail.vendor_material,
+  )
+  @JoinColumn({ name: 'project_vendor_material_id' })
+  detail: ProjectVendorMaterialDetailEntity[];
 }

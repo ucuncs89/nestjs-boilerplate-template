@@ -11,7 +11,6 @@ import { VendorTypeEntity } from './vendor_type.entity';
 import { FabricVendorEntity } from '../fabric/fabric_vendor.entity';
 import { ProvinceEntity } from '../master/province.entity';
 import { CityEntity } from '../master/city.entity';
-import { ProjectVendorMaterialFabricDetailEntity } from '../project/project_vendor_material_fabric_detail.entity';
 import { ProjectVendorMaterialDetailEntity } from '../project/project_vendor_material_detail.entity';
 
 @Entity('vendors')
@@ -130,14 +129,6 @@ export class VendorsEntity {
 
   @Column({ type: 'boolean', nullable: true, default: false })
   is_active: boolean;
-
-  @OneToMany(
-    () => ProjectVendorMaterialFabricDetailEntity,
-    (fabric_detail: ProjectVendorMaterialFabricDetailEntity) =>
-      fabric_detail.vendors,
-  )
-  @JoinColumn({ name: 'vendor_id' })
-  project_vendor_material_fabric_detail: ProjectVendorMaterialFabricDetailEntity[];
 
   @OneToMany(
     () => ProjectVendorMaterialDetailEntity,

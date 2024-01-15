@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export enum TypeProjectDocumentsEnum {
   FILE = 'FILE',
@@ -8,9 +8,6 @@ export enum TypeProjectDocumentsEnum {
 export class ProjectSizeDto {
   @ApiProperty()
   size_ratio: string;
-
-  @ApiProperty()
-  number_of_item: number;
 
   project_id?: number;
 }
@@ -84,11 +81,16 @@ export class CreateProjectDto {
   })
   @ApiProperty()
   project_document?: ProjectDocumentsDto[];
+}
 
-  @ApiProperty({
-    isArray: true,
-    type: ProjectSizeDto,
-  })
-  @ApiProperty()
-  size?: ProjectSizeDto[];
+export enum MaterialSourceTypeProjectEnum {
+  BuyFabrics = 'Buy Fabrics',
+  PurchaseFinishedGoods = 'Purchase finished goods',
+}
+
+export class ProjectMaterialSourceDto {
+  @ApiProperty({ enum: MaterialSourceTypeProjectEnum })
+  @IsEnum(MaterialSourceTypeProjectEnum)
+  @IsNotEmpty()
+  material_source: MaterialSourceTypeProjectEnum;
 }

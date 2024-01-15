@@ -13,7 +13,7 @@ export class ProjectVendorProductionEntity {
   id: number;
 
   @Column({ type: 'int' })
-  project_detail_id: number;
+  project_id: number;
 
   @Column({ type: 'int', nullable: true })
   activity_id: number;

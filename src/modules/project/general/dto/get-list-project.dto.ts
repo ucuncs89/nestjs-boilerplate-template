@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { OrderTypeProjectEnum } from './create-project.dto';
 
 export enum StatusProjectEnum {
+  Project_Created = 'Project Created',
+  Costing = 'Costing',
   Planning = 'Planning',
   Sampling = 'Sampling',
   Production = 'Production',
