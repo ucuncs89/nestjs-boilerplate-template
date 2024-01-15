@@ -37,6 +37,9 @@ import { ProjectCostingSamplingService } from './costing/services/project-costin
 import { ProjectPriceEntity } from 'src/entities/project/project_price.entity';
 import { ProjectCostingPriceController } from './costing/controllers/project-costing-price.controller';
 import { ProjectCostingPriceService } from './costing/services/project-costing-price.service';
+import { ProjectRemarksController } from './general/controllers/project-remarks.controller';
+import { ProjectRemarksService } from './general/services/project-remarks.service';
+import { ProjectRemarksEntity } from 'src/entities/project/project_remark.entity';
 
 @Module({
   imports: [
@@ -53,6 +56,7 @@ import { ProjectCostingPriceService } from './costing/services/project-costing-p
       ProjectAdditionalCostEntity,
       ProjectSamplingEntity,
       ProjectPriceEntity,
+      ProjectRemarksEntity,
     ]),
     RabbitMQModule,
   ],
@@ -69,6 +73,7 @@ import { ProjectCostingPriceService } from './costing/services/project-costing-p
     ProjectCostingAdditionalCostController,
     ProjectCostingSamplingController,
     ProjectCostingPriceController,
+    ProjectRemarksController,
   ],
   providers: [
     ProjectService,
@@ -83,6 +88,7 @@ import { ProjectCostingPriceService } from './costing/services/project-costing-p
     ProjectCostingAdditionalCostService,
     ProjectCostingSamplingService,
     ProjectCostingPriceService,
+    ProjectRemarksService,
   ],
 })
 export class ProjectModule {}

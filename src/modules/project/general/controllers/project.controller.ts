@@ -13,12 +13,16 @@ import {
   CreateProjectDto,
   ProjectMaterialSourceDto,
 } from '../dto/create-project.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';
-import { GetListProjectDto } from '../dto/get-list-project.dto';
+import {
+  GetListProjectDto,
+  StatusProjectEnum,
+} from '../dto/get-list-project.dto';
 import { Pagination } from 'src/utils/pagination';
+import { ProjectHistoryService } from '../services/project-history.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
@@ -27,6 +31,7 @@ export class ProjectController {
   constructor(
     private readonly projectService: ProjectService,
     private readonly rabbitMQService: RabbitMQService,
+    private readonly projectHistoryService: ProjectHistoryService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -109,8 +114,75 @@ export class ProjectController {
     return { data };
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.projectService.remove(+id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/hold')
+  @ApiBody({
+    description: 'Object with hold_description property',
+    schema: {
+      type: 'object',
+      properties: {
+        hold_description: {
+          type: 'string',
+          nullable: true,
+          required: ['false'],
+        },
+      },
+    },
+  })
+  async postHoldProject(
+    @Body('hold_description') hold_description: string,
+    @Req() req,
+    @Param('id') id: number,
+  ) {
+    const data = await this.projectService.holdProject(
+      id,
+      hold_description,
+      req.user.id,
+    );
+    if (data) {
+      this.projectHistoryService.create(
+        { status: StatusProjectEnum.Hold },
+        id,
+        req.user.id,
+        {},
+      );
+    }
+    return { data };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/cancel')
+  @ApiBody({
+    description: 'Object with hold_description property',
+    schema: {
+      type: 'object',
+      properties: {
+        cancel_description: {
+          type: 'string',
+          nullable: true,
+          required: ['false'],
+        },
+      },
+    },
+  })
+  async postCancelProject(
+    @Req() req,
+    @Body('cancel_description') cancel_description: string,
+    @Param('id') id: number,
+  ) {
+    const data = await this.projectService.cancelProject(
+      id,
+      cancel_description,
+      req.user.id,
+    );
+    if (data) {
+      this.projectHistoryService.create(
+        { status: StatusProjectEnum.Canceled },
+        id,
+        req.user.id,
+        {},
+      );
+    }
+    return { data };
+  }
 }

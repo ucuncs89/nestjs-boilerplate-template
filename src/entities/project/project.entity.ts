@@ -65,6 +65,12 @@ export class ProjectEntity {
   @Column({ type: 'varchar', length: 50, nullable: true })
   material_source: string;
 
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  cancel_description: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  hold_description: string;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

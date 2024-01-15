@@ -418,4 +418,36 @@ export class ProjectService {
       throw new Error(error);
     }
   }
+  async holdProject(
+    project_id: number,
+    hold_description: string,
+    user_id: number,
+  ) {
+    const data = await this.projectRepository.update(
+      { id: project_id },
+      {
+        hold_description,
+        status: StatusProjectEnum.Hold,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
+    return data;
+  }
+  async cancelProject(
+    project_id: number,
+    cancel_description: string,
+    user_id: number,
+  ) {
+    const data = await this.projectRepository.update(
+      { id: project_id },
+      {
+        cancel_description,
+        status: StatusProjectEnum.Canceled,
+        updated_at: new Date().toISOString(),
+        updated_by: user_id,
+      },
+    );
+    return data;
+  }
 }
