@@ -33,6 +33,9 @@ export class ProjectVendorMaterialEntity {
   @Column({ type: 'int', default: 0 })
   total_consumption: number;
 
+  @Column({ type: 'double precision', default: 0 })
+  total_price: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
