@@ -14,6 +14,9 @@ export class ProjectVariantSizeDto {
   @ApiProperty({ required: false })
   size_unit?: string;
 
+  @ApiProperty()
+  size_id: number;
+
   project_variant_id?: number;
 }
 export class ProjectVariantDto {

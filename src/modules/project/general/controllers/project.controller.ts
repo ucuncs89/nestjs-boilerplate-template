@@ -106,6 +106,16 @@ export class ProjectController {
   @Post(':id/publish')
   async publishNewProject(@Req() req, @Param('id') id: number) {
     const data = await this.projectService.publishNewProject(id, req.user.id);
+    if (data) {
+      this.projectHistoryService.create(
+        {
+          status: StatusProjectEnum.Project_Created,
+        },
+        id,
+        req.user.id,
+        {},
+      );
+    }
     this.rabbitMQService.send('send-notification-project-new', {
       from_user_id: req.user.id,
       from_user_fullname: req.user.full_name,
