@@ -44,7 +44,7 @@ export class ProjectCostingVendorMaterialController {
     return { data };
   }
   @Put(
-    ':project_id/detail/:detail_id/vendor-material/:vendor_material_id/detail/:vendor_material_detail_id',
+    ':project_id/vendor-material/:vendor_material_id/detail/:vendor_material_detail_id',
   )
   async updateOneVendorMaterialDetail(
     @Req() req,
@@ -66,7 +66,7 @@ export class ProjectCostingVendorMaterialController {
     return { data };
   }
   @Delete(
-    ':project_id/detail/:detail_id/vendor-material/:vendor_material_id/detail/:vendor_material_detail_id',
+    ':project_id/vendor-material/:vendor_material_id/detail/:vendor_material_detail_id',
   )
   async deleteOneVendorMaterialDetail(
     @Req() req,
