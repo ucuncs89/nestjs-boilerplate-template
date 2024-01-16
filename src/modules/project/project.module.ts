@@ -40,6 +40,7 @@ import { ProjectCostingPriceService } from './costing/services/project-costing-p
 import { ProjectRemarksController } from './general/controllers/project-remarks.controller';
 import { ProjectRemarksService } from './general/services/project-remarks.service';
 import { ProjectRemarksEntity } from 'src/entities/project/project_remark.entity';
+import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { ProjectRemarksEntity } from 'src/entities/project/project_remark.entity
       ProjectSamplingEntity,
       ProjectPriceEntity,
       ProjectRemarksEntity,
+      ProjectVendorMaterialEntity,
     ]),
     RabbitMQModule,
   ],
