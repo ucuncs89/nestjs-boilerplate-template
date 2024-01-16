@@ -13,6 +13,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectCostingVendorMaterialService } from '../services/project-costing-vendor-material.service';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectCostingVendorMaterialDto } from '../dto/project-costing-vendor-material.dto';
+import { ProjectCostingMaterialService } from '../services/project-costing-material.service';
 
 @ApiBearerAuth()
 @ApiTags('project costing')
@@ -21,6 +22,7 @@ import { ProjectCostingVendorMaterialDto } from '../dto/project-costing-vendor-m
 export class ProjectCostingVendorMaterialController {
   constructor(
     private projectCostingVendorMaterialService: ProjectCostingVendorMaterialService,
+    private projectCostingMaterialService: ProjectCostingMaterialService,
   ) {}
 
   @Post(':project_id/vendor-material/:vendor_material_id')
@@ -40,7 +42,18 @@ export class ProjectCostingVendorMaterialController {
         req.user.id,
         i18n,
       );
-
+    if (data) {
+      await this.projectCostingVendorMaterialService.updateTotalQuantitySubtotal(
+        vendor_material_id,
+      );
+      const material =
+        await this.projectCostingMaterialService.findMaterilIdByMaterialVendor(
+          vendor_material_id,
+        );
+      await this.projectCostingMaterialService.updateTotalCostingAndAvgCost(
+        material,
+      );
+    }
     return { data };
   }
   @Put(
@@ -63,6 +76,16 @@ export class ProjectCostingVendorMaterialController {
         req.user.id,
         i18n,
       );
+    if (data) {
+      this.projectCostingVendorMaterialService.updateTotalQuantitySubtotal(
+        vendor_material_id,
+      );
+      const material =
+        await this.projectCostingMaterialService.findMaterilIdByMaterialVendor(
+          vendor_material_id,
+        );
+      this.projectCostingMaterialService.updateTotalCostingAndAvgCost(material);
+    }
     return { data };
   }
   @Delete(
@@ -80,6 +103,16 @@ export class ProjectCostingVendorMaterialController {
         vendor_material_id,
         vendor_material_detail_id,
       );
+    if (data) {
+      this.projectCostingVendorMaterialService.updateTotalQuantitySubtotal(
+        vendor_material_id,
+      );
+      const material =
+        await this.projectCostingMaterialService.findMaterilIdByMaterialVendor(
+          vendor_material_id,
+        );
+      this.projectCostingMaterialService.updateTotalCostingAndAvgCost(material);
+    }
     return { data };
   }
 }

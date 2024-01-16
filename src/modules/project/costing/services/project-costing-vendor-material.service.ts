@@ -2,14 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { Connection, Repository } from 'typeorm';
+import { Connection, IsNull, Repository } from 'typeorm';
 import { ProjectCostingVendorMaterialDto } from '../dto/project-costing-vendor-material.dto';
+import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 
 @Injectable()
 export class ProjectCostingVendorMaterialService {
   constructor(
     @InjectRepository(ProjectVendorMaterialDetailEntity)
     private projectVendorMaterialDetailRepository: Repository<ProjectVendorMaterialDetailEntity>,
+
+    @InjectRepository(ProjectVendorMaterialEntity)
+    private projectVendorMaterialRepository: Repository<ProjectVendorMaterialEntity>,
+
     private connection: Connection,
   ) {}
 
@@ -73,6 +78,37 @@ export class ProjectCostingVendorMaterialService {
       return data;
     } catch (error) {
       throw new AppErrorException(error);
+    }
+  }
+  async updateTotalQuantitySubtotal(vendor_material_id: number) {
+    try {
+      const vendorMaterial = await this.projectVendorMaterialRepository.findOne(
+        {
+          where: { id: vendor_material_id },
+          relations: { project_variant: true },
+        },
+      );
+      const variant_total_item = vendorMaterial.project_variant.total_item || 0;
+      const total_quantity =
+        await this.projectVendorMaterialDetailRepository.sum('quantity', {
+          project_vendor_material_id: vendor_material_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        });
+      const sumPrice = await this.projectVendorMaterialDetailRepository.sum(
+        'total_price',
+        {
+          project_vendor_material_id: vendor_material_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+      );
+      vendorMaterial.total_consumption = total_quantity;
+      vendorMaterial.total_item = variant_total_item;
+      vendorMaterial.total_price = sumPrice;
+      this.projectVendorMaterialRepository.save(vendorMaterial);
+    } catch (error) {
+      console.log(error);
     }
   }
 }

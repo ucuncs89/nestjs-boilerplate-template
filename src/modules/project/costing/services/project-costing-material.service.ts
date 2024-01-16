@@ -16,6 +16,9 @@ export class ProjectCostingMaterialService {
   constructor(
     @InjectRepository(ProjectMaterialItemEntity)
     private projectMaterialItemRepository: Repository<ProjectMaterialItemEntity>,
+
+    @InjectRepository(ProjectVendorMaterialEntity)
+    private projectVendorMaterialRepository: Repository<ProjectVendorMaterialEntity>,
     private connection: Connection,
   ) {}
   async findAllMaterialItem(
@@ -47,6 +50,7 @@ export class ProjectCostingMaterialService {
           section_type: true,
           total_item: true,
           total_consumption: true,
+          total_price: true,
           project_variant: {
             id: true,
             name: true,
@@ -217,6 +221,41 @@ export class ProjectCostingMaterialService {
         },
       );
       return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+
+  async findMaterilIdByMaterialVendor(vendor_material_id: number) {
+    const data = await this.projectVendorMaterialRepository.findOne({
+      where: { id: vendor_material_id },
+    });
+    return data.project_material_item_id;
+  }
+
+  async updateTotalCostingAndAvgCost(material_item_id: number) {
+    try {
+      const sumTotalPrice = await this.projectVendorMaterialRepository.sum(
+        'total_price',
+        {
+          section_type: StatusProjectEnum.Costing,
+          project_material_item_id: material_item_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+      );
+      const sumTotalConsumption =
+        await this.projectVendorMaterialRepository.sum('total_consumption', {
+          project_material_item_id: material_item_id,
+          section_type: StatusProjectEnum.Costing,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        });
+      const avgPrice = sumTotalPrice / sumTotalConsumption;
+      await this.projectMaterialItemRepository.update(
+        { id: material_item_id },
+        { total_price: sumTotalPrice, avg_price: avgPrice },
+      );
     } catch (error) {
       throw new AppErrorException(error);
     }
