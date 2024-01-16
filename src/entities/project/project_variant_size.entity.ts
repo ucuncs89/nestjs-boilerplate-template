@@ -24,6 +24,9 @@ export class ProjectVariantSizeEntity {
   @Column({ type: 'varchar', nullable: true, length: 50 })
   size_unit: string;
 
+  @Column({ type: 'int', nullable: true })
+  size_id: number;
+
   @ManyToOne(
     () => ProjectVariantEntity,
     (project_variant: ProjectVariantEntity) =>

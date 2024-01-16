@@ -28,7 +28,7 @@ export class ProjectCostingVendorProductionService {
         percentage_of_loss: true,
         total_quantity: true,
         sub_total_price: true,
-        quantity_unit_required: true,
+        // quantity_unit_required: true,
         vendor_production_detail: {
           id: true,
           price: true,
