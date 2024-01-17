@@ -15,6 +15,7 @@ export class ProjectVariantService {
   constructor(
     @InjectRepository(ProjectVariantEntity)
     private projectVariantRepository: Repository<ProjectVariantEntity>,
+
     private connection: Connection,
   ) {}
 
