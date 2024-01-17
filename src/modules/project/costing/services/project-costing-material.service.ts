@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
-import { Connection, In, IsNull, Repository } from 'typeorm';
+import { Connection, In, IsNull, Not, Repository } from 'typeorm';
 import {
   GetListProjectMaterialDto,
   ProjectMaterialItemDto,
+  ProjectMaterialItemEnum,
 } from '../dto/project-costing-material.dto';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
@@ -240,24 +241,60 @@ export class ProjectCostingMaterialService {
         {
           section_type: StatusProjectEnum.Costing,
           project_material_item_id: material_item_id,
+          total_price: Not(IsNull()),
           deleted_at: IsNull(),
           deleted_by: IsNull(),
         },
       );
+      console.log(sumTotalPrice);
+
       const sumTotalConsumption =
         await this.projectVendorMaterialRepository.sum('total_consumption', {
           project_material_item_id: material_item_id,
+          total_consumption: Not(IsNull()),
           section_type: StatusProjectEnum.Costing,
           deleted_at: IsNull(),
           deleted_by: IsNull(),
         });
       const avgPrice = sumTotalPrice / sumTotalConsumption;
-      await this.projectMaterialItemRepository.update(
+
+      const data = await this.projectMaterialItemRepository.update(
         { id: material_item_id },
-        { total_price: sumTotalPrice, avg_price: avgPrice },
+        {
+          total_price: sumTotalPrice,
+          avg_price: avgPrice,
+        },
       );
+      return data;
     } catch (error) {
+      console.log(error);
+
       throw new AppErrorException(error);
     }
+  }
+  async findRecap(project_id: number, type: ProjectMaterialItemEnum) {
+    const data = await this.projectMaterialItemRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        relation_id: true,
+        type: true,
+        name: true,
+        category: true,
+        allowance: true,
+        consumption: true,
+        consumption_unit: true,
+        section_type: true,
+        avg_price: true,
+      },
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        type,
+        section_type: In([StatusProjectEnum.Costing]),
+      },
+    });
+    return data;
   }
 }
