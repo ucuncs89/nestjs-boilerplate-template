@@ -77,14 +77,16 @@ export class ProjectCostingVendorMaterialController {
         i18n,
       );
     if (data) {
-      this.projectCostingVendorMaterialService.updateTotalQuantitySubtotal(
+      await this.projectCostingVendorMaterialService.updateTotalQuantitySubtotal(
         vendor_material_id,
       );
       const material =
         await this.projectCostingMaterialService.findMaterilIdByMaterialVendor(
           vendor_material_id,
         );
-      this.projectCostingMaterialService.updateTotalCostingAndAvgCost(material);
+      await this.projectCostingMaterialService.updateTotalCostingAndAvgCost(
+        material,
+      );
     }
     return { data };
   }
@@ -104,14 +106,16 @@ export class ProjectCostingVendorMaterialController {
         vendor_material_detail_id,
       );
     if (data) {
-      this.projectCostingVendorMaterialService.updateTotalQuantitySubtotal(
+      await this.projectCostingVendorMaterialService.updateTotalQuantitySubtotal(
         vendor_material_id,
       );
       const material =
         await this.projectCostingMaterialService.findMaterilIdByMaterialVendor(
           vendor_material_id,
         );
-      this.projectCostingMaterialService.updateTotalCostingAndAvgCost(material);
+      await this.projectCostingMaterialService.updateTotalCostingAndAvgCost(
+        material,
+      );
     }
     return { data };
   }

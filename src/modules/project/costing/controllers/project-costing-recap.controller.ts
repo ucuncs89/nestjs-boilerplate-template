@@ -6,6 +6,11 @@ import { ProjectVariantService } from '../../general/services/project-variant.se
 import { ProjectCostingRecapService } from '../services/project-costing-recap.service';
 import { ProjectCostingMaterialService } from '../services/project-costing-material.service';
 import { ProjectMaterialItemEnum } from '../dto/project-costing-material.dto';
+import { ProjectCostingVendorProductionService } from '../services/project-costing-vendor-production.service';
+import { ProjectCostingShippingService } from '../services/project-costing-shipping.service';
+import { ProjectCostingSamplingService } from '../services/project-costing-sampling.service';
+import { ProjectCostingAdditionalCostService } from '../services/project-costing-additional-cost.service';
+import { ProjectCostingPriceService } from '../services/project-costing-price.service';
 
 @ApiBearerAuth()
 @ApiTags('project costing')
@@ -17,6 +22,11 @@ export class ProjectCostingRecapController {
     private readonly projectVariantService: ProjectVariantService,
     private readonly projectRecapService: ProjectCostingRecapService,
     private readonly projectCostingMaterialService: ProjectCostingMaterialService,
+    private readonly projectCostingVendorProductionService: ProjectCostingVendorProductionService,
+    private readonly projectCostingShippingService: ProjectCostingShippingService,
+    private readonly projectCostingAdditionalCostService: ProjectCostingAdditionalCostService,
+    private readonly projectCostingSamplingService: ProjectCostingSamplingService,
+    private readonly projectCostingPriceService: ProjectCostingPriceService,
   ) {}
 
   @Get(':project_id/recap/size-quantity')
@@ -47,11 +57,28 @@ export class ProjectCostingRecapController {
       project_id,
       ProjectMaterialItemEnum.Finishedgoods,
     );
+    const production =
+      await this.projectCostingVendorProductionService.findRecap(project_id);
+    const shipping =
+      await this.projectCostingShippingService.findByProjectDetailId(
+        project_id,
+      );
+    const additional_cost =
+      await this.projectCostingAdditionalCostService.findAll(project_id);
+    const sampling = await this.projectCostingSamplingService.findAll(
+      project_id,
+    );
+    const price = await this.projectCostingPriceService.findOne(project_id);
     const data = await this.projectRecapService.calculateRecap(
       fabric,
       sewing,
       packaging,
       finishedgoods,
+      production,
+      shipping,
+      additional_cost,
+      sampling,
+      price,
     );
     return { data };
   }

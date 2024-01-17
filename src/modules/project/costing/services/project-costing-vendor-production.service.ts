@@ -198,4 +198,22 @@ export class ProjectCostingVendorProductionService {
     );
     return update;
   }
+
+  async findRecap(project_id: number) {
+    const data = await this.projectVendorProductionRepository.find({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        activity_id: true,
+        activity_name: true,
+        sub_total_price: true,
+        total_quantity: true,
+      },
+    });
+    return data;
+  }
 }

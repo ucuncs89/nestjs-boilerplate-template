@@ -82,6 +82,8 @@ export class ProjectCostingVendorMaterialService {
   }
   async updateTotalQuantitySubtotal(vendor_material_id: number) {
     try {
+      console.log(vendor_material_id);
+
       const vendorMaterial = await this.projectVendorMaterialRepository.findOne(
         {
           where: { id: vendor_material_id },
@@ -95,6 +97,7 @@ export class ProjectCostingVendorMaterialService {
           deleted_at: IsNull(),
           deleted_by: IsNull(),
         });
+
       const sumPrice = await this.projectVendorMaterialDetailRepository.sum(
         'total_price',
         {
