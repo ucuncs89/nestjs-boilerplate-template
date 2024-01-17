@@ -41,6 +41,8 @@ import { ProjectRemarksController } from './general/controllers/project-remarks.
 import { ProjectRemarksService } from './general/services/project-remarks.service';
 import { ProjectRemarksEntity } from 'src/entities/project/project_remark.entity';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
+import { ProjectCostingRecapController } from './costing/controllers/project-costing-recap.controller';
+import { ProjectCostingRecapService } from './costing/services/project-costing-recap.service';
 
 @Module({
   imports: [
@@ -67,6 +69,7 @@ import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor
     ProjectSizeController,
     ProjectVariantController,
     ProjectHistoryController,
+    ProjectRemarksController,
     ProjectCostingController,
     ProjectCostingMaterialController,
     ProjectCostingVendorMaterialController,
@@ -75,7 +78,7 @@ import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor
     ProjectCostingAdditionalCostController,
     ProjectCostingSamplingController,
     ProjectCostingPriceController,
-    ProjectRemarksController,
+    ProjectCostingRecapController,
   ],
   providers: [
     ProjectService,
@@ -91,6 +94,7 @@ import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor
     ProjectCostingSamplingService,
     ProjectCostingPriceService,
     ProjectRemarksService,
+    ProjectCostingRecapService,
   ],
 })
 export class ProjectModule {}

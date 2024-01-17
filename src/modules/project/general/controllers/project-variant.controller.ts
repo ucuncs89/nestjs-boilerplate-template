@@ -15,13 +15,17 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectVariantService } from '../services/project-variant.service';
 import { ProjectVariantDto } from '../dto/project-variant.dto';
+import { ProjectSizeService } from '../services/project-size.service';
 
 @ApiBearerAuth()
 @ApiTags('project')
 @UseGuards(JwtAuthGuard)
 @Controller('project')
 export class ProjectVariantController {
-  constructor(private readonly projectVariantService: ProjectVariantService) {}
+  constructor(
+    private readonly projectVariantService: ProjectVariantService,
+    private readonly projectSizeService: ProjectSizeService,
+  ) {}
 
   @Post(':project_id/variant')
   async createVariant(
@@ -35,6 +39,9 @@ export class ProjectVariantController {
       projectVariantDto,
       req.user.id,
     );
+    if (data) {
+      this.projectSizeService.calculateTotalItem(project_id);
+    }
     return {
       data,
     };
@@ -82,6 +89,10 @@ export class ProjectVariantController {
       projectVariantDto,
       req.user.id,
     );
+
+    if (data) {
+      this.projectSizeService.calculateTotalItem(project_id);
+    }
     return {
       data,
     };
@@ -98,6 +109,9 @@ export class ProjectVariantController {
       variant_id,
       req.user.id,
     );
+    if (data) {
+      this.projectSizeService.calculateTotalItem(project_id);
+    }
     return {
       data,
     };

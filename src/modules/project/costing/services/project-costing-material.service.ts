@@ -5,6 +5,7 @@ import { Connection, In, IsNull, Repository } from 'typeorm';
 import {
   GetListProjectMaterialDto,
   ProjectMaterialItemDto,
+  ProjectMaterialItemEnum,
 } from '../dto/project-costing-material.dto';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
@@ -259,5 +260,30 @@ export class ProjectCostingMaterialService {
     } catch (error) {
       throw new AppErrorException(error);
     }
+  }
+  async findRecap(project_id: number, type: ProjectMaterialItemEnum) {
+    const data = await this.projectMaterialItemRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        relation_id: true,
+        type: true,
+        name: true,
+        category: true,
+        allowance: true,
+        consumption: true,
+        consumption_unit: true,
+        section_type: true,
+        avg_price: true,
+      },
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        type,
+        section_type: In([StatusProjectEnum.Costing]),
+      },
+    });
+    return data;
   }
 }
