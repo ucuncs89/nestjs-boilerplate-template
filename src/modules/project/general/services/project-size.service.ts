@@ -36,7 +36,12 @@ export class ProjectSizeService {
   }
   async findAllProjectSize(project_id) {
     const data = await this.projectSizeRepository.find({
-      select: { id: true, project_id: true, size_ratio: true },
+      select: {
+        id: true,
+        project_id: true,
+        size_ratio: true,
+        total_item: true,
+      },
       where: {
         project_id,
         deleted_at: IsNull(),
