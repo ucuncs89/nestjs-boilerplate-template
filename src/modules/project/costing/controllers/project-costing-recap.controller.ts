@@ -51,7 +51,7 @@ export class ProjectCostingRecapController {
     );
     const packaging = await this.projectCostingMaterialService.findRecap(
       project_id,
-      ProjectMaterialItemEnum.Sewing,
+      ProjectMaterialItemEnum.Packaging,
     );
     const finishedgoods = await this.projectCostingMaterialService.findRecap(
       project_id,
