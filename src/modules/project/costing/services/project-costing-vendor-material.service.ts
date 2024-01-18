@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { Connection, IsNull, Repository } from 'typeorm';
+import { Connection, IsNull, Not, Repository } from 'typeorm';
 import { ProjectCostingVendorMaterialDto } from '../dto/project-costing-vendor-material.dto';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 
@@ -86,7 +86,9 @@ export class ProjectCostingVendorMaterialService {
 
       const vendorMaterial = await this.projectVendorMaterialRepository.findOne(
         {
-          where: { id: vendor_material_id },
+          where: {
+            id: vendor_material_id,
+          },
           relations: { project_variant: true },
         },
       );
@@ -106,9 +108,9 @@ export class ProjectCostingVendorMaterialService {
           deleted_by: IsNull(),
         },
       );
-      vendorMaterial.total_consumption = total_quantity;
+      vendorMaterial.total_consumption = total_quantity ? total_quantity : 0;
       vendorMaterial.total_item = variant_total_item;
-      vendorMaterial.total_price = sumPrice;
+      vendorMaterial.total_price = sumPrice ? sumPrice : 0;
       this.projectVendorMaterialRepository.save(vendorMaterial);
     } catch (error) {
       console.log(error);
