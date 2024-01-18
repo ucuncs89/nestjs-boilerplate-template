@@ -97,13 +97,14 @@ export class ProjectCostingRecapService {
     }
 
     const detail = listMaterialItem.map((item) => {
-      const total_avg = item.avg_price * item.consumption;
-      const allowPrice = (item.allowance / 100) * total_avg;
-      const material_cost = parseFloat((allowPrice + total_avg).toFixed(2));
+      const allowPercent = item.allowance / 100;
+      const allowPrice = allowPercent * item.consumption + item.consumption;
+      const material_cost = item.avg_price * allowPrice;
 
       return {
         ...item,
-        allowPrice: parseFloat(allowPrice.toFixed(2)),
+        allowPercent,
+        allowPrice,
         material_cost,
       };
     });
