@@ -93,6 +93,7 @@ export class ProjectCostingVendorProductionController {
       await this.projectCostingVendorProductionService.deleteVendorProductionDetail(
         project_vendor_id,
         project_vendor_production_detail_id,
+        req.user.id,
       );
     return { data };
   }
