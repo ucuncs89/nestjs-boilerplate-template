@@ -157,6 +157,7 @@ export class ProjectCostingVendorProductionService {
   async deleteVendorProductionDetail(
     project_vendor_production_id: number,
     project_vendor_production_detail_id: number,
+    user_id: number,
   ) {
     try {
       const data = await this.projectVendorProductionDetailRepository.delete({
@@ -164,6 +165,7 @@ export class ProjectCostingVendorProductionService {
         id: project_vendor_production_detail_id,
       });
       this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      this.deleteIfNotExistActivity(project_vendor_production_id, user_id);
       return data;
     } catch (error) {
       throw new AppErrorException(error);
@@ -215,5 +217,30 @@ export class ProjectCostingVendorProductionService {
       },
     });
     return data;
+  }
+  async deleteIfNotExistActivity(
+    vendor_production_id: number,
+    user_id: number,
+  ) {
+    const vendorDetail =
+      await this.projectVendorProductionDetailRepository.findOne({
+        where: {
+          project_vendor_production_id: vendor_production_id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+      });
+    if (!vendorDetail) {
+      await this.projectVendorProductionRepository.update(
+        {
+          id: vendor_production_id,
+        },
+        {
+          deleted_at: new Date().toISOString(),
+          deleted_by: user_id,
+        },
+      );
+    }
+    return true;
   }
 }
