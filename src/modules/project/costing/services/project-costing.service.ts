@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { ProjectEntity } from 'src/entities/project/project.entity';
-import { Connection, Repository } from 'typeorm';
+import { Connection, IsNull, Repository } from 'typeorm';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @Injectable()
@@ -32,5 +32,18 @@ export class ProjectCostingService {
       return { generate_project_costing: 'new', data };
     }
     return { generate_project_costing: 'old' };
+  }
+  async publishCosting(project_id: number, user_id: number) {
+    const project = await this.projectRepository.findOne({
+      where: { id: project_id, deleted_at: IsNull(), deleted_by: IsNull() },
+    });
+    if (project.status === StatusProjectEnum.Planning) {
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        { can_planning: true },
+      );
+      return data;
+    }
+    return { data: 'Already' };
   }
 }

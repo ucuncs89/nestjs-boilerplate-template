@@ -25,7 +25,6 @@ export class ProjectCostingController {
     private readonly projectHistoryService: ProjectHistoryService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post(':project_id/generate')
   async generate(@Req() req, @Param('project_id') project_id: number) {
     const data = await this.projectCostingService.generateUpdateCosting(
@@ -40,6 +39,14 @@ export class ProjectCostingController {
         {},
       );
     }
+    return { data };
+  }
+  @Post(':project_id/publish')
+  async publish(@Req() req, @Param('project_id') project_id: number) {
+    const data = await this.projectCostingService.publishCosting(
+      project_id,
+      req.user.id,
+    );
     return { data };
   }
 }
