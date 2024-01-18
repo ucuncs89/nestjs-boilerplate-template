@@ -68,6 +68,7 @@ export class ProjectCostingRecapController {
     const sampling = await this.projectCostingSamplingService.findAll(
       project_id,
     );
+
     const price = await this.projectCostingPriceService.findOne(project_id);
     const data = await this.projectRecapService.calculateRecap(
       fabric,
