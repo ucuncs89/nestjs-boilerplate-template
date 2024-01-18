@@ -71,6 +71,12 @@ export class ProjectEntity {
   @Column({ type: 'varchar', length: 50, nullable: true })
   hold_description: string;
 
+  @Column({ type: 'boolean', default: false })
+  can_planning: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  can_production: boolean;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

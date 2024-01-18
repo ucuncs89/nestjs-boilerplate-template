@@ -249,6 +249,9 @@ export class ProjectService {
         sub_category_id: true,
         description: true,
         material_source: true,
+        can_planning: true,
+        can_production: true,
+        hold_description: true,
         size: {
           id: true,
           project_id: true,
