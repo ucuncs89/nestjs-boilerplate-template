@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectEntity } from './project.entity';
+import { UsersEntity } from '../users/users.entity';
 
 @Entity('project_history')
 export class ProjectHistoryEntity {
@@ -48,4 +49,10 @@ export class ProjectHistoryEntity {
   )
   @JoinColumn({ name: 'project_id' })
   public project: ProjectEntity;
+
+  @ManyToOne(() => UsersEntity, (users: UsersEntity) => users.history, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'created_by' })
+  public users: UsersEntity;
 }
