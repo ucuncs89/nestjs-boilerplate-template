@@ -12,6 +12,7 @@ import {
 import { RolesEntity } from '../roles/roles.entity';
 import { UsersDetailEntity } from './users_detail.entity';
 import { PurchaseOrderApprovalEntity } from '../purchase-order/purchase_order_approval.entity';
+import { ProjectHistoryEntity } from '../project/project_history.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -93,4 +94,11 @@ export class UsersEntity {
   )
   @JoinColumn({ name: 'updated_by' })
   purchase_order_approval: PurchaseOrderApprovalEntity[];
+
+  @OneToMany(
+    () => ProjectHistoryEntity,
+    (history: ProjectHistoryEntity) => history.users,
+  )
+  @JoinColumn({ name: 'created_by' })
+  history: ProjectHistoryEntity[];
 }
