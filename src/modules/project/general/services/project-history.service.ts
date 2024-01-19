@@ -49,12 +49,16 @@ export class ProjectHistoryService {
         created_by: true,
         updated_at: true,
         updated_by: true,
+        users: {
+          id: true,
+          full_name: true,
+        },
       },
-
       where: { project_id },
       order: orderObj,
       take: page_size,
       skip: page,
+      relations: { users: true },
     });
     return {
       results,
