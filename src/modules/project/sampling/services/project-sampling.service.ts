@@ -7,6 +7,7 @@ import {
 } from 'src/exceptions/app-exception';
 import { Connection, IsNull, Repository } from 'typeorm';
 import { ProjectSamplingDto } from '../dto/project-sampling.dto';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @Injectable()
 export class ProjectSamplingService {
@@ -38,6 +39,7 @@ export class ProjectSamplingService {
     try {
       const sampling = this.projectSamplingRepository.create({
         ...projectSamplingDto,
+        section_type: StatusProjectEnum.Sampling,
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
