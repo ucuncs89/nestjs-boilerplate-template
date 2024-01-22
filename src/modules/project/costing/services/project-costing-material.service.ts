@@ -295,4 +295,71 @@ export class ProjectCostingMaterialService {
     });
     return data;
   }
+
+  async findVendorMaterialCosting(project_id: number) {
+    const data = await this.projectMaterialItemRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        relation_id: true,
+        type: true,
+        name: true,
+        category: true,
+        used_for: true,
+        cut_shape: true,
+        allowance: true,
+        consumption: true,
+        consumption_unit: true,
+        section_type: true,
+        avg_price: true,
+        total_price: true,
+        diameter: true,
+        diameter_unit: true,
+        length: true,
+        length_unit: true,
+        weight: true,
+        weight_unit: true,
+        width: true,
+        width_unit: true,
+        vendor_material: {
+          id: true,
+          project_id: true,
+          project_variant_id: true,
+          project_material_item_id: true,
+          section_type: true,
+          total_item: true,
+          total_consumption: true,
+          total_price: true,
+          detail: {
+            id: true,
+            vendor_id: true,
+            type: true,
+            price: true,
+            price_unit: true,
+            quantity: true,
+            quantity_unit: true,
+            total_price: true,
+          },
+        },
+      },
+      where: {
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        project_id,
+        section_type: StatusProjectEnum.Costing,
+        vendor_material: {
+          section_type: StatusProjectEnum.Costing,
+          project_id,
+        },
+      },
+      relations: {
+        vendor_material: { detail: true },
+      },
+      order: {
+        type: 'ASC',
+        id: 'ASC',
+      },
+    });
+    return data;
+  }
 }

@@ -45,6 +45,8 @@ import { ProjectCostingRecapController } from './costing/controllers/project-cos
 import { ProjectCostingRecapService } from './costing/services/project-costing-recap.service';
 import { ProjectSamplingController } from './sampling/controllers/project-sampling.controller';
 import { ProjectSamplingService } from './sampling/services/project-sampling.service';
+import { ProjectPlanningController } from './planning/controllers/project-planning.controller';
+import { ProjectPlanningService } from './planning/services/project-planning.service';
 
 @Module({
   imports: [
@@ -82,6 +84,7 @@ import { ProjectSamplingService } from './sampling/services/project-sampling.ser
     ProjectCostingPriceController,
     ProjectCostingRecapController,
     ProjectSamplingController,
+    ProjectPlanningController,
   ],
   providers: [
     ProjectService,
@@ -99,6 +102,7 @@ import { ProjectSamplingService } from './sampling/services/project-sampling.ser
     ProjectRemarksService,
     ProjectCostingRecapService,
     ProjectSamplingService,
+    ProjectPlanningService,
   ],
 })
 export class ProjectModule {}

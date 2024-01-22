@@ -5,6 +5,7 @@ import { AppErrorException } from 'src/exceptions/app-exception';
 import { Connection, IsNull, Not, Repository } from 'typeorm';
 import { ProjectCostingVendorMaterialDto } from '../dto/project-costing-vendor-material.dto';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @Injectable()
 export class ProjectCostingVendorMaterialService {
@@ -115,5 +116,39 @@ export class ProjectCostingVendorMaterialService {
     } catch (error) {
       console.log(error);
     }
+  }
+  async findVendorMaterialByProjectId(project_id: number) {
+    const data = await this.projectVendorMaterialRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        project_material_item_id: true,
+        project_variant_id: true,
+        section_type: true,
+        total_item: true,
+        total_consumption: true,
+        total_price: true,
+        detail: {
+          id: true,
+          vendor_id: true,
+          quantity: true,
+          quantity_unit: true,
+          total_price: true,
+          price_unit: true,
+          type: true,
+        },
+      },
+      where: {
+        project_id,
+        section_type: StatusProjectEnum.Costing,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        detail: { deleted_at: IsNull(), deleted_by: IsNull() },
+      },
+      relations: {
+        detail: true,
+      },
+    });
+    return data;
   }
 }
