@@ -246,7 +246,6 @@ export class ProjectCostingMaterialService {
           deleted_by: IsNull(),
         },
       );
-      console.log(sumTotalPrice);
 
       const sumTotalConsumption =
         await this.projectVendorMaterialRepository.sum('total_consumption', {

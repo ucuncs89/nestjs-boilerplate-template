@@ -83,8 +83,6 @@ export class ProjectCostingVendorMaterialService {
   }
   async updateTotalQuantitySubtotal(vendor_material_id: number) {
     try {
-      console.log(vendor_material_id);
-
       const vendorMaterial = await this.projectVendorMaterialRepository.findOne(
         {
           where: {
