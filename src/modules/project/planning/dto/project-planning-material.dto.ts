@@ -8,12 +8,12 @@ export enum ProjectMaterialItemEnum {
   Finishedgoods = 'Finished goods',
 }
 
-export class GetListProjectPlanningMaterialDto {
+export class GetListProjectMaterialDto {
   @ApiProperty({ required: false, enum: ProjectMaterialItemEnum })
   type?: ProjectMaterialItemEnum;
 }
 
-export class ProjectPlanningMaterialItemDto {
+export class ProjectMaterialItemDto {
   @ApiProperty()
   @IsNotEmpty()
   relation_id: number;

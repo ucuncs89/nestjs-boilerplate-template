@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
-import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
-import { Connection, In, IsNull, Repository } from 'typeorm';
-
-import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import { Connection, In, IsNull, Not, Repository } from 'typeorm';
+import {
+  GetListProjectMaterialDto,
+  ProjectMaterialItemDto,
+  ProjectMaterialItemEnum,
+} from '../dto/project-planning-material.dto';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import {
-  GetListProjectPlanningMaterialDto,
-  ProjectPlanningMaterialItemDto,
-} from '../dto/project-planning-material.dto';
+import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @Injectable()
 export class ProjectPlanningMaterialService {
@@ -18,11 +18,13 @@ export class ProjectPlanningMaterialService {
     @InjectRepository(ProjectMaterialItemEntity)
     private projectMaterialItemRepository: Repository<ProjectMaterialItemEntity>,
 
+    @InjectRepository(ProjectVendorMaterialEntity)
+    private projectVendorMaterialRepository: Repository<ProjectVendorMaterialEntity>,
     private connection: Connection,
   ) {}
   async findAllMaterialItem(
     project_id,
-    getListProjectPlanningMaterialDto: GetListProjectPlanningMaterialDto,
+    getListProjectMaterialDto: GetListProjectMaterialDto,
   ) {
     const data = await this.projectMaterialItemRepository.find({
       select: {
@@ -73,10 +75,10 @@ export class ProjectPlanningMaterialService {
         deleted_at: IsNull(),
         deleted_by: IsNull(),
         project_id,
-        added_in_section: In([StatusProjectEnum.Planning]),
+        added_in_section: StatusProjectEnum.Planning,
         type:
-          getListProjectPlanningMaterialDto.type != null
-            ? getListProjectPlanningMaterialDto.type
+          getListProjectMaterialDto.type != null
+            ? getListProjectMaterialDto.type
             : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
         vendor_material: { added_in_section: StatusProjectEnum.Planning },
       },
@@ -92,7 +94,7 @@ export class ProjectPlanningMaterialService {
   }
   async createMaterialItemOne(
     project_id,
-    projectPlanningMaterialItemDto: ProjectPlanningMaterialItemDto,
+    projectMaterialItemDto: ProjectMaterialItemDto,
     user_id,
   ) {
     const queryRunner = this.connection.createQueryRunner();
@@ -102,7 +104,7 @@ export class ProjectPlanningMaterialService {
       const projectMaterial = await queryRunner.manager.insert(
         ProjectMaterialItemEntity,
         {
-          ...projectPlanningMaterialItemDto,
+          ...projectMaterialItemDto,
           project_id,
           added_in_section: StatusProjectEnum.Planning,
           created_at: new Date().toISOString(),
@@ -128,10 +130,7 @@ export class ProjectPlanningMaterialService {
       }
       await queryRunner.commitTransaction();
 
-      return {
-        ...projectPlanningMaterialItemDto,
-        id: projectMaterial.raw[0].id,
-      };
+      return { ...projectMaterialItemDto, id: projectMaterial.raw[0].id };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
@@ -182,7 +181,7 @@ export class ProjectPlanningMaterialService {
   async updateMaterialItemOne(
     project_id: number,
     material_item_id: number,
-    projectPlanningMaterialItemDto: ProjectPlanningMaterialItemDto,
+    projectMaterialItemDto: ProjectMaterialItemDto,
     user_id: number,
   ) {
     try {
@@ -194,7 +193,7 @@ export class ProjectPlanningMaterialService {
           deleted_by: IsNull(),
         },
         {
-          ...projectPlanningMaterialItemDto,
+          ...projectMaterialItemDto,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
         },
@@ -226,5 +225,141 @@ export class ProjectPlanningMaterialService {
     } catch (error) {
       throw new AppErrorException(error);
     }
+  }
+
+  async findMaterilIdByMaterialVendor(vendor_material_id: number) {
+    const data = await this.projectVendorMaterialRepository.findOne({
+      where: { id: vendor_material_id },
+    });
+    return data.project_material_item_id;
+  }
+
+  async updateTotalPlanningAndAvgCost(material_item_id: number) {
+    try {
+      const sumTotalPrice = await this.projectVendorMaterialRepository.sum(
+        'total_price',
+        {
+          added_in_section: StatusProjectEnum.Planning,
+          project_material_item_id: material_item_id,
+          total_price: Not(IsNull()),
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+      );
+
+      const sumTotalConsumption =
+        await this.projectVendorMaterialRepository.sum('total_consumption', {
+          project_material_item_id: material_item_id,
+          total_consumption: Not(IsNull()),
+          added_in_section: StatusProjectEnum.Planning,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        });
+      const avgPrice = sumTotalPrice / sumTotalConsumption;
+
+      const data = await this.projectMaterialItemRepository.update(
+        { id: material_item_id },
+        {
+          total_price: sumTotalPrice,
+          avg_price: avgPrice,
+        },
+      );
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+  async findRecap(project_id: number, type: ProjectMaterialItemEnum) {
+    const data = await this.projectMaterialItemRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        relation_id: true,
+        type: true,
+        name: true,
+        category: true,
+        allowance: true,
+        consumption: true,
+        consumption_unit: true,
+        added_in_section: true,
+        avg_price: true,
+      },
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        type,
+        added_in_section: In([StatusProjectEnum.Planning]),
+      },
+    });
+    return data;
+  }
+
+  async findVendorMaterialPlanning(project_id: number) {
+    const data = await this.projectMaterialItemRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        relation_id: true,
+        type: true,
+        name: true,
+        category: true,
+        used_for: true,
+        cut_shape: true,
+        allowance: true,
+        consumption: true,
+        consumption_unit: true,
+        added_in_section: true,
+        avg_price: true,
+        total_price: true,
+        diameter: true,
+        diameter_unit: true,
+        length: true,
+        length_unit: true,
+        weight: true,
+        weight_unit: true,
+        width: true,
+        width_unit: true,
+        vendor_material: {
+          id: true,
+          project_id: true,
+          project_variant_id: true,
+          project_material_item_id: true,
+          added_in_section: true,
+          total_item: true,
+          total_consumption: true,
+          total_price: true,
+          detail: {
+            id: true,
+            vendor_id: true,
+            type: true,
+            price: true,
+            price_unit: true,
+            quantity: true,
+            quantity_unit: true,
+            total_price: true,
+          },
+        },
+      },
+      where: {
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        project_id,
+        planning_material_item_id: IsNull(),
+        added_in_section: StatusProjectEnum.Planning,
+        vendor_material: {
+          added_in_section: StatusProjectEnum.Planning,
+          project_id,
+        },
+      },
+      relations: {
+        vendor_material: { detail: true },
+      },
+      order: {
+        type: 'ASC',
+        id: 'ASC',
+      },
+    });
+    return data;
   }
 }

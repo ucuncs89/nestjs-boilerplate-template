@@ -47,6 +47,22 @@ import { ProjectSamplingController } from './sampling/controllers/project-sampli
 import { ProjectSamplingService } from './sampling/services/project-sampling.service';
 import { ProjectPlanningController } from './planning/controllers/project-planning.controller';
 import { ProjectPlanningService } from './planning/services/project-planning.service';
+import { ProjectPlanningMaterialService } from './planning/services/project-planning-material.service';
+import { ProjectPlanningVendorMaterialService } from './planning/services/project-planning-vendor-material.service';
+import { ProjectPlanningVendorProductionService } from './planning/services/project-planning-vendor-production.service';
+import { ProjectPlanningShippingService } from './planning/services/project-planning-shipping.service';
+import { ProjectPlanningAdditionalCostService } from './planning/services/project-planning-additional-cost.service';
+import { ProjectPlanningSamplingService } from './planning/services/project-planning-sampling.service';
+import { ProjectPlanningRecapService } from './planning/services/project-planning-recap.service';
+import { ProjectPlanningMaterialController } from './planning/controllers/project-planning-material.controller';
+import { ProjectPlanningVendorMaterialController } from './planning/controllers/project-planning-vendor-material.controller';
+import { ProjectPlanningVendorProductionController } from './planning/controllers/project-planning-vendor-production.controller';
+import { ProjectPlanningShippingController } from './planning/controllers/project-planning-shipping.controller';
+import { ProjectPlanningAdditionalCostController } from './planning/controllers/project-planning-additional-cost.controller';
+import { ProjectPlanningSamplingController } from './planning/controllers/project-planning-sampling.controller';
+import { ProjectPlanningPriceController } from './planning/controllers/project-planning-price.controller';
+import { ProjectPlanningRecapController } from './planning/controllers/project-planning-recap.controller';
+import { ProjectPlanningPriceService } from './planning/services/project-planning-price.service';
 
 @Module({
   imports: [
@@ -85,6 +101,14 @@ import { ProjectPlanningService } from './planning/services/project-planning.ser
     ProjectCostingRecapController,
     ProjectSamplingController,
     ProjectPlanningController,
+    ProjectPlanningMaterialController,
+    ProjectPlanningVendorMaterialController,
+    ProjectPlanningVendorProductionController,
+    ProjectPlanningShippingController,
+    ProjectPlanningAdditionalCostController,
+    ProjectPlanningSamplingController,
+    ProjectPlanningPriceController,
+    ProjectPlanningRecapController,
   ],
   providers: [
     ProjectService,
@@ -103,6 +127,14 @@ import { ProjectPlanningService } from './planning/services/project-planning.ser
     ProjectCostingRecapService,
     ProjectSamplingService,
     ProjectPlanningService,
+    ProjectPlanningMaterialService,
+    ProjectPlanningVendorMaterialService,
+    ProjectPlanningVendorProductionService,
+    ProjectPlanningShippingService,
+    ProjectPlanningAdditionalCostService,
+    ProjectPlanningSamplingService,
+    ProjectPlanningPriceService,
+    ProjectPlanningRecapService,
   ],
 })
 export class ProjectModule {}

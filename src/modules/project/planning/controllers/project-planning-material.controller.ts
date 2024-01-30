@@ -14,14 +14,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectPlanningMaterialService } from '../services/project-planning-material.service';
 import {
-  GetListProjectPlanningMaterialDto,
-  ProjectPlanningMaterialItemDto,
+  GetListProjectMaterialDto,
+  ProjectMaterialItemDto,
 } from '../dto/project-planning-material.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
 @UseGuards(JwtAuthGuard)
-@Controller('project/plannning')
+@Controller('project/planning')
 export class ProjectPlanningMaterialController {
   constructor(
     private readonly projectPlanningMaterialService: ProjectPlanningMaterialService,
@@ -30,12 +30,11 @@ export class ProjectPlanningMaterialController {
   @Get(':project_id/material')
   async listMaterialItem(
     @Param('project_id') project_id: number,
-    @Query()
-    getListProjectPlanningMaterialDto: GetListProjectPlanningMaterialDto,
+    @Query() getListProjectMaterialDto: GetListProjectMaterialDto,
   ) {
     const data = await this.projectPlanningMaterialService.findAllMaterialItem(
       project_id,
-      getListProjectPlanningMaterialDto,
+      getListProjectMaterialDto,
     );
     return {
       data,
@@ -45,12 +44,12 @@ export class ProjectPlanningMaterialController {
   async createMaterialItem(
     @Req() req,
     @Param('project_id') project_id: number,
-    @Body() projectPlanningMaterialItemDto: ProjectPlanningMaterialItemDto,
+    @Body() projectMaterialItemDto: ProjectMaterialItemDto,
   ) {
     const data =
       await this.projectPlanningMaterialService.createMaterialItemOne(
         project_id,
-        projectPlanningMaterialItemDto,
+        projectMaterialItemDto,
         req.user.id,
       );
     return {
@@ -77,13 +76,13 @@ export class ProjectPlanningMaterialController {
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('material_item_id') material_item_id: number,
-    @Body() projectPlanningMaterialItemDto: ProjectPlanningMaterialItemDto,
+    @Body() projectMaterialItemDto: ProjectMaterialItemDto,
   ) {
     const data =
       await this.projectPlanningMaterialService.updateMaterialItemOne(
         project_id,
         material_item_id,
-        projectPlanningMaterialItemDto,
+        projectMaterialItemDto,
         req.user.id,
       );
     return {
