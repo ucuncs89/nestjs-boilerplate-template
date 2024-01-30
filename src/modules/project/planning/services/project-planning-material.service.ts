@@ -1,30 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
-import { Connection, In, IsNull, Not, Repository } from 'typeorm';
-import {
-  GetListProjectMaterialDto,
-  ProjectMaterialItemDto,
-  ProjectMaterialItemEnum,
-} from '../dto/project-costing-material.dto';
+import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
+import { Connection, In, IsNull, Repository } from 'typeorm';
+
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
-import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import {
+  GetListProjectPlanningMaterialDto,
+  ProjectPlanningMaterialItemDto,
+} from '../dto/project-planning-material.dto';
 
 @Injectable()
-export class ProjectCostingMaterialService {
+export class ProjectPlanningMaterialService {
   constructor(
     @InjectRepository(ProjectMaterialItemEntity)
     private projectMaterialItemRepository: Repository<ProjectMaterialItemEntity>,
 
-    @InjectRepository(ProjectVendorMaterialEntity)
-    private projectVendorMaterialRepository: Repository<ProjectVendorMaterialEntity>,
     private connection: Connection,
   ) {}
   async findAllMaterialItem(
     project_id,
-    getListProjectMaterialDto: GetListProjectMaterialDto,
+    getListProjectPlanningMaterialDto: GetListProjectPlanningMaterialDto,
   ) {
     const data = await this.projectMaterialItemRepository.find({
       select: {
@@ -75,12 +73,12 @@ export class ProjectCostingMaterialService {
         deleted_at: IsNull(),
         deleted_by: IsNull(),
         project_id,
-        added_in_section: StatusProjectEnum.Costing,
+        added_in_section: In([StatusProjectEnum.Planning]),
         type:
-          getListProjectMaterialDto.type != null
-            ? getListProjectMaterialDto.type
+          getListProjectPlanningMaterialDto.type != null
+            ? getListProjectPlanningMaterialDto.type
             : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
-        vendor_material: { added_in_section: StatusProjectEnum.Costing },
+        vendor_material: { added_in_section: StatusProjectEnum.Planning },
       },
       relations: {
         vendor_material: { project_variant: true, detail: { vendors: true } },
@@ -94,7 +92,7 @@ export class ProjectCostingMaterialService {
   }
   async createMaterialItemOne(
     project_id,
-    projectMaterialItemDto: ProjectMaterialItemDto,
+    projectPlanningMaterialItemDto: ProjectPlanningMaterialItemDto,
     user_id,
   ) {
     const queryRunner = this.connection.createQueryRunner();
@@ -104,9 +102,9 @@ export class ProjectCostingMaterialService {
       const projectMaterial = await queryRunner.manager.insert(
         ProjectMaterialItemEntity,
         {
-          ...projectMaterialItemDto,
+          ...projectPlanningMaterialItemDto,
           project_id,
-          added_in_section: StatusProjectEnum.Costing,
+          added_in_section: StatusProjectEnum.Planning,
           created_at: new Date().toISOString(),
           created_by: user_id,
         },
@@ -124,13 +122,16 @@ export class ProjectCostingMaterialService {
             project_variant_id: dataVariant.id,
             project_material_item_id: projectMaterial.raw[0].id,
             project_id,
-            added_in_section: StatusProjectEnum.Costing,
+            added_in_section: StatusProjectEnum.Planning,
           });
         }
       }
       await queryRunner.commitTransaction();
 
-      return { ...projectMaterialItemDto, id: projectMaterial.raw[0].id };
+      return {
+        ...projectPlanningMaterialItemDto,
+        id: projectMaterial.raw[0].id,
+      };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
@@ -181,7 +182,7 @@ export class ProjectCostingMaterialService {
   async updateMaterialItemOne(
     project_id: number,
     material_item_id: number,
-    projectMaterialItemDto: ProjectMaterialItemDto,
+    projectPlanningMaterialItemDto: ProjectPlanningMaterialItemDto,
     user_id: number,
   ) {
     try {
@@ -193,7 +194,7 @@ export class ProjectCostingMaterialService {
           deleted_by: IsNull(),
         },
         {
-          ...projectMaterialItemDto,
+          ...projectPlanningMaterialItemDto,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
         },
@@ -225,141 +226,5 @@ export class ProjectCostingMaterialService {
     } catch (error) {
       throw new AppErrorException(error);
     }
-  }
-
-  async findMaterilIdByMaterialVendor(vendor_material_id: number) {
-    const data = await this.projectVendorMaterialRepository.findOne({
-      where: { id: vendor_material_id },
-    });
-    return data.project_material_item_id;
-  }
-
-  async updateTotalCostingAndAvgCost(material_item_id: number) {
-    try {
-      const sumTotalPrice = await this.projectVendorMaterialRepository.sum(
-        'total_price',
-        {
-          added_in_section: StatusProjectEnum.Costing,
-          project_material_item_id: material_item_id,
-          total_price: Not(IsNull()),
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        },
-      );
-
-      const sumTotalConsumption =
-        await this.projectVendorMaterialRepository.sum('total_consumption', {
-          project_material_item_id: material_item_id,
-          total_consumption: Not(IsNull()),
-          added_in_section: StatusProjectEnum.Costing,
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
-        });
-      const avgPrice = sumTotalPrice / sumTotalConsumption;
-
-      const data = await this.projectMaterialItemRepository.update(
-        { id: material_item_id },
-        {
-          total_price: sumTotalPrice,
-          avg_price: avgPrice,
-        },
-      );
-      return data;
-    } catch (error) {
-      throw new AppErrorException(error);
-    }
-  }
-  async findRecap(project_id: number, type: ProjectMaterialItemEnum) {
-    const data = await this.projectMaterialItemRepository.find({
-      select: {
-        id: true,
-        project_id: true,
-        relation_id: true,
-        type: true,
-        name: true,
-        category: true,
-        allowance: true,
-        consumption: true,
-        consumption_unit: true,
-        added_in_section: true,
-        avg_price: true,
-      },
-      where: {
-        project_id,
-        deleted_at: IsNull(),
-        deleted_by: IsNull(),
-        type,
-        added_in_section: In([StatusProjectEnum.Costing]),
-      },
-    });
-    return data;
-  }
-
-  async findVendorMaterialCosting(project_id: number) {
-    const data = await this.projectMaterialItemRepository.find({
-      select: {
-        id: true,
-        project_id: true,
-        relation_id: true,
-        type: true,
-        name: true,
-        category: true,
-        used_for: true,
-        cut_shape: true,
-        allowance: true,
-        consumption: true,
-        consumption_unit: true,
-        added_in_section: true,
-        avg_price: true,
-        total_price: true,
-        diameter: true,
-        diameter_unit: true,
-        length: true,
-        length_unit: true,
-        weight: true,
-        weight_unit: true,
-        width: true,
-        width_unit: true,
-        vendor_material: {
-          id: true,
-          project_id: true,
-          project_variant_id: true,
-          project_material_item_id: true,
-          added_in_section: true,
-          total_item: true,
-          total_consumption: true,
-          total_price: true,
-          detail: {
-            id: true,
-            vendor_id: true,
-            type: true,
-            price: true,
-            price_unit: true,
-            quantity: true,
-            quantity_unit: true,
-            total_price: true,
-          },
-        },
-      },
-      where: {
-        deleted_at: IsNull(),
-        deleted_by: IsNull(),
-        project_id,
-        planning_material_item_id: IsNull(),
-        added_in_section: StatusProjectEnum.Costing,
-        vendor_material: {
-          added_in_section: StatusProjectEnum.Costing,
-          project_id,
-        },
-      },
-      relations: {
-        vendor_material: { detail: true },
-      },
-      order: {
-        type: 'ASC',
-        id: 'ASC',
-      },
-    });
-    return data;
   }
 }

@@ -122,7 +122,7 @@ export class ProjectCostingVendorMaterialService {
         project_id: true,
         project_material_item_id: true,
         project_variant_id: true,
-        section_type: true,
+        added_in_section: true,
         total_item: true,
         total_consumption: true,
         total_price: true,
@@ -138,7 +138,7 @@ export class ProjectCostingVendorMaterialService {
       },
       where: {
         project_id,
-        section_type: StatusProjectEnum.Costing,
+        added_in_section: StatusProjectEnum.Costing,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
         detail: { deleted_at: IsNull(), deleted_by: IsNull() },

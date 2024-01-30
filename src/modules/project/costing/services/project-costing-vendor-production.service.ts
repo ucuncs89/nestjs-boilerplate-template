@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { Connection, IsNull, Repository } from 'typeorm';
+import { Connection, In, IsNull, Not, Repository } from 'typeorm';
 import { ProjectCostingVendorProductionDetailDto } from '../dto/project-costing-vendor-production.dto';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @Injectable()
 export class ProjectCostingVendorProductionService {
@@ -242,5 +243,24 @@ export class ProjectCostingVendorProductionService {
       );
     }
     return true;
+  }
+  async findProductionCosting(project_id: number) {
+    const data = await this.projectVendorProductionRepository.find({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        planning_project_vendor_production_id: IsNull(),
+        added_in_section: In([StatusProjectEnum.Costing]),
+        vendor_production_detail: {
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+      },
+      relations: {
+        vendor_production_detail: true,
+      },
+    });
+    return data;
   }
 }

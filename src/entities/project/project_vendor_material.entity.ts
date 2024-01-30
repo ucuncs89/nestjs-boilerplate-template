@@ -25,7 +25,7 @@ export class ProjectVendorMaterialEntity {
   project_material_item_id: number;
 
   @Column({ type: 'varchar' })
-  section_type: string;
+  added_in_section: string;
 
   @Column({ type: 'int', default: 0 })
   total_item: number;

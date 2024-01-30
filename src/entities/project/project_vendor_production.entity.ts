@@ -54,6 +54,15 @@ export class ProjectVendorProductionEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
+  @Column({ type: 'varchar', nullable: true })
+  added_in_section: string;
+
+  @Column({ type: 'int', nullable: true })
+  planning_project_vendor_production_id: number;
+
+  @Column({ type: 'int', nullable: true })
+  costing_project_vendor_production_id: number;
+
   @OneToMany(
     () => ProjectVendorProductionDetailEntity,
     (vendor_production_detail: ProjectVendorProductionDetailEntity) =>

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectAdditionalCostEntity } from 'src/entities/project/project_additional_cost.entity';
-import { Connection, IsNull, Repository, In } from 'typeorm';
+import { Connection, IsNull, Repository, In, Not } from 'typeorm';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 import { ProjectCostingAdditionalCostDto } from '../dto/project-costing-additional-cost.dto';
 import {
@@ -28,7 +28,7 @@ export class ProjectCostingAdditionalCostService {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
-        section_type: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Costing]),
       },
     });
     return data;
@@ -42,7 +42,7 @@ export class ProjectCostingAdditionalCostService {
       const data = this.projectAdditionalCostRepository.create({
         project_id,
         ...projectAdditionalCostDto,
-        section_type: StatusProjectEnum.Costing,
+        added_in_section: StatusProjectEnum.Costing,
         created_at: new Date().toISOString(),
         created_by: user_id,
       });
@@ -86,6 +86,26 @@ export class ProjectCostingAdditionalCostService {
     const data = await this.projectAdditionalCostRepository.delete({
       project_id,
       id: additional_id,
+    });
+    return data;
+  }
+
+  async findAdditionalCosting(project_id: number) {
+    const data = await this.projectAdditionalCostRepository.find({
+      select: {
+        id: true,
+        additional_name: true,
+        additional_price: true,
+        description: true,
+        project_id: true,
+      },
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: In([StatusProjectEnum.Costing]),
+        planning_project_additional_cost_id: IsNull(),
+      },
     });
     return data;
   }

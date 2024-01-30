@@ -5,7 +5,7 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { Connection, In, IsNull, Repository } from 'typeorm';
+import { Connection, In, IsNull, Not, Repository } from 'typeorm';
 import { ProjectCostingShippingDto } from '../dto/project-costing-shipping.dto';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
@@ -25,7 +25,7 @@ export class ProjectCostingShippingService {
     try {
       const shipping = this.projectShippingRepository.create({
         ...projectCostingShippingDto,
-        section_type: StatusProjectEnum.Costing,
+        added_in_section: StatusProjectEnum.Costing,
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
@@ -91,10 +91,32 @@ export class ProjectCostingShippingService {
       },
       where: {
         project_id,
+        added_in_section: In([StatusProjectEnum.Costing]),
         deleted_at: IsNull(),
         deleted_by: IsNull(),
       },
     });
     return shipping;
+  }
+  async findShippingCosting(project_id: number) {
+    const data = await this.projectShippingRepository.find({
+      where: {
+        project_id,
+        added_in_section: In([StatusProjectEnum.Costing]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        planning_project_shipping_id: IsNull(),
+      },
+      select: {
+        id: true,
+        project_id: true,
+        shipping_name: true,
+        shipping_vendor_name: true,
+        shipping_date: true,
+        shipping_cost: true,
+        added_in_section: true,
+      },
+    });
+    return data;
   }
 }

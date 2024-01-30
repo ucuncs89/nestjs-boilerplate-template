@@ -28,7 +28,7 @@ export class ProjectCostingSamplingService {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
-        section_type: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Costing]),
       },
     });
     return data;
@@ -42,7 +42,7 @@ export class ProjectCostingSamplingService {
       const data = this.projectSamplingRepository.create({
         project_id,
         ...projectCostingSamplingDto,
-        section_type: StatusProjectEnum.Costing,
+        added_in_section: StatusProjectEnum.Costing,
         created_at: new Date().toISOString(),
         created_by: user_id,
       });

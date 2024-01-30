@@ -7,6 +7,7 @@ import {
 } from 'src/exceptions/app-exception';
 import { ProjectPriceEntity } from 'src/entities/project/project_price.entity';
 import { ProjectCostingPriceDto } from '../dto/project-costing-price.dto';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @Injectable()
 export class ProjectCostingPriceService {
@@ -49,6 +50,7 @@ export class ProjectCostingPriceService {
     const data = await this.projectPriceRepository.findOne({
       where: {
         project_id,
+        added_in_section: In([StatusProjectEnum.Costing]),
         deleted_at: IsNull(),
         deleted_by: IsNull(),
       },
@@ -77,6 +79,18 @@ export class ProjectCostingPriceService {
     const data = await this.projectPriceRepository.delete({
       project_id,
       id: price_id,
+    });
+    return data;
+  }
+  async findPriceCosting(project_id) {
+    const data = await this.projectPriceRepository.findOne({
+      where: {
+        project_id,
+        added_in_section: In([StatusProjectEnum.Costing]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      order: { id: 'ASC' },
     });
     return data;
   }

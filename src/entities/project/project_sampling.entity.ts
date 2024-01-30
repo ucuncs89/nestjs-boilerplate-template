@@ -15,7 +15,7 @@ export class ProjectSamplingEntity {
   cost: number;
 
   @Column({ type: 'varchar' })
-  section_type: string;
+  added_in_section: string;
 
   @Column({
     type: 'timestamp with time zone',
@@ -37,4 +37,10 @@ export class ProjectSamplingEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @Column({ type: 'int', nullable: true })
+  planning_project_project_sampling_id: number;
+
+  @Column({ type: 'int', nullable: true })
+  costing_project_project_sampling_id: number;
 }
