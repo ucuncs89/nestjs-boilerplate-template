@@ -97,4 +97,17 @@ export class ProjectPlanningVendorProductionController {
       );
     return { data };
   }
+
+  @Get(':project_id/vendor-production/compare')
+  async getCompareVendorProduction(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectPlanningVendorProductionService.findCompareProduction(
+        project_id,
+      );
+    return { data };
+  }
 }

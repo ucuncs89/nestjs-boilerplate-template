@@ -92,4 +92,16 @@ export class ProjectPlanningShippingController {
     );
     return { data };
   }
+  @Get(':project_id/shipping/compare')
+  async getShippingCompare(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data =
+      await this.projectPlanningShippingService.findByProjectDetailId(
+        project_id,
+      );
+    return { data };
+  }
 }

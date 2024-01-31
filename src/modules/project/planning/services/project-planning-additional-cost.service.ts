@@ -109,4 +109,36 @@ export class ProjectPlanningAdditionalCostService {
     });
     return data;
   }
+
+  async compareFind(project_id: number) {
+    const costing = await this.projectAdditionalCostRepository.find({
+      select: {
+        id: true,
+        additional_name: true,
+        additional_price: true,
+        description: true,
+      },
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: In([StatusProjectEnum.Costing]),
+      },
+    });
+    const planning = await this.projectAdditionalCostRepository.find({
+      select: {
+        id: true,
+        additional_name: true,
+        additional_price: true,
+        description: true,
+      },
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: In([StatusProjectEnum.Planning]),
+      },
+    });
+    return { costing, planning };
+  }
 }

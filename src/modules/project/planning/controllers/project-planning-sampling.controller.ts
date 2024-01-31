@@ -90,4 +90,11 @@ export class ProjectPlanningSamplingController {
       data,
     };
   }
+  @Get(':project_id/sampling/compare')
+  async findListCompare(@Param('project_id') project_id: number) {
+    const data = await this.projectPlanningSamplingService.findAll(project_id);
+    return {
+      data,
+    };
+  }
 }
