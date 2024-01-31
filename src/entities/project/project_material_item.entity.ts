@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -73,13 +74,19 @@ export class ProjectMaterialItemEntity {
   diameter_unit: string;
 
   @Column({ type: 'varchar' })
-  section_type: string;
+  added_in_section: string;
 
   @Column({ type: 'double precision', nullable: true })
   avg_price: number;
 
   @Column({ type: 'double precision', nullable: true })
   total_price: number;
+
+  @Column({ type: 'int', nullable: true })
+  planning_material_item_id: number;
+
+  @Column({ type: 'int', nullable: true })
+  costing_material_item_id: number;
 
   @Column({
     type: 'timestamp with time zone',

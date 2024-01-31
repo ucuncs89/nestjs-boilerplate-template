@@ -5,7 +5,7 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { Connection, IsNull, Repository } from 'typeorm';
+import { Connection, In, IsNull, Repository } from 'typeorm';
 import { ProjectSamplingDto } from '../dto/project-sampling.dto';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
@@ -18,7 +18,15 @@ export class ProjectSamplingService {
   ) {}
   async findAll(project_id: number) {
     const data = await this.projectSamplingRepository.find({
-      where: { project_id, deleted_at: IsNull(), deleted_by: IsNull() },
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: In([
+          StatusProjectEnum.Costing,
+          StatusProjectEnum.Sampling,
+        ]),
+      },
     });
     return data;
   }
@@ -39,7 +47,7 @@ export class ProjectSamplingService {
     try {
       const sampling = this.projectSamplingRepository.create({
         ...projectSamplingDto,
-        section_type: StatusProjectEnum.Sampling,
+        added_in_section: StatusProjectEnum.Sampling,
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
@@ -95,5 +103,20 @@ export class ProjectSamplingService {
     }
     const total_cost = sampling.reduce((total, item) => total + item.cost, 0);
     return { data: sampling, total_cost };
+  }
+  async findSamplingAll(project_id: number) {
+    const data = await this.projectSamplingRepository.find({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: In([
+          StatusProjectEnum.Costing,
+          StatusProjectEnum.Sampling,
+        ]),
+        planning_project_project_sampling_id: IsNull(),
+      },
+    });
+    return data;
   }
 }

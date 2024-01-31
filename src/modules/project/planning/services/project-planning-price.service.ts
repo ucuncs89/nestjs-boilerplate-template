@@ -6,11 +6,11 @@ import {
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import { ProjectPriceEntity } from 'src/entities/project/project_price.entity';
-import { ProjectCostingPriceDto } from '../dto/project-costing-price.dto';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import { ProjectPlanningPriceDto } from '../dto/project-planning-price.dto';
 
 @Injectable()
-export class ProjectCostingPriceService {
+export class ProjectPlanningPriceService {
   constructor(
     @InjectRepository(ProjectPriceEntity)
     private projectPriceRepository: Repository<ProjectPriceEntity>,
@@ -19,7 +19,7 @@ export class ProjectCostingPriceService {
 
   async create(
     project_id: number,
-    projectCostingPriceDto: ProjectCostingPriceDto,
+    projectPlanningPriceDto: ProjectPlanningPriceDto,
     user_id: number,
   ) {
     try {
@@ -27,7 +27,7 @@ export class ProjectCostingPriceService {
       if (!price) {
         const data = this.projectPriceRepository.create({
           project_id,
-          ...projectCostingPriceDto,
+          ...projectPlanningPriceDto,
           created_at: new Date().toISOString(),
           created_by: user_id,
         });
@@ -37,7 +37,7 @@ export class ProjectCostingPriceService {
         const data = await this.update(
           project_id,
           price.id,
-          projectCostingPriceDto,
+          projectPlanningPriceDto,
           user_id,
         );
         return data;
@@ -50,7 +50,7 @@ export class ProjectCostingPriceService {
     const data = await this.projectPriceRepository.findOne({
       where: {
         project_id,
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
         deleted_at: IsNull(),
         deleted_by: IsNull(),
       },
@@ -62,13 +62,13 @@ export class ProjectCostingPriceService {
   async update(
     project_id: number,
     price_id: number,
-    projectCostingPriceDto: ProjectCostingPriceDto,
+    projectPlanningPriceDto: ProjectPlanningPriceDto,
     user_id: number,
   ) {
     const data = await this.projectPriceRepository.update(
       { project_id, id: price_id },
       {
-        ...projectCostingPriceDto,
+        ...projectPlanningPriceDto,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
       },
@@ -82,11 +82,11 @@ export class ProjectCostingPriceService {
     });
     return data;
   }
-  async findPriceCosting(project_id) {
+  async findPricePlanning(project_id) {
     const data = await this.projectPriceRepository.findOne({
       where: {
         project_id,
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
         deleted_at: IsNull(),
         deleted_by: IsNull(),
       },

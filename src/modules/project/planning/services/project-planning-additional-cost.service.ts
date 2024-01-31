@@ -3,14 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectAdditionalCostEntity } from 'src/entities/project/project_additional_cost.entity';
 import { Connection, IsNull, Repository, In, Not } from 'typeorm';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
-import { ProjectCostingAdditionalCostDto } from '../dto/project-costing-additional-cost.dto';
 import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
+import { ProjectPlanningAdditionalCostDto } from '../dto/project-planning-additional-cost.dto';
 
 @Injectable()
-export class ProjectCostingAdditionalCostService {
+export class ProjectPlanningAdditionalCostService {
   constructor(
     @InjectRepository(ProjectAdditionalCostEntity)
     private projectAdditionalCostRepository: Repository<ProjectAdditionalCostEntity>,
@@ -28,21 +28,21 @@ export class ProjectCostingAdditionalCostService {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
       },
     });
     return data;
   }
   async create(
     project_id: number,
-    projectAdditionalCostDto: ProjectCostingAdditionalCostDto,
+    projectAdditionalCostDto: ProjectPlanningAdditionalCostDto,
     user_id: number,
   ) {
     try {
       const data = this.projectAdditionalCostRepository.create({
         project_id,
         ...projectAdditionalCostDto,
-        added_in_section: StatusProjectEnum.Costing,
+        added_in_section: StatusProjectEnum.Planning,
         created_at: new Date().toISOString(),
         created_by: user_id,
       });
@@ -69,7 +69,7 @@ export class ProjectCostingAdditionalCostService {
   async update(
     project_id: number,
     additional_id: number,
-    projectAdditionalCostDto: ProjectCostingAdditionalCostDto,
+    projectAdditionalCostDto: ProjectPlanningAdditionalCostDto,
     user_id: number,
   ) {
     const data = await this.projectAdditionalCostRepository.update(
@@ -90,7 +90,7 @@ export class ProjectCostingAdditionalCostService {
     return data;
   }
 
-  async findAdditionalCosting(project_id: number) {
+  async findAdditionalPlanning(project_id: number) {
     const data = await this.projectAdditionalCostRepository.find({
       select: {
         id: true,
@@ -103,7 +103,7 @@ export class ProjectCostingAdditionalCostService {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
         planning_project_additional_cost_id: IsNull(),
       },
     });

@@ -6,11 +6,11 @@ import {
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import { Connection, In, IsNull, Not, Repository } from 'typeorm';
-import { ProjectCostingShippingDto } from '../dto/project-costing-shipping.dto';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import { ProjectPlanningShippingDto } from '../dto/project-planning-shipping.dto';
 
 @Injectable()
-export class ProjectCostingShippingService {
+export class ProjectPlanningShippingService {
   constructor(
     @InjectRepository(ProjectShippingEntity)
     private projectShippingRepository: Repository<ProjectShippingEntity>,
@@ -19,13 +19,13 @@ export class ProjectCostingShippingService {
   ) {}
   async createShipping(
     project_id,
-    projectCostingShippingDto: ProjectCostingShippingDto,
+    projectPlanningShippingDto: ProjectPlanningShippingDto,
     user_id,
   ) {
     try {
       const shipping = this.projectShippingRepository.create({
-        ...projectCostingShippingDto,
-        added_in_section: StatusProjectEnum.Costing,
+        ...projectPlanningShippingDto,
+        added_in_section: StatusProjectEnum.Planning,
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
@@ -40,7 +40,7 @@ export class ProjectCostingShippingService {
   }
   async updateShipping(
     shipping_id: number,
-    projectCostingShippingDto: ProjectCostingShippingDto,
+    projectPlanningShippingDto: ProjectPlanningShippingDto,
     user_id: number,
   ) {
     try {
@@ -49,15 +49,15 @@ export class ProjectCostingShippingService {
           id: shipping_id,
         },
         {
-          shipping_cost: projectCostingShippingDto.shipping_cost,
-          shipping_date: projectCostingShippingDto.shipping_date,
-          shipping_name: projectCostingShippingDto.shipping_name,
-          shipping_vendor_name: projectCostingShippingDto.shipping_vendor_name,
+          shipping_cost: projectPlanningShippingDto.shipping_cost,
+          shipping_date: projectPlanningShippingDto.shipping_date,
+          shipping_name: projectPlanningShippingDto.shipping_name,
+          shipping_vendor_name: projectPlanningShippingDto.shipping_vendor_name,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
         },
       );
-      return { id: shipping_id, ...projectCostingShippingDto };
+      return { id: shipping_id, ...projectPlanningShippingDto };
     } catch (error) {
       throw new AppErrorException(error);
     }
@@ -91,18 +91,18 @@ export class ProjectCostingShippingService {
       },
       where: {
         project_id,
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
         deleted_at: IsNull(),
         deleted_by: IsNull(),
       },
     });
     return shipping;
   }
-  async findShippingCosting(project_id: number) {
+  async findShippingPlanning(project_id: number) {
     const data = await this.projectShippingRepository.find({
       where: {
         project_id,
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
         deleted_at: IsNull(),
         deleted_by: IsNull(),
         planning_project_shipping_id: IsNull(),

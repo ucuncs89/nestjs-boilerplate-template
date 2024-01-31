@@ -4,11 +4,11 @@ import { ProjectVendorProductionEntity } from 'src/entities/project/project_vend
 import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
 import { Connection, In, IsNull, Not, Repository } from 'typeorm';
-import { ProjectCostingVendorProductionDetailDto } from '../dto/project-costing-vendor-production.dto';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import { ProjectPlanningVendorProductionDetailDto } from '../dto/project-planning-vendor-production.dto';
 
 @Injectable()
-export class ProjectCostingVendorProductionService {
+export class ProjectPlanningVendorProductionService {
   constructor(
     @InjectRepository(ProjectVendorProductionEntity)
     private projectVendorProductionRepository: Repository<ProjectVendorProductionEntity>,
@@ -89,20 +89,20 @@ export class ProjectCostingVendorProductionService {
 
   async createVendorProduction(
     project_id,
-    projectCostingVendorProductionDetailDto: ProjectCostingVendorProductionDetailDto,
+    projectPlanningVendorProductionDetailDto: ProjectPlanningVendorProductionDetailDto,
     user_id,
     i18n,
   ) {
     let project_vendor_production_id;
     const findVendorProductionActivity = await this.findOneProductionActivty(
       project_id,
-      projectCostingVendorProductionDetailDto.activity_id,
+      projectPlanningVendorProductionDetailDto.activity_id,
     );
     if (!findVendorProductionActivity) {
       const insert = await this.createVendorProductionActivity(
         project_id,
-        projectCostingVendorProductionDetailDto.activity_id,
-        projectCostingVendorProductionDetailDto.activity_name,
+        projectPlanningVendorProductionDetailDto.activity_id,
+        projectPlanningVendorProductionDetailDto.activity_name,
         user_id,
         i18n,
       );
@@ -112,7 +112,7 @@ export class ProjectCostingVendorProductionService {
     }
     try {
       const vendor = this.projectVendorProductionDetailRepository.create({
-        ...projectCostingVendorProductionDetailDto,
+        ...projectPlanningVendorProductionDetailDto,
         project_vendor_production_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
@@ -128,13 +128,13 @@ export class ProjectCostingVendorProductionService {
   async updateVendorProduction(
     project_vendor_production_id: number,
     project_vendor_production_detail_id: number,
-    projectCostingVendorProductionDetailDto: ProjectCostingVendorProductionDetailDto,
+    projectPlanningVendorProductionDetailDto: ProjectPlanningVendorProductionDetailDto,
     user_id,
     i18n,
   ) {
     try {
-      delete projectCostingVendorProductionDetailDto.activity_id;
-      delete projectCostingVendorProductionDetailDto.activity_name;
+      delete projectPlanningVendorProductionDetailDto.activity_id;
+      delete projectPlanningVendorProductionDetailDto.activity_name;
       const data = await this.projectVendorProductionDetailRepository.update(
         {
           id: project_vendor_production_detail_id,
@@ -143,7 +143,7 @@ export class ProjectCostingVendorProductionService {
           deleted_by: IsNull(),
         },
         {
-          ...projectCostingVendorProductionDetailDto,
+          ...projectPlanningVendorProductionDetailDto,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
         },
@@ -244,14 +244,14 @@ export class ProjectCostingVendorProductionService {
     }
     return true;
   }
-  async findProductionCosting(project_id: number) {
+  async findProductionPlanning(project_id: number) {
     const data = await this.projectVendorProductionRepository.find({
       where: {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
         planning_project_vendor_production_id: IsNull(),
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
         vendor_production_detail: {
           deleted_at: IsNull(),
           deleted_by: IsNull(),

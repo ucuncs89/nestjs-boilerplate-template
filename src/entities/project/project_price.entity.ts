@@ -37,4 +37,7 @@ export class ProjectPriceEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  added_in_section: string;
 }

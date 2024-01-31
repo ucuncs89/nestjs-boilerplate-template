@@ -7,10 +7,10 @@ import {
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import { ProjectSamplingEntity } from 'src/entities/project/project_sampling.entity';
-import { ProjectCostingSamplingDto } from '../dto/project-costing-sampling.dto';
+import { ProjectPlanningSamplingDto } from '../dto/project-planning-sampling.dto';
 
 @Injectable()
-export class ProjectCostingSamplingService {
+export class ProjectPlanningSamplingService {
   constructor(
     @InjectRepository(ProjectSamplingEntity)
     private projectSamplingRepository: Repository<ProjectSamplingEntity>,
@@ -28,21 +28,21 @@ export class ProjectCostingSamplingService {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
       },
     });
     return data;
   }
   async create(
     project_id: number,
-    projectCostingSamplingDto: ProjectCostingSamplingDto,
+    projectPlanningSamplingDto: ProjectPlanningSamplingDto,
     user_id: number,
   ) {
     try {
       const data = this.projectSamplingRepository.create({
         project_id,
-        ...projectCostingSamplingDto,
-        added_in_section: StatusProjectEnum.Costing,
+        ...projectPlanningSamplingDto,
+        added_in_section: StatusProjectEnum.Planning,
         created_at: new Date().toISOString(),
         created_by: user_id,
       });
@@ -69,13 +69,13 @@ export class ProjectCostingSamplingService {
   async update(
     project_id: number,
     sampling_id: number,
-    projectCostingSamplingDto: ProjectCostingSamplingDto,
+    projectPlanningSamplingDto: ProjectPlanningSamplingDto,
     user_id: number,
   ) {
     const data = await this.projectSamplingRepository.update(
       { project_id, id: sampling_id },
       {
-        ...projectCostingSamplingDto,
+        ...projectPlanningSamplingDto,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
       },
