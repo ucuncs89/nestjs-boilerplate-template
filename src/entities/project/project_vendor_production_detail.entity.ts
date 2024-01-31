@@ -66,6 +66,9 @@ export class ProjectVendorProductionDetailEntity {
   @Column({ type: 'boolean', nullable: true })
   production_is_completed: boolean;
 
+  @Column({ type: 'varchar', nullable: true })
+  added_in_section: string;
+
   @ManyToOne(
     () => ProjectVendorProductionEntity,
     (vendor_production: ProjectVendorProductionEntity) =>

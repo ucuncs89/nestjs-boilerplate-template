@@ -18,7 +18,7 @@ export class ProjectAdditionalCostEntity {
   description: string;
 
   @Column({ type: 'varchar' })
-  section_type: string;
+  added_in_section: string;
 
   @Column({
     type: 'timestamp with time zone',
@@ -40,4 +40,10 @@ export class ProjectAdditionalCostEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @Column({ type: 'int', nullable: true })
+  planning_project_additional_cost_id: number;
+
+  @Column({ type: 'int', nullable: true })
+  costing_project_additional_cost_id: number;
 }

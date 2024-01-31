@@ -6,14 +6,14 @@ import {
   GetListProjectMaterialDto,
   ProjectMaterialItemDto,
   ProjectMaterialItemEnum,
-} from '../dto/project-costing-material.dto';
+} from '../dto/project-planning-material.dto';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @Injectable()
-export class ProjectCostingMaterialService {
+export class ProjectPlanningMaterialService {
   constructor(
     @InjectRepository(ProjectMaterialItemEntity)
     private projectMaterialItemRepository: Repository<ProjectMaterialItemEntity>,
@@ -75,12 +75,12 @@ export class ProjectCostingMaterialService {
         deleted_at: IsNull(),
         deleted_by: IsNull(),
         project_id,
-        added_in_section: StatusProjectEnum.Costing,
+        added_in_section: StatusProjectEnum.Planning,
         type:
           getListProjectMaterialDto.type != null
             ? getListProjectMaterialDto.type
             : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
-        vendor_material: { added_in_section: StatusProjectEnum.Costing },
+        vendor_material: { added_in_section: StatusProjectEnum.Planning },
       },
       relations: {
         vendor_material: { project_variant: true, detail: { vendors: true } },
@@ -106,7 +106,7 @@ export class ProjectCostingMaterialService {
         {
           ...projectMaterialItemDto,
           project_id,
-          added_in_section: StatusProjectEnum.Costing,
+          added_in_section: StatusProjectEnum.Planning,
           created_at: new Date().toISOString(),
           created_by: user_id,
         },
@@ -124,7 +124,7 @@ export class ProjectCostingMaterialService {
             project_variant_id: dataVariant.id,
             project_material_item_id: projectMaterial.raw[0].id,
             project_id,
-            added_in_section: StatusProjectEnum.Costing,
+            added_in_section: StatusProjectEnum.Planning,
           });
         }
       }
@@ -234,12 +234,12 @@ export class ProjectCostingMaterialService {
     return data.project_material_item_id;
   }
 
-  async updateTotalCostingAndAvgCost(material_item_id: number) {
+  async updateTotalPlanningAndAvgCost(material_item_id: number) {
     try {
       const sumTotalPrice = await this.projectVendorMaterialRepository.sum(
         'total_price',
         {
-          added_in_section: StatusProjectEnum.Costing,
+          added_in_section: StatusProjectEnum.Planning,
           project_material_item_id: material_item_id,
           total_price: Not(IsNull()),
           deleted_at: IsNull(),
@@ -251,7 +251,7 @@ export class ProjectCostingMaterialService {
         await this.projectVendorMaterialRepository.sum('total_consumption', {
           project_material_item_id: material_item_id,
           total_consumption: Not(IsNull()),
-          added_in_section: StatusProjectEnum.Costing,
+          added_in_section: StatusProjectEnum.Planning,
           deleted_at: IsNull(),
           deleted_by: IsNull(),
         });
@@ -289,13 +289,13 @@ export class ProjectCostingMaterialService {
         deleted_at: IsNull(),
         deleted_by: IsNull(),
         type,
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([StatusProjectEnum.Planning]),
       },
     });
     return data;
   }
 
-  async findVendorMaterialCosting(project_id: number) {
+  async findVendorMaterialPlanning(project_id: number) {
     const data = await this.projectMaterialItemRepository.find({
       select: {
         id: true,
@@ -346,9 +346,9 @@ export class ProjectCostingMaterialService {
         deleted_by: IsNull(),
         project_id,
         planning_material_item_id: IsNull(),
-        added_in_section: StatusProjectEnum.Costing,
+        added_in_section: StatusProjectEnum.Planning,
         vendor_material: {
-          added_in_section: StatusProjectEnum.Costing,
+          added_in_section: StatusProjectEnum.Planning,
           project_id,
         },
       },
