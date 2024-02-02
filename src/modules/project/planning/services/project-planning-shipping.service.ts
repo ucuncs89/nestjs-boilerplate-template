@@ -119,4 +119,42 @@ export class ProjectPlanningShippingService {
     });
     return data;
   }
+
+  async findCompareByProjectDetailId(project_id) {
+    const costing = await this.projectShippingRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        shipping_name: true,
+        shipping_vendor_name: true,
+        shipping_date: true,
+        shipping_cost: true,
+        created_at: true,
+      },
+      where: {
+        project_id,
+        added_in_section: In([StatusProjectEnum.Costing]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    const planning = await this.projectShippingRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        shipping_name: true,
+        shipping_vendor_name: true,
+        shipping_date: true,
+        shipping_cost: true,
+        created_at: true,
+      },
+      where: {
+        project_id,
+        added_in_section: In([StatusProjectEnum.Planning]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    return { costing, planning };
+  }
 }

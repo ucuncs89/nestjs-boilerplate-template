@@ -263,4 +263,82 @@ export class ProjectPlanningVendorProductionService {
     });
     return data;
   }
+
+  async findCompareProduction(project_id: number) {
+    const costing = await this.projectVendorProductionRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        activity_id: true,
+        activity_name: true,
+        percentage_of_loss: true,
+        total_quantity: true,
+        sub_total_price: true,
+        // quantity_unit_required: true,
+        vendor_production_detail: {
+          id: true,
+          price: true,
+          quantity: true,
+          quantity_unit: true,
+          vendor_id: true,
+          vendor_name: true,
+          project_vendor_production_id: true,
+          price_unit: true,
+          total_price: true,
+          start_date: true,
+          end_date: true,
+        },
+      },
+      where: {
+        added_in_section: In([StatusProjectEnum.Costing]),
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      relations: {
+        vendor_production_detail: true,
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+    const planning = await this.projectVendorProductionRepository.find({
+      select: {
+        id: true,
+        project_id: true,
+        activity_id: true,
+        activity_name: true,
+        percentage_of_loss: true,
+        total_quantity: true,
+        sub_total_price: true,
+        // quantity_unit_required: true,
+        vendor_production_detail: {
+          id: true,
+          price: true,
+          quantity: true,
+          quantity_unit: true,
+          vendor_id: true,
+          vendor_name: true,
+          project_vendor_production_id: true,
+          price_unit: true,
+          total_price: true,
+          start_date: true,
+          end_date: true,
+        },
+      },
+      where: {
+        added_in_section: In([StatusProjectEnum.Planning]),
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      relations: {
+        vendor_production_detail: true,
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+    return { costing, planning };
+  }
 }

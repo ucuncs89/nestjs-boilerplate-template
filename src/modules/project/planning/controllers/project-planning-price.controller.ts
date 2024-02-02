@@ -77,4 +77,11 @@ export class ProjectPlanningPriceController {
       data,
     };
   }
+  @Get(':project_id/price/compare')
+  async findCompareList(@Param('project_id') project_id: number) {
+    const data = await this.projectPlanningPriceService.findCompare(project_id);
+    return {
+      data,
+    };
+  }
 }

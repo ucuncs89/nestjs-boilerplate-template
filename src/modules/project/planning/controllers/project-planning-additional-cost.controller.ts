@@ -92,4 +92,14 @@ export class ProjectPlanningAdditionalCostController {
       data,
     };
   }
+
+  @Get(':project_id/additional-cost/compare')
+  async compare(@Param('project_id') project_id: number) {
+    const data = await this.projectPlanningAdditionalCostService.compareFind(
+      project_id,
+    );
+    return {
+      data,
+    };
+  }
 }

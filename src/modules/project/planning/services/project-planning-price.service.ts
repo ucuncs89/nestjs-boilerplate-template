@@ -94,4 +94,27 @@ export class ProjectPlanningPriceService {
     });
     return data;
   }
+  async findCompare(project_id: number) {
+    const costing = await this.projectPriceRepository.findOne({
+      where: {
+        project_id,
+        added_in_section: In([StatusProjectEnum.Costing]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      order: { id: 'ASC' },
+    });
+
+    const planning = await this.projectPriceRepository.findOne({
+      where: {
+        project_id,
+        added_in_section: In([StatusProjectEnum.Planning]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      order: { id: 'ASC' },
+    });
+
+    return { costing, planning };
+  }
 }
