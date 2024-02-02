@@ -89,4 +89,26 @@ export class ProjectPlanningSamplingService {
     });
     return data;
   }
+  async findCompare(project_id: number) {
+    const costing_sampling = await this.projectSamplingRepository.find({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: In([
+          StatusProjectEnum.Costing,
+          StatusProjectEnum.Sampling,
+        ]),
+      },
+    });
+    const planning = await this.projectSamplingRepository.find({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: In([StatusProjectEnum.Planning]),
+      },
+    });
+    return { costing_sampling, planning };
+  }
 }

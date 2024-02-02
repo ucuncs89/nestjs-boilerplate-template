@@ -40,6 +40,20 @@ export class ProjectPlanningMaterialController {
       data,
     };
   }
+  @Get(':project_id/material/compare')
+  async listMaterialItemCompare(
+    @Param('project_id') project_id: number,
+    @Query() getListProjectMaterialDto: GetListProjectMaterialDto,
+  ) {
+    const data =
+      await this.projectPlanningMaterialService.findCompareMaterialItem(
+        project_id,
+        getListProjectMaterialDto,
+      );
+    return {
+      data,
+    };
+  }
   @Post(':project_id/material')
   async createMaterialItem(
     @Req() req,
