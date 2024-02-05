@@ -13,6 +13,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectPlanningSamplingDto } from '../dto/project-planning-sampling.dto';
 import { ProjectPlanningSamplingService } from '../services/project-planning-sampling.service';
+import { ProjectCostingSamplingService } from '../../costing/services/project-costing-sampling.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -21,6 +22,7 @@ import { ProjectPlanningSamplingService } from '../services/project-planning-sam
 export class ProjectPlanningSamplingController {
   constructor(
     private readonly projectPlanningSamplingService: ProjectPlanningSamplingService,
+    private readonly projectCostingSamplingService: ProjectCostingSamplingService,
   ) {}
 
   @Get(':project_id/sampling')
@@ -92,9 +94,15 @@ export class ProjectPlanningSamplingController {
   }
   @Get(':project_id/sampling/compare')
   async findListCompare(@Param('project_id') project_id: number) {
-    const data = await this.projectPlanningSamplingService.findAll(project_id);
+    const costing = await this.projectCostingSamplingService.findAll(
+      project_id,
+    );
+    const planning = await this.projectPlanningSamplingService.findAll(
+      project_id,
+    );
     return {
-      data,
+      planning,
+      costing,
     };
   }
 }
