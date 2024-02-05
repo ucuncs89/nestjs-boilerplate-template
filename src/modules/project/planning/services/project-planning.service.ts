@@ -105,6 +105,7 @@ export class ProjectPlanningService {
       if (Array.isArray(arrMaterialItem) && arrMaterialItem.length > 0) {
         for (const material of arrMaterialItem) {
           material.added_in_section = StatusProjectEnum.Planning;
+          material.costing_material_item_id = material.id;
 
           const materialItem = await queryRunner.manager.insert(
             ProjectMaterialItemEntity,
@@ -152,6 +153,8 @@ export class ProjectPlanningService {
       if (Array.isArray(arrProduction) && arrProduction.length > 0) {
         for (const productionVendor of arrProduction) {
           productionVendor.added_in_section = StatusProjectEnum.Planning;
+          productionVendor.costing_project_vendor_production_id =
+            productionVendor.id;
           const insertProduction = await queryRunner.manager.insert(
             ProjectVendorProductionEntity,
             { ...productionVendor, created_at: new Date().toISOString() },
@@ -188,6 +191,7 @@ export class ProjectPlanningService {
       if (Array.isArray(arrShipping) && arrShipping.length > 0) {
         for (const shipping of arrShipping) {
           shipping.added_in_section = StatusProjectEnum.Planning;
+          shipping.costing_project_shipping_id = shipping.id;
           const insertShipping = await queryRunner.manager.insert(
             ProjectShippingEntity,
             {
@@ -208,7 +212,7 @@ export class ProjectPlanningService {
       if (Array.isArray(arrAdditionalCost) && arrAdditionalCost.length > 0) {
         for (const additionalCost of arrAdditionalCost) {
           additionalCost.added_in_section = StatusProjectEnum.Planning;
-
+          additionalCost.costing_project_additional_cost_id = additionalCost.id;
           const additionalInsert = await queryRunner.manager.insert(
             ProjectAdditionalCostEntity,
             {
@@ -229,6 +233,7 @@ export class ProjectPlanningService {
       if (Array.isArray(arrSampling) && arrSampling.length > 0) {
         for (const sampling of arrSampling) {
           sampling.added_in_section = StatusProjectEnum.Planning;
+          sampling.costing_project_project_sampling_id = sampling.id;
           const samplingInsert = await queryRunner.manager.insert(
             ProjectSamplingEntity,
             { ...sampling, created_at: new Date().toISOString() },
