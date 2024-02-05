@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectPlanningShippingService } from '../services/project-planning-shipping.service';
 import { ProjectPlanningShippingDto } from '../dto/project-planning-shipping.dto';
+import { ProjectCostingShippingService } from '../../costing/services/project-costing-shipping.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -23,6 +24,7 @@ import { ProjectPlanningShippingDto } from '../dto/project-planning-shipping.dto
 export class ProjectPlanningShippingController {
   constructor(
     private readonly projectPlanningShippingService: ProjectPlanningShippingService,
+    private readonly projectCostingShippingService: ProjectCostingShippingService,
   ) {}
 
   @Get(':project_id/shipping')
@@ -98,10 +100,14 @@ export class ProjectPlanningShippingController {
     @Param('project_id') project_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data =
+    const costing =
+      await this.projectCostingShippingService.findByProjectDetailId(
+        project_id,
+      );
+    const planning =
       await this.projectPlanningShippingService.findByProjectDetailId(
         project_id,
       );
-    return { data };
+    return { costing, planning };
   }
 }

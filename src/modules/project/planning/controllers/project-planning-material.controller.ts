@@ -17,6 +17,7 @@ import {
   GetListProjectMaterialDto,
   ProjectMaterialItemDto,
 } from '../dto/project-planning-material.dto';
+import { ProjectCostingMaterialService } from '../../costing/services/project-costing-material.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -25,6 +26,7 @@ import {
 export class ProjectPlanningMaterialController {
   constructor(
     private readonly projectPlanningMaterialService: ProjectPlanningMaterialService,
+    private readonly projectCostingMaterialService: ProjectCostingMaterialService,
   ) {}
 
   @Get(':project_id/material')
@@ -45,13 +47,19 @@ export class ProjectPlanningMaterialController {
     @Param('project_id') project_id: number,
     @Query() getListProjectMaterialDto: GetListProjectMaterialDto,
   ) {
-    const data =
-      await this.projectPlanningMaterialService.findCompareMaterialItem(
+    const costing =
+      await this.projectPlanningMaterialService.findAllMaterialItem(
+        project_id,
+        getListProjectMaterialDto,
+      );
+    const planning =
+      await this.projectPlanningMaterialService.findAllMaterialItem(
         project_id,
         getListProjectMaterialDto,
       );
     return {
-      data,
+      costing,
+      planning,
     };
   }
   @Post(':project_id/material')

@@ -14,6 +14,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectPlanningVendorProductionService } from '../services/project-planning-vendor-production.service';
 import { ProjectPlanningVendorProductionDetailDto } from '../dto/project-planning-vendor-production.dto';
+import { ProjectCostingVendorProductionService } from '../../costing/services/project-costing-vendor-production.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -22,6 +23,7 @@ import { ProjectPlanningVendorProductionDetailDto } from '../dto/project-plannin
 export class ProjectPlanningVendorProductionController {
   constructor(
     private projectPlanningVendorProductionService: ProjectPlanningVendorProductionService,
+    private projectCostingVendorProductionService: ProjectCostingVendorProductionService,
   ) {}
 
   @Get(':project_id/vendor-production')
@@ -104,10 +106,14 @@ export class ProjectPlanningVendorProductionController {
     @Param('project_id') project_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data =
-      await this.projectPlanningVendorProductionService.findCompareProduction(
+    const costing =
+      await this.projectCostingVendorProductionService.findVendorProduction(
         project_id,
       );
-    return { data };
+    const planning =
+      await this.projectPlanningVendorProductionService.findVendorProduction(
+        project_id,
+      );
+    return { costing, planning };
   }
 }
