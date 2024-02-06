@@ -78,7 +78,7 @@ import { ProjectModule } from './modules/project/project.module';
   providers: [AppService],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
-  }
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  // }
 }
