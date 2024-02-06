@@ -27,6 +27,7 @@ export class ProjectPlanningPriceService {
       if (!price) {
         const data = this.projectPriceRepository.create({
           project_id,
+          added_in_section: StatusProjectEnum.Planning,
           ...projectPlanningPriceDto,
           created_at: new Date().toISOString(),
           created_by: user_id,

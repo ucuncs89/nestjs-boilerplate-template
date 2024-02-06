@@ -28,7 +28,10 @@ export class ProjectCostingSamplingService {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
-        added_in_section: In([StatusProjectEnum.Costing]),
+        added_in_section: In([
+          StatusProjectEnum.Costing,
+          StatusProjectEnum.Sampling,
+        ]),
       },
     });
     return data;
