@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, IsNull, Repository, In } from 'typeorm';
-import {
-  AppErrorException,
-  AppErrorNotFoundException,
-} from 'src/exceptions/app-exception';
+import { AppErrorException } from 'src/exceptions/app-exception';
 import { ProjectPriceEntity } from 'src/entities/project/project_price.entity';
 import { ProjectCostingPriceDto } from '../dto/project-costing-price.dto';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
@@ -28,6 +25,7 @@ export class ProjectCostingPriceService {
         const data = this.projectPriceRepository.create({
           project_id,
           ...projectCostingPriceDto,
+          added_in_section: StatusProjectEnum.Costing,
           created_at: new Date().toISOString(),
           created_by: user_id,
         });

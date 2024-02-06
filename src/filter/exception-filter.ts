@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { IncomingMessage } from 'http';
+import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';
 
 export const getStatusCode = (exception: unknown): number => {
   return exception instanceof HttpException
@@ -20,6 +21,7 @@ export const getErrorMessage = (exception: unknown): string => {
 
 @Catch(HttpException)
 export class GlobalExceptionFilter implements ExceptionFilter {
+  constructor(private readonly rabbitMQService: RabbitMQService) {}
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -44,5 +46,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         : bodyMessage.message,
       data: bodyMessage.data || null,
     });
+    this.sendLogToRabbitMQ({
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      status_code: code,
+      error_code,
+      message: Array.isArray(bodyMessage.message)
+        ? bodyMessage.message[0]
+        : bodyMessage.message,
+      data: bodyMessage.data || null,
+    });
+  }
+  private sendLogToRabbitMQ(data: any) {
+    this.rabbitMQService.send('cloami-error-log', data);
   }
 }
