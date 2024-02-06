@@ -6,6 +6,7 @@ import {
   GetListProjectMaterialDto,
   ProjectMaterialItemDto,
   ProjectMaterialItemEnum,
+  ResponseMaterialItem,
 } from '../dto/project-planning-material.dto';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
@@ -26,71 +27,90 @@ export class ProjectPlanningMaterialService {
     project_id,
     getListProjectMaterialDto: GetListProjectMaterialDto,
   ) {
-    const data = await this.projectMaterialItemRepository.find({
-      select: {
-        id: true,
-        project_id: true,
-        relation_id: true,
-        type: true,
-        name: true,
-        category: true,
-        used_for: true,
-        cut_shape: true,
-        allowance: true,
-        consumption: true,
-        consumption_unit: true,
-        added_in_section: true,
-        avg_price: true,
-        total_price: true,
-        created_at: true,
-        vendor_material: {
+    const material: ResponseMaterialItem[] =
+      await this.projectMaterialItemRepository.find({
+        select: {
           id: true,
           project_id: true,
-          project_variant_id: true,
-          project_material_item_id: true,
+          relation_id: true,
+          type: true,
+          name: true,
+          category: true,
+          used_for: true,
+          cut_shape: true,
+          allowance: true,
+          consumption: true,
+          consumption_unit: true,
           added_in_section: true,
-          total_item: true,
-          total_consumption: true,
+          avg_price: true,
           total_price: true,
-          project_variant: {
+          created_at: true,
+          vendor_material: {
             id: true,
-            name: true,
+            project_id: true,
+            project_variant_id: true,
+            project_material_item_id: true,
+            added_in_section: true,
             total_item: true,
-            item_unit: true,
-          },
-          detail: {
-            id: true,
-            vendor_id: true,
-            type: true,
-            price: true,
-            price_unit: true,
-            quantity: true,
-            quantity_unit: true,
+            total_consumption: true,
             total_price: true,
-            vendors: { id: true, company_name: true },
+            project_variant: {
+              id: true,
+              name: true,
+              total_item: true,
+              item_unit: true,
+            },
+            detail: {
+              id: true,
+              vendor_id: true,
+              type: true,
+              price: true,
+              price_unit: true,
+              quantity: true,
+              quantity_unit: true,
+              total_price: true,
+              vendors: { id: true, company_name: true },
+            },
+          },
+          costing_material_item: {
+            id: true,
+            avg_price: true,
+            total_price: true,
           },
         },
-      },
-      where: {
-        deleted_at: IsNull(),
-        deleted_by: IsNull(),
-        project_id,
-        added_in_section: StatusProjectEnum.Planning,
-        type:
-          getListProjectMaterialDto.type != null
-            ? getListProjectMaterialDto.type
-            : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
-        vendor_material: { added_in_section: StatusProjectEnum.Planning },
-      },
-      relations: {
-        vendor_material: { project_variant: true, detail: { vendors: true } },
-      },
-      order: {
-        type: 'ASC',
-        id: 'ASC',
-      },
-    });
-    return data;
+        where: {
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+          project_id,
+          added_in_section: StatusProjectEnum.Planning,
+          type:
+            getListProjectMaterialDto.type != null
+              ? getListProjectMaterialDto.type
+              : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
+          vendor_material: { added_in_section: StatusProjectEnum.Planning },
+          costing_material_item: { deleted_at: IsNull(), deleted_by: IsNull() },
+        },
+        relations: {
+          vendor_material: { project_variant: true, detail: { vendors: true } },
+          costing_material_item: true,
+        },
+        order: {
+          type: 'ASC',
+          id: 'ASC',
+        },
+      });
+    for (const data of material) {
+      if (
+        data.costing_material_item !== null &&
+        data.costing_material_item.avg_price >= data.avg_price
+      ) {
+        data.is_passed = true;
+      } else {
+        data.is_passed = false;
+      }
+    }
+
+    return material;
   }
   async createMaterialItemOne(
     project_id,
