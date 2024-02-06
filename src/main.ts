@@ -5,6 +5,7 @@ import { ResponseInterceptor } from './interceptors/response-interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './filter/exception-filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { RabbitMQService } from './rabbitmq/services/rabbit-mq.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -32,7 +33,8 @@ async function bootstrap() {
     .swagger-ui .topbar { background-color: #f1f2f1; } `,
   });
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.useGlobalFilters(new GlobalExceptionFilter());
+  const rabbitMQService = app.get(RabbitMQService);
+  app.useGlobalFilters(new GlobalExceptionFilter(rabbitMQService));
   app.useGlobalInterceptors(new ResponseInterceptor());
   await app.listen(env.APP_PORT);
 }
