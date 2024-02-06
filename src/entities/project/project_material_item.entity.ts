@@ -110,8 +110,6 @@ export class ProjectMaterialItemEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
-  @Column({ type: 'varchar', nullable: true })
-  status_approval: string;
   @OneToMany(
     () => ProjectVendorMaterialEntity,
     (vendor_material_material: ProjectVendorMaterialEntity) =>
