@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
 
 export enum ProjectMaterialItemEnum {
   Fabric = 'Fabric',
@@ -80,4 +81,8 @@ export class ProjectMaterialItemDto {
 
   created_by?: number;
   created_at?: string;
+}
+
+export class ResponseMaterialItem extends ProjectMaterialItemEntity {
+  is_passed?: boolean;
 }

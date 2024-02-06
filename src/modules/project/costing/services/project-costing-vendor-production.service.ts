@@ -227,20 +227,12 @@ export class ProjectCostingVendorProductionService {
       await this.projectVendorProductionDetailRepository.findOne({
         where: {
           project_vendor_production_id: vendor_production_id,
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
         },
       });
     if (!vendorDetail) {
-      await this.projectVendorProductionRepository.update(
-        {
-          id: vendor_production_id,
-        },
-        {
-          deleted_at: new Date().toISOString(),
-          deleted_by: user_id,
-        },
-      );
+      await this.projectVendorProductionRepository.delete({
+        id: vendor_production_id,
+      });
     }
     return true;
   }

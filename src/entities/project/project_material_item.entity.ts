@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectVendorMaterialEntity } from './project_vendor_material.entity';
@@ -109,6 +110,8 @@ export class ProjectMaterialItemEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
+  @Column({ type: 'varchar', nullable: true })
+  status_approval: string;
   @OneToMany(
     () => ProjectVendorMaterialEntity,
     (vendor_material_material: ProjectVendorMaterialEntity) =>
@@ -116,4 +119,8 @@ export class ProjectMaterialItemEntity {
   )
   @JoinColumn({ name: 'project_material_item_id' })
   vendor_material: ProjectVendorMaterialEntity[];
+
+  @OneToOne(() => ProjectMaterialItemEntity)
+  @JoinColumn({ name: 'costing_material_item_id' })
+  costing_material_item: ProjectMaterialItemEntity;
 }
