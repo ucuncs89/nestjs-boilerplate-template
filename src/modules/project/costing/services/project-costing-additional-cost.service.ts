@@ -8,12 +8,16 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
+import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detail_calculate.entity';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 
 @Injectable()
 export class ProjectCostingAdditionalCostService {
   constructor(
     @InjectRepository(ProjectAdditionalCostEntity)
     private projectAdditionalCostRepository: Repository<ProjectAdditionalCostEntity>,
+    @InjectRepository(ProjectDetailCalculateEntity)
+    private projectDetailCalculateRepository: Repository<ProjectDetailCalculateEntity>,
     private connection: Connection,
   ) {}
   async findAll(project_id: number) {
@@ -107,6 +111,29 @@ export class ProjectCostingAdditionalCostService {
         planning_project_additional_cost_id: IsNull(),
       },
     });
+    return data;
+  }
+  async updateGrandAvgPriceTotalAdditionalPrice(project_id: number) {
+    const avgPrice = await this.projectAdditionalCostRepository.average(
+      'additional_price',
+      {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: StatusProjectEnum.Costing,
+      },
+    );
+    const data = await this.projectDetailCalculateRepository.upsert(
+      {
+        project_id,
+        type: TypeProjectDetailCalculateEnum.AdditionalCost,
+        added_in_section: StatusProjectEnum.Costing,
+        avg_price: avgPrice,
+      },
+      {
+        conflictPaths: { project_id: true, type: true, added_in_section: true },
+      },
+    );
     return data;
   }
 }

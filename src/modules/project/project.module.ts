@@ -63,6 +63,7 @@ import { ProjectPlanningSamplingController } from './planning/controllers/projec
 import { ProjectPlanningPriceController } from './planning/controllers/project-planning-price.controller';
 import { ProjectPlanningRecapController } from './planning/controllers/project-planning-recap.controller';
 import { ProjectPlanningPriceService } from './planning/services/project-planning-price.service';
+import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detail_calculate.entity';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { ProjectPlanningPriceService } from './planning/services/project-plannin
       ProjectPriceEntity,
       ProjectRemarksEntity,
       ProjectVendorMaterialEntity,
+      ProjectDetailCalculateEntity,
     ]),
     RabbitMQModule,
   ],

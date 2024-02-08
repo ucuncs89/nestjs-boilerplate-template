@@ -41,6 +41,11 @@ export class ProjectCostingSamplingController {
       projectCostingSamplingDto,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
+        project_id,
+      );
+    }
     return {
       data,
     };
@@ -73,6 +78,11 @@ export class ProjectCostingSamplingController {
       projectCostingSamplingDto,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
+        project_id,
+      );
+    }
     return {
       data,
     };
@@ -86,6 +96,11 @@ export class ProjectCostingSamplingController {
       project_id,
       sampling_id,
     );
+    if (data) {
+      this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
+        project_id,
+      );
+    }
     return {
       data,
     };

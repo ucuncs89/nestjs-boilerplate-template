@@ -1,12 +1,15 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('project_detail_calculate')
-export class UsersRolesEntity {
+export class ProjectDetailCalculateEntity {
   @PrimaryColumn({ type: 'int' })
   project_id: number;
 
   @PrimaryColumn({ type: 'varchar' })
   type: string;
+
+  @PrimaryColumn({ type: 'varchar' })
+  added_in_section: string;
 
   @Column({ type: 'double precision', default: 0, nullable: true })
   total_price: number;
