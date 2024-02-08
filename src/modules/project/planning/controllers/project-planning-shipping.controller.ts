@@ -16,6 +16,9 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectPlanningShippingService } from '../services/project-planning-shipping.service';
 import { ProjectPlanningShippingDto } from '../dto/project-planning-shipping.dto';
 import { ProjectCostingShippingService } from '../../costing/services/project-costing-shipping.service';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -25,6 +28,7 @@ export class ProjectPlanningShippingController {
   constructor(
     private readonly projectPlanningShippingService: ProjectPlanningShippingService,
     private readonly projectCostingShippingService: ProjectCostingShippingService,
+    private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
   ) {}
 
   @Get(':project_id/shipping')
@@ -109,5 +113,18 @@ export class ProjectPlanningShippingController {
         project_id,
       );
     return { costing, planning };
+  }
+  @Post(':project_id/shipping/approval-request')
+  async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
+    const data =
+      await this.projectPlanningApprovalService.createPlanningApproval(
+        {
+          relation_id: project_id,
+          status: StatusApprovalEnum.waiting,
+          type: TypeProjectDetailCalculateEnum.Shipping,
+        },
+        req.user.id,
+      );
+    return { data };
   }
 }

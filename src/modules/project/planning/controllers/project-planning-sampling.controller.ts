@@ -14,6 +14,9 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectPlanningSamplingDto } from '../dto/project-planning-sampling.dto';
 import { ProjectPlanningSamplingService } from '../services/project-planning-sampling.service';
 import { ProjectCostingSamplingService } from '../../costing/services/project-costing-sampling.service';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -23,6 +26,7 @@ export class ProjectPlanningSamplingController {
   constructor(
     private readonly projectPlanningSamplingService: ProjectPlanningSamplingService,
     private readonly projectCostingSamplingService: ProjectCostingSamplingService,
+    private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
   ) {}
 
   @Get(':project_id/sampling')
@@ -104,5 +108,18 @@ export class ProjectPlanningSamplingController {
       planning,
       costing,
     };
+  }
+  @Post(':project_id/sampling/approval-request')
+  async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
+    const data =
+      await this.projectPlanningApprovalService.createPlanningApproval(
+        {
+          relation_id: project_id,
+          status: StatusApprovalEnum.waiting,
+          type: TypeProjectDetailCalculateEnum.Sampling,
+        },
+        req.user.id,
+      );
+    return { data };
   }
 }

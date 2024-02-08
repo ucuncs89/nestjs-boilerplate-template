@@ -15,6 +15,9 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectPlanningVendorProductionService } from '../services/project-planning-vendor-production.service';
 import { ProjectPlanningVendorProductionDetailDto } from '../dto/project-planning-vendor-production.dto';
 import { ProjectCostingVendorProductionService } from '../../costing/services/project-costing-vendor-production.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -24,6 +27,7 @@ export class ProjectPlanningVendorProductionController {
   constructor(
     private projectPlanningVendorProductionService: ProjectPlanningVendorProductionService,
     private projectCostingVendorProductionService: ProjectCostingVendorProductionService,
+    private projectPlanningApprovalService: ProjectPlanningApprovalService,
   ) {}
 
   @Get(':project_id/vendor-production')
@@ -115,5 +119,18 @@ export class ProjectPlanningVendorProductionController {
         project_id,
       );
     return { costing, planning };
+  }
+  @Post(':project_id/shipping/approval-request')
+  async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
+    const data =
+      await this.projectPlanningApprovalService.createPlanningApproval(
+        {
+          relation_id: project_id,
+          status: StatusApprovalEnum.waiting,
+          type: TypeProjectDetailCalculateEnum.Production,
+        },
+        req.user.id,
+      );
+    return { data };
   }
 }

@@ -14,6 +14,9 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectPlanningAdditionalCostService } from '../services/project-planning-additional-cost.service';
 import { ProjectPlanningAdditionalCostDto } from '../dto/project-planning-additional-cost.dto';
 import { ProjectCostingAdditionalCostService } from '../../costing/services/project-costing-additional-cost.service';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -23,6 +26,7 @@ export class ProjectPlanningAdditionalCostController {
   constructor(
     private readonly projectPlanningAdditionalCostService: ProjectPlanningAdditionalCostService,
     private readonly projectCostingAdditionalCostService: ProjectCostingAdditionalCostService,
+    private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
   ) {}
 
   @Get(':project_id/additional-cost')
@@ -107,5 +111,18 @@ export class ProjectPlanningAdditionalCostController {
       costing,
       planning,
     };
+  }
+  @Post(':project_id/additional-cost/approval-request')
+  async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
+    const data =
+      await this.projectPlanningApprovalService.createPlanningApproval(
+        {
+          relation_id: project_id,
+          status: StatusApprovalEnum.waiting,
+          type: TypeProjectDetailCalculateEnum.AdditionalCost,
+        },
+        req.user.id,
+      );
+    return { data };
   }
 }

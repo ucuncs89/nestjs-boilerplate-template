@@ -1,11 +1,11 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('project_planning_approval')
 export class ProjectPlanningApprovalEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   relation_id: number;
 
   @Column({ type: 'varchar' })
@@ -14,7 +14,7 @@ export class ProjectPlanningApprovalEntity {
   @Column({ type: 'varchar' })
   status: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   status_desc: string;
 
   @Column({

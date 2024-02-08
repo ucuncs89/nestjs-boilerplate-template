@@ -5,4 +5,5 @@ export enum TypeProjectDetailCalculateEnum {
   Shipping = 'shipping',
   Sampling = 'sampling',
   Price = 'price',
+  Material = 'material',
 }
