@@ -66,6 +66,7 @@ import { ProjectPlanningPriceService } from './planning/services/project-plannin
 import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detail_calculate.entity';
 import { ProjectPlanningApprovalService } from './general/services/project-planning-approval.service';
 import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_planning_approval.entity';
+import { ProjectDetailCalculateService } from './general/services/project-detail-calculate.service';
 
 @Module({
   imports: [
@@ -141,6 +142,7 @@ import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_plan
     ProjectPlanningPriceService,
     ProjectPlanningRecapService,
     ProjectPlanningApprovalService,
+    ProjectDetailCalculateService,
   ],
 })
 export class ProjectModule {}

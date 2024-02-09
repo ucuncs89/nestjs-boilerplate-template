@@ -18,6 +18,7 @@ import { ProjectCostingVendorProductionService } from '../../costing/services/pr
 import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
 import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -28,6 +29,7 @@ export class ProjectPlanningVendorProductionController {
     private projectPlanningVendorProductionService: ProjectPlanningVendorProductionService,
     private projectCostingVendorProductionService: ProjectCostingVendorProductionService,
     private projectPlanningApprovalService: ProjectPlanningApprovalService,
+    private projectDetailCalculateService: ProjectDetailCalculateService,
   ) {}
 
   @Get(':project_id/vendor-production')
@@ -40,6 +42,20 @@ export class ProjectPlanningVendorProductionController {
       await this.projectPlanningVendorProductionService.findVendorProduction(
         project_id,
       );
+    const approval = await this.projectPlanningApprovalService.findOneApproval(
+      project_id,
+      TypeProjectDetailCalculateEnum.Production,
+    );
+    const compare =
+      await this.projectDetailCalculateService.compareCostingPlanningIsPassed(
+        project_id,
+        TypeProjectDetailCalculateEnum.Production,
+      );
+    return {
+      data,
+      approval,
+      compare,
+    };
     return { data };
   }
 
@@ -81,6 +97,7 @@ export class ProjectPlanningVendorProductionController {
         projectPlanningVendorProductionDetailDto,
         req.user.id,
         i18n,
+        project_id,
       );
     return { data };
   }
@@ -100,6 +117,7 @@ export class ProjectPlanningVendorProductionController {
         project_vendor_id,
         project_vendor_production_detail_id,
         req.user.id,
+        project_id,
       );
     return { data };
   }
@@ -120,7 +138,7 @@ export class ProjectPlanningVendorProductionController {
       );
     return { costing, planning };
   }
-  @Post(':project_id/shipping/approval-request')
+  @Post(':project_id/production/approval-request')
   async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
     const data =
       await this.projectPlanningApprovalService.createPlanningApproval(

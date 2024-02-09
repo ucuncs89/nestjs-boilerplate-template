@@ -4,6 +4,7 @@ import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_plan
 import { Repository } from 'typeorm';
 import { ProjectPlanningApprovalDto } from '../dto/project-planning-approval.dto';
 import { AppErrorException } from 'src/exceptions/app-exception';
+import { TypeProjectDetailCalculateEnum } from '../dto/project-detail.dto';
 
 @Injectable()
 export class ProjectPlanningApprovalService {
@@ -44,5 +45,24 @@ export class ProjectPlanningApprovalService {
     } catch (error) {
       throw new AppErrorException(error);
     }
+  }
+  async findOneApproval(
+    relation_id: number,
+    type: TypeProjectDetailCalculateEnum,
+  ) {
+    const findOne = await this.projectPlanningApprovalRepository.findOne({
+      where: {
+        relation_id,
+        type,
+      },
+      select: {
+        id: true,
+        relation_id: true,
+        status: true,
+        status_desc: true,
+        type: true,
+      },
+    });
+    return findOne;
   }
 }

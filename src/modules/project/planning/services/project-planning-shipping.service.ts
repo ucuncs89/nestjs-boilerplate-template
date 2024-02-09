@@ -157,4 +157,16 @@ export class ProjectPlanningShippingService {
     });
     return { costing, planning };
   }
+  async sumGrandAvgPriceTotalShipping(project_id: number) {
+    const avgPrice = await this.projectShippingRepository.average(
+      'shipping_cost',
+      {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: StatusProjectEnum.Planning,
+      },
+    );
+    return avgPrice;
+  }
 }

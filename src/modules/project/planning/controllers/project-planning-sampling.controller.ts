@@ -17,6 +17,8 @@ import { ProjectCostingSamplingService } from '../../costing/services/project-co
 import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
 import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
 import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -27,13 +29,25 @@ export class ProjectPlanningSamplingController {
     private readonly projectPlanningSamplingService: ProjectPlanningSamplingService,
     private readonly projectCostingSamplingService: ProjectCostingSamplingService,
     private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
+    private readonly projectDetailCalculateService: ProjectDetailCalculateService,
   ) {}
 
   @Get(':project_id/sampling')
   async findList(@Param('project_id') project_id: number) {
     const data = await this.projectPlanningSamplingService.findAll(project_id);
+    const approval = await this.projectPlanningApprovalService.findOneApproval(
+      project_id,
+      TypeProjectDetailCalculateEnum.Sampling,
+    );
+    const compare =
+      await this.projectDetailCalculateService.compareCostingPlanningIsPassed(
+        project_id,
+        TypeProjectDetailCalculateEnum.Sampling,
+      );
     return {
       data,
+      approval,
+      compare,
     };
   }
   @Post(':project_id/sampling')
@@ -47,6 +61,18 @@ export class ProjectPlanningSamplingController {
       projectPlanningSamplingDto,
       req.user.id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningSamplingService.sumGrandAvgPriceTotalSampling(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.Sampling,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };
@@ -79,6 +105,18 @@ export class ProjectPlanningSamplingController {
       projectPlanningSamplingDto,
       req.user.id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningSamplingService.sumGrandAvgPriceTotalSampling(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.Sampling,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };
@@ -92,6 +130,18 @@ export class ProjectPlanningSamplingController {
       project_id,
       sampling_id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningSamplingService.sumGrandAvgPriceTotalSampling(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.Sampling,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };

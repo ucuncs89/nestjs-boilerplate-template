@@ -17,6 +17,8 @@ import { ProjectCostingAdditionalCostService } from '../../costing/services/proj
 import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
 import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
 import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -27,6 +29,7 @@ export class ProjectPlanningAdditionalCostController {
     private readonly projectPlanningAdditionalCostService: ProjectPlanningAdditionalCostService,
     private readonly projectCostingAdditionalCostService: ProjectCostingAdditionalCostService,
     private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
+    private readonly projectDetailCalculateService: ProjectDetailCalculateService,
   ) {}
 
   @Get(':project_id/additional-cost')
@@ -34,8 +37,19 @@ export class ProjectPlanningAdditionalCostController {
     const data = await this.projectPlanningAdditionalCostService.findAll(
       project_id,
     );
+    const approval = await this.projectPlanningApprovalService.findOneApproval(
+      project_id,
+      TypeProjectDetailCalculateEnum.AdditionalCost,
+    );
+    const compare =
+      await this.projectDetailCalculateService.compareCostingPlanningIsPassed(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+      );
     return {
       data,
+      approval,
+      compare,
     };
   }
   @Post(':project_id/additional-cost')
@@ -49,6 +63,18 @@ export class ProjectPlanningAdditionalCostController {
       projectPlanningAdditionalCostDto,
       req.user.id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };
@@ -81,6 +107,18 @@ export class ProjectPlanningAdditionalCostController {
       projectPlanningAdditionalCostDto,
       req.user.id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };
@@ -94,6 +132,18 @@ export class ProjectPlanningAdditionalCostController {
       project_id,
       additional_id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };

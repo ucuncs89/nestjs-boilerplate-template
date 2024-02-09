@@ -52,7 +52,7 @@ export class ProjectPlanningMaterialController {
     @Query() getListProjectMaterialDto: GetListProjectMaterialDto,
   ) {
     const costing =
-      await this.projectPlanningMaterialService.findAllMaterialItem(
+      await this.projectCostingMaterialService.findAllMaterialItem(
         project_id,
         getListProjectMaterialDto,
       );

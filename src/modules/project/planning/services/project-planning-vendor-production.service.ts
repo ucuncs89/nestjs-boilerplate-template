@@ -6,6 +6,8 @@ import { AppErrorException } from 'src/exceptions/app-exception';
 import { Connection, In, IsNull, Not, Repository } from 'typeorm';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 import { ProjectPlanningVendorProductionDetailDto } from '../dto/project-planning-vendor-production.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detail_calculate.entity';
 
 @Injectable()
 export class ProjectPlanningVendorProductionService {
@@ -15,6 +17,9 @@ export class ProjectPlanningVendorProductionService {
 
     @InjectRepository(ProjectVendorProductionDetailEntity)
     private projectVendorProductionDetailRepository: Repository<ProjectVendorProductionDetailEntity>,
+
+    @InjectRepository(ProjectDetailCalculateEntity)
+    private projectDetailCalculateRepository: Repository<ProjectDetailCalculateEntity>,
 
     private connection: Connection,
   ) {}
@@ -119,6 +124,7 @@ export class ProjectPlanningVendorProductionService {
       });
       await this.projectVendorProductionDetailRepository.save(vendor);
       this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      this.updateGrandTotalProductionPerProject(project_id);
       return vendor;
     } catch (error) {
       throw new AppErrorException(error);
@@ -131,6 +137,7 @@ export class ProjectPlanningVendorProductionService {
     projectPlanningVendorProductionDetailDto: ProjectPlanningVendorProductionDetailDto,
     user_id,
     i18n,
+    project_id: number,
   ) {
     try {
       delete projectPlanningVendorProductionDetailDto.activity_id;
@@ -149,6 +156,7 @@ export class ProjectPlanningVendorProductionService {
         },
       );
       this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      this.updateGrandTotalProductionPerProject(project_id);
       return data;
     } catch (error) {
       throw new AppErrorException(error);
@@ -159,6 +167,7 @@ export class ProjectPlanningVendorProductionService {
     project_vendor_production_id: number,
     project_vendor_production_detail_id: number,
     user_id: number,
+    project_id: number,
   ) {
     try {
       const data = await this.projectVendorProductionDetailRepository.delete({
@@ -167,6 +176,7 @@ export class ProjectPlanningVendorProductionService {
       });
       this.updateTotalQuantitySubtotal(project_vendor_production_id);
       this.deleteIfNotExistActivity(project_vendor_production_id, user_id);
+      this.updateGrandTotalProductionPerProject(project_id);
       return data;
     } catch (error) {
       throw new AppErrorException(error);
@@ -340,5 +350,38 @@ export class ProjectPlanningVendorProductionService {
       },
     });
     return { costing, planning };
+  }
+  async updateGrandTotalProductionPerProject(project_id: number) {
+    const sumTotalPrice: number =
+      await this.projectVendorProductionRepository.sum('sub_total_price', {
+        project_id,
+        added_in_section: In([StatusProjectEnum.Planning]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        sub_total_price: Not(IsNull()),
+      });
+    const sumTotalQuantity: number =
+      await this.projectVendorProductionRepository.sum('total_quantity', {
+        project_id,
+        added_in_section: In([StatusProjectEnum.Planning]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        total_quantity: Not(IsNull()),
+      });
+    const avgPrice = sumTotalPrice / sumTotalQuantity;
+    const data = await this.projectDetailCalculateRepository.upsert(
+      {
+        project_id,
+        type: TypeProjectDetailCalculateEnum.Production,
+        added_in_section: StatusProjectEnum.Production,
+        total_price: sumTotalPrice,
+        avg_price: avgPrice,
+      },
+      {
+        conflictPaths: { project_id: true, type: true, added_in_section: true },
+      },
+    );
+
+    return data;
   }
 }
