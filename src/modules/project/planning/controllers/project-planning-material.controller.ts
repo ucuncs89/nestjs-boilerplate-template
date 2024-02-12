@@ -149,7 +149,7 @@ export class ProjectPlanningMaterialController {
           status: StatusApprovalEnum.waiting,
           type: TypeProjectDetailCalculateEnum.Material,
           project_id,
-          name: `${material.type} - ${material.name} ${material.used_for}`,
+          name: `${material.type} - ${material.name} - ${material.category} ${material.used_for}`,
         },
         req.user.id,
       );
