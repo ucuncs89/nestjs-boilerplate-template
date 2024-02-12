@@ -18,6 +18,9 @@ import {
   ProjectMaterialItemDto,
 } from '../dto/project-planning-material.dto';
 import { ProjectCostingMaterialService } from '../../costing/services/project-costing-material.service';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -27,6 +30,7 @@ export class ProjectPlanningMaterialController {
   constructor(
     private readonly projectPlanningMaterialService: ProjectPlanningMaterialService,
     private readonly projectCostingMaterialService: ProjectCostingMaterialService,
+    private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
   ) {}
 
   @Get(':project_id/material')
@@ -48,7 +52,7 @@ export class ProjectPlanningMaterialController {
     @Query() getListProjectMaterialDto: GetListProjectMaterialDto,
   ) {
     const costing =
-      await this.projectPlanningMaterialService.findAllMaterialItem(
+      await this.projectCostingMaterialService.findAllMaterialItem(
         project_id,
         getListProjectMaterialDto,
       );
@@ -126,5 +130,29 @@ export class ProjectPlanningMaterialController {
     return {
       data,
     };
+  }
+  @Post(':project_id/material/:material_item_id/approval-request')
+  async approvalRequest(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('material_item_id') material_item_id: number,
+  ) {
+    const material =
+      await this.projectPlanningMaterialService.findOneMaterialItem(
+        project_id,
+        material_item_id,
+      );
+    const data =
+      await this.projectPlanningApprovalService.createPlanningApproval(
+        {
+          relation_id: material_item_id,
+          status: StatusApprovalEnum.waiting,
+          type: TypeProjectDetailCalculateEnum.Material,
+          project_id,
+          name: `${material.type} - ${material.name} - ${material.category} ${material.used_for}`,
+        },
+        req.user.id,
+      );
+    return { data };
   }
 }

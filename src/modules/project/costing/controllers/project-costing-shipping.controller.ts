@@ -49,6 +49,11 @@ export class ProjectCostingShippingController {
       projectCostingShippingDto,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingShippingService.updateGrandAvgPriceTotalShipping(
+        project_id,
+      );
+    }
     return { data };
   }
   @Put(':project_id/shipping/:shipping_id')
@@ -65,6 +70,11 @@ export class ProjectCostingShippingController {
       projectCostingShippingDto,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingShippingService.updateGrandAvgPriceTotalShipping(
+        project_id,
+      );
+    }
     return { data };
   }
   @Get(':project_id/shipping/:shipping_id')
@@ -89,6 +99,11 @@ export class ProjectCostingShippingController {
     const data = await this.projectCostingShippingService.deleteShipping(
       shipping_id,
     );
+    if (data) {
+      this.projectCostingShippingService.updateGrandAvgPriceTotalShipping(
+        project_id,
+      );
+    }
     return { data };
   }
 }

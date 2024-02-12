@@ -141,4 +141,16 @@ export class ProjectPlanningAdditionalCostService {
     });
     return { costing, planning };
   }
+  async sumGrandAvgPriceTotalAdditionalPrice(project_id: number) {
+    const avgPrice = await this.projectAdditionalCostRepository.average(
+      'additional_price',
+      {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: StatusProjectEnum.Planning,
+      },
+    );
+    return avgPrice;
+  }
 }

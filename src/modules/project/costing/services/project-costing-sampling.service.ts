@@ -8,12 +8,16 @@ import {
 } from 'src/exceptions/app-exception';
 import { ProjectSamplingEntity } from 'src/entities/project/project_sampling.entity';
 import { ProjectCostingSamplingDto } from '../dto/project-costing-sampling.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detail_calculate.entity';
 
 @Injectable()
 export class ProjectCostingSamplingService {
   constructor(
     @InjectRepository(ProjectSamplingEntity)
     private projectSamplingRepository: Repository<ProjectSamplingEntity>,
+    @InjectRepository(ProjectDetailCalculateEntity)
+    private projectDetailCalculateRepository: Repository<ProjectDetailCalculateEntity>,
     private connection: Connection,
   ) {}
 
@@ -90,6 +94,29 @@ export class ProjectCostingSamplingService {
       project_id,
       id: sampling_id,
     });
+    return data;
+  }
+  async updateGrandAvgPriceTotalSampling(project_id: number) {
+    const avgPrice = await this.projectSamplingRepository.average('cost', {
+      project_id,
+      deleted_at: IsNull(),
+      deleted_by: IsNull(),
+      added_in_section: In([
+        StatusProjectEnum.Costing,
+        StatusProjectEnum.Sampling,
+      ]),
+    });
+    const data = await this.projectDetailCalculateRepository.upsert(
+      {
+        project_id,
+        type: TypeProjectDetailCalculateEnum.Sampling,
+        added_in_section: StatusProjectEnum.Costing,
+        avg_price: avgPrice,
+      },
+      {
+        conflictPaths: { project_id: true, type: true, added_in_section: true },
+      },
+    );
     return data;
   }
 }

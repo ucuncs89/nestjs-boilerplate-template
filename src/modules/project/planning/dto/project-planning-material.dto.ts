@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { ProjectMaterialItemEntity } from 'src/entities/project/project_material_item.entity';
+import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_planning_approval.entity';
 
 export enum ProjectMaterialItemEnum {
   Fabric = 'Fabric',
@@ -84,5 +85,6 @@ export class ProjectMaterialItemDto {
 }
 
 export class ResponseMaterialItem extends ProjectMaterialItemEntity {
+  approval?: ProjectPlanningApprovalEntity;
   is_passed?: boolean;
 }

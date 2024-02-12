@@ -111,4 +111,13 @@ export class ProjectPlanningSamplingService {
     });
     return { costing_sampling, planning };
   }
+  async sumGrandAvgPriceTotalSampling(project_id: number) {
+    const avgPrice = await this.projectSamplingRepository.average('cost', {
+      project_id,
+      deleted_at: IsNull(),
+      deleted_by: IsNull(),
+      added_in_section: StatusProjectEnum.Planning,
+    });
+    return avgPrice;
+  }
 }

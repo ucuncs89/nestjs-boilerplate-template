@@ -63,6 +63,10 @@ import { ProjectPlanningSamplingController } from './planning/controllers/projec
 import { ProjectPlanningPriceController } from './planning/controllers/project-planning-price.controller';
 import { ProjectPlanningRecapController } from './planning/controllers/project-planning-recap.controller';
 import { ProjectPlanningPriceService } from './planning/services/project-planning-price.service';
+import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detail_calculate.entity';
+import { ProjectPlanningApprovalService } from './general/services/project-planning-approval.service';
+import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_planning_approval.entity';
+import { ProjectDetailCalculateService } from './general/services/project-detail-calculate.service';
 
 @Module({
   imports: [
@@ -81,6 +85,8 @@ import { ProjectPlanningPriceService } from './planning/services/project-plannin
       ProjectPriceEntity,
       ProjectRemarksEntity,
       ProjectVendorMaterialEntity,
+      ProjectDetailCalculateEntity,
+      ProjectPlanningApprovalEntity,
     ]),
     RabbitMQModule,
   ],
@@ -135,6 +141,8 @@ import { ProjectPlanningPriceService } from './planning/services/project-plannin
     ProjectPlanningSamplingService,
     ProjectPlanningPriceService,
     ProjectPlanningRecapService,
+    ProjectPlanningApprovalService,
+    ProjectDetailCalculateService,
   ],
 })
 export class ProjectModule {}
