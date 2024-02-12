@@ -51,12 +51,14 @@ export class ProjectPlanningVendorProductionController {
         project_id,
         TypeProjectDetailCalculateEnum.Production,
       );
+    if (approval !== null && approval.status === StatusApprovalEnum.approved) {
+      compare.is_passed = true;
+    }
     return {
       data,
       approval,
       compare,
     };
-    return { data };
   }
 
   @Post(':project_id/vendor-production')
@@ -146,6 +148,8 @@ export class ProjectPlanningVendorProductionController {
           relation_id: project_id,
           status: StatusApprovalEnum.waiting,
           type: TypeProjectDetailCalculateEnum.Production,
+          name: `${TypeProjectDetailCalculateEnum.Production}`,
+          project_id,
         },
         req.user.id,
       );

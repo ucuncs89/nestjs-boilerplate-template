@@ -40,10 +40,13 @@ export class ProjectPlanningSamplingController {
       TypeProjectDetailCalculateEnum.Sampling,
     );
     const compare =
-      await this.projectDetailCalculateService.compareCostingPlanningIsPassed(
+      await this.projectDetailCalculateService.compareTotalPricePlanningIsPassed(
         project_id,
         TypeProjectDetailCalculateEnum.Sampling,
       );
+    if (approval !== null && approval.status === StatusApprovalEnum.approved) {
+      compare.is_passed = true;
+    }
     return {
       data,
       approval,
@@ -167,6 +170,8 @@ export class ProjectPlanningSamplingController {
           relation_id: project_id,
           status: StatusApprovalEnum.waiting,
           type: TypeProjectDetailCalculateEnum.Sampling,
+          name: `${TypeProjectDetailCalculateEnum.Sampling}`,
+          project_id,
         },
         req.user.id,
       );

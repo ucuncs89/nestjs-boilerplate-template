@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_planning_approval.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { ProjectPlanningApprovalDto } from '../dto/project-planning-approval.dto';
 import { AppErrorException } from 'src/exceptions/app-exception';
 import { TypeProjectDetailCalculateEnum } from '../dto/project-detail.dto';
@@ -12,7 +12,7 @@ export class ProjectPlanningApprovalService {
     @InjectRepository(ProjectPlanningApprovalEntity)
     private projectPlanningApprovalRepository: Repository<ProjectPlanningApprovalEntity>,
   ) {}
-  // async findMaterialApproval(project_id) {}
+
   async createPlanningApproval(
     projectPlanningApprovalDto: ProjectPlanningApprovalDto,
     user_id: number,
@@ -21,6 +21,7 @@ export class ProjectPlanningApprovalService {
       where: {
         relation_id: projectPlanningApprovalDto.relation_id,
         type: projectPlanningApprovalDto.type,
+        project_id: projectPlanningApprovalDto.project_id,
       },
     });
     try {
@@ -64,5 +65,39 @@ export class ProjectPlanningApprovalService {
       },
     });
     return findOne;
+  }
+  async findAll(project_id: number) {
+    const data = await this.projectPlanningApprovalRepository.find({
+      where: {
+        project_id,
+      },
+    });
+    return data;
+  }
+  async findOne(detail_id: number, project_id: number) {
+    const data = await this.projectPlanningApprovalRepository.findOne({
+      where: { id: detail_id },
+    });
+    return data;
+  }
+  async findAllMaterial(project_id: number) {
+    const data = await this.projectPlanningApprovalRepository.find({
+      where: {
+        project_id,
+        type: TypeProjectDetailCalculateEnum.Material,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        project_id: true,
+        relation_id: true,
+        type: true,
+        status: true,
+        status_desc: true,
+        name: true,
+      },
+    });
+    return data;
   }
 }

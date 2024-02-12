@@ -137,12 +137,19 @@ export class ProjectPlanningMaterialController {
     @Param('project_id') project_id: number,
     @Param('material_item_id') material_item_id: number,
   ) {
+    const material =
+      await this.projectPlanningMaterialService.findOneMaterialItem(
+        project_id,
+        material_item_id,
+      );
     const data =
       await this.projectPlanningApprovalService.createPlanningApproval(
         {
           relation_id: material_item_id,
           status: StatusApprovalEnum.waiting,
           type: TypeProjectDetailCalculateEnum.Material,
+          project_id,
+          name: `${material.type} - ${material.name} ${material.used_for}`,
         },
         req.user.id,
       );

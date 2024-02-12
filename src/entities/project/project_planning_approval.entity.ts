@@ -5,6 +5,9 @@ export class ProjectPlanningApprovalEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'int' })
+  project_id: number;
+
   @Column({ type: 'int', nullable: true })
   relation_id: number;
 
@@ -16,6 +19,9 @@ export class ProjectPlanningApprovalEntity {
 
   @Column({ type: 'varchar', nullable: true })
   status_desc: string;
+
+  @Column({ type: 'varchar' })
+  name: string;
 
   @Column({
     type: 'timestamp with time zone',

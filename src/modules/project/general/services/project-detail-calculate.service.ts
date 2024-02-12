@@ -62,6 +62,47 @@ export class ProjectDetailCalculateService {
 
     return { is_passed: isPassed, costing, planning };
   }
+  async compareTotalPricePlanningIsPassed(
+    project_id: number,
+    type: TypeProjectDetailCalculateEnum,
+  ) {
+    const costing = await this.projectDetailCalculateRepository.findOne({
+      where: {
+        project_id,
+        type,
+        added_in_section: StatusProjectEnum.Costing,
+      },
+      select: {
+        project_id: true,
+        total_price: true,
+        type: true,
+        avg_price: true,
+        added_in_section: true,
+      },
+    });
+    const planning = await this.projectDetailCalculateRepository.findOne({
+      where: {
+        project_id,
+        type,
+        added_in_section: StatusProjectEnum.Planning,
+      },
+      select: {
+        project_id: true,
+        total_price: true,
+        type: true,
+        avg_price: true,
+        added_in_section: true,
+      },
+    });
+
+    let isPassed = false;
+
+    if (planning && costing && costing.total_price > planning.total_price) {
+      isPassed = true;
+    }
+
+    return { is_passed: isPassed, costing, planning };
+  }
   async upsertCalculate(
     project_id: number,
     type: TypeProjectDetailCalculateEnum,

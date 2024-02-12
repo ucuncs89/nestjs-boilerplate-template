@@ -12,6 +12,8 @@ import { ProjectVariantEntity } from 'src/entities/project/project_variant.entit
 import { AppErrorException } from 'src/exceptions/app-exception';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
 
 @Injectable()
 export class ProjectPlanningMaterialService {
@@ -21,6 +23,9 @@ export class ProjectPlanningMaterialService {
 
     @InjectRepository(ProjectVendorMaterialEntity)
     private projectVendorMaterialRepository: Repository<ProjectVendorMaterialEntity>,
+
+    private projectPlanningApprovalService: ProjectPlanningApprovalService,
+
     private connection: Connection,
   ) {}
   async findAllMaterialItem(
@@ -99,14 +104,31 @@ export class ProjectPlanningMaterialService {
           id: 'ASC',
         },
       });
+    const approval = await this.projectPlanningApprovalService.findAllMaterial(
+      project_id,
+    );
     for (const data of material) {
-      if (
-        data.costing_material_item !== null &&
-        data.costing_material_item.avg_price >= data.avg_price
-      ) {
-        data.is_passed = true;
-      } else {
-        data.is_passed = false;
+      for (const objApproval of approval) {
+        if (objApproval.relation_id === data.id) {
+          data.approval = {
+            id: objApproval.relation_id,
+            ...objApproval,
+          };
+          if (
+            data.costing_material_item !== null &&
+            data.costing_material_item.avg_price >= data.avg_price
+          ) {
+            data.is_passed = true;
+          } else {
+            data.is_passed = false;
+          }
+          if (
+            data.approval !== null &&
+            data.approval.status === StatusApprovalEnum.approved
+          ) {
+            data.is_passed = true;
+          }
+        }
       }
     }
 
@@ -162,7 +184,7 @@ export class ProjectPlanningMaterialService {
     project_id: number,
     project_material_item_id: number,
   ) {
-    const data = await this.projectMaterialItemRepository.find({
+    const data = await this.projectMaterialItemRepository.findOne({
       select: {
         id: true,
         project_id: true,

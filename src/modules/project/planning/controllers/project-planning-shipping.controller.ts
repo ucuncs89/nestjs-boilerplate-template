@@ -53,6 +53,9 @@ export class ProjectPlanningShippingController {
         project_id,
         TypeProjectDetailCalculateEnum.Shipping,
       );
+    if (approval !== null && approval.status === StatusApprovalEnum.approved) {
+      compare.is_passed = true;
+    }
     return {
       data,
       approval,
@@ -174,6 +177,8 @@ export class ProjectPlanningShippingController {
           relation_id: project_id,
           status: StatusApprovalEnum.waiting,
           type: TypeProjectDetailCalculateEnum.Shipping,
+          name: `${TypeProjectDetailCalculateEnum.Shipping}`,
+          project_id,
         },
         req.user.id,
       );

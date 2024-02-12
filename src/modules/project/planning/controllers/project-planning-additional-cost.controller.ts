@@ -37,15 +37,18 @@ export class ProjectPlanningAdditionalCostController {
     const data = await this.projectPlanningAdditionalCostService.findAll(
       project_id,
     );
+    const compare =
+      await this.projectDetailCalculateService.compareTotalPricePlanningIsPassed(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+      );
     const approval = await this.projectPlanningApprovalService.findOneApproval(
       project_id,
       TypeProjectDetailCalculateEnum.AdditionalCost,
     );
-    const compare =
-      await this.projectDetailCalculateService.compareCostingPlanningIsPassed(
-        project_id,
-        TypeProjectDetailCalculateEnum.AdditionalCost,
-      );
+    if (approval !== null && approval.status === StatusApprovalEnum.approved) {
+      compare.is_passed = true;
+    }
     return {
       data,
       approval,
@@ -170,6 +173,8 @@ export class ProjectPlanningAdditionalCostController {
           relation_id: project_id,
           status: StatusApprovalEnum.waiting,
           type: TypeProjectDetailCalculateEnum.AdditionalCost,
+          name: 'Additional Cost',
+          project_id,
         },
         req.user.id,
       );
