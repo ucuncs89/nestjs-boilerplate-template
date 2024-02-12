@@ -404,4 +404,142 @@ export class ProjectPlanningMaterialService {
     });
     return data;
   }
+  async findCompareOne(relation_id: number) {
+    const planning = await this.projectMaterialItemRepository.findOne({
+      select: {
+        id: true,
+        project_id: true,
+        relation_id: true,
+        type: true,
+        name: true,
+        category: true,
+        used_for: true,
+        cut_shape: true,
+        allowance: true,
+        consumption: true,
+        consumption_unit: true,
+        added_in_section: true,
+        avg_price: true,
+        total_price: true,
+        created_at: true,
+        costing_material_item_id: true,
+        vendor_material: {
+          id: true,
+          project_id: true,
+          project_variant_id: true,
+          project_material_item_id: true,
+          added_in_section: true,
+          total_item: true,
+          total_consumption: true,
+          total_price: true,
+          project_variant: {
+            id: true,
+            name: true,
+            total_item: true,
+            item_unit: true,
+          },
+          detail: {
+            id: true,
+            vendor_id: true,
+            type: true,
+            price: true,
+            price_unit: true,
+            quantity: true,
+            quantity_unit: true,
+            total_price: true,
+            vendors: { id: true, company_name: true },
+          },
+        },
+        costing_material_item: {
+          id: true,
+          avg_price: true,
+          total_price: true,
+        },
+      },
+      where: {
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        id: relation_id,
+        added_in_section: StatusProjectEnum.Planning,
+        vendor_material: { added_in_section: StatusProjectEnum.Planning },
+      },
+      relations: {
+        vendor_material: { project_variant: true, detail: { vendors: true } },
+      },
+      order: {
+        type: 'ASC',
+        id: 'ASC',
+      },
+    });
+    if (!planning.costing_material_item_id) {
+      return { costing: null, planning };
+    }
+    const costing = await this.projectMaterialItemRepository.findOne({
+      select: {
+        id: true,
+        project_id: true,
+        relation_id: true,
+        type: true,
+        name: true,
+        category: true,
+        used_for: true,
+        cut_shape: true,
+        allowance: true,
+        consumption: true,
+        consumption_unit: true,
+        added_in_section: true,
+        avg_price: true,
+        total_price: true,
+        created_at: true,
+        costing_material_item_id: true,
+        vendor_material: {
+          id: true,
+          project_id: true,
+          project_variant_id: true,
+          project_material_item_id: true,
+          added_in_section: true,
+          total_item: true,
+          total_consumption: true,
+          total_price: true,
+          project_variant: {
+            id: true,
+            name: true,
+            total_item: true,
+            item_unit: true,
+          },
+          detail: {
+            id: true,
+            vendor_id: true,
+            type: true,
+            price: true,
+            price_unit: true,
+            quantity: true,
+            quantity_unit: true,
+            total_price: true,
+            vendors: { id: true, company_name: true },
+          },
+        },
+        costing_material_item: {
+          id: true,
+          avg_price: true,
+          total_price: true,
+        },
+      },
+      where: {
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        id: planning.costing_material_item_id,
+        added_in_section: StatusProjectEnum.Costing,
+        vendor_material: { added_in_section: StatusProjectEnum.Costing },
+      },
+      relations: {
+        vendor_material: { project_variant: true, detail: { vendors: true } },
+      },
+      order: {
+        type: 'ASC',
+        id: 'ASC',
+      },
+    });
+    return { planning, costing };
+  }
 }
