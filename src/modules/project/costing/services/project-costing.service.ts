@@ -37,7 +37,7 @@ export class ProjectCostingService {
     const project = await this.projectRepository.findOne({
       where: { id: project_id, deleted_at: IsNull(), deleted_by: IsNull() },
     });
-    if (project.status === StatusProjectEnum.Planning) {
+    if (project.status === StatusProjectEnum.Costing) {
       const data = await this.projectRepository.update(
         { id: project_id },
         { can_planning: true },

@@ -8,12 +8,17 @@ import {
 import { Connection, In, IsNull, Not, Repository } from 'typeorm';
 import { ProjectCostingShippingDto } from '../dto/project-costing-shipping.dto';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detail_calculate.entity';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 
 @Injectable()
 export class ProjectCostingShippingService {
   constructor(
     @InjectRepository(ProjectShippingEntity)
     private projectShippingRepository: Repository<ProjectShippingEntity>,
+
+    @InjectRepository(ProjectDetailCalculateEntity)
+    private projectDetailCalculateRepository: Repository<ProjectDetailCalculateEntity>,
 
     private connection: Connection,
   ) {}
@@ -117,6 +122,29 @@ export class ProjectCostingShippingService {
         added_in_section: true,
       },
     });
+    return data;
+  }
+  async updateGrandAvgPriceTotalShipping(project_id: number) {
+    const avgPrice = await this.projectShippingRepository.average(
+      'shipping_cost',
+      {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: StatusProjectEnum.Costing,
+      },
+    );
+    const data = await this.projectDetailCalculateRepository.upsert(
+      {
+        project_id,
+        type: TypeProjectDetailCalculateEnum.Shipping,
+        added_in_section: StatusProjectEnum.Costing,
+        avg_price: avgPrice,
+      },
+      {
+        conflictPaths: { project_id: true, type: true, added_in_section: true },
+      },
+    );
     return data;
   }
 }

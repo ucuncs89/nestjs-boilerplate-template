@@ -43,6 +43,11 @@ export class ProjectCostingAdditionalCostController {
       projectCostingAdditionalCostDto,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingAdditionalCostService.updateGrandAvgPriceTotalAdditionalPrice(
+        project_id,
+      );
+    }
     return {
       data,
     };
@@ -75,6 +80,11 @@ export class ProjectCostingAdditionalCostController {
       projectCostingAdditionalCostDto,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingAdditionalCostService.updateGrandAvgPriceTotalAdditionalPrice(
+        project_id,
+      );
+    }
     return {
       data,
     };
@@ -88,6 +98,11 @@ export class ProjectCostingAdditionalCostController {
       project_id,
       additional_id,
     );
+    if (data) {
+      this.projectCostingAdditionalCostService.updateGrandAvgPriceTotalAdditionalPrice(
+        project_id,
+      );
+    }
     return {
       data,
     };

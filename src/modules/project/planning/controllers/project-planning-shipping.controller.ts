@@ -16,6 +16,11 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectPlanningShippingService } from '../services/project-planning-shipping.service';
 import { ProjectPlanningShippingDto } from '../dto/project-planning-shipping.dto';
 import { ProjectCostingShippingService } from '../../costing/services/project-costing-shipping.service';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -25,6 +30,8 @@ export class ProjectPlanningShippingController {
   constructor(
     private readonly projectPlanningShippingService: ProjectPlanningShippingService,
     private readonly projectCostingShippingService: ProjectCostingShippingService,
+    private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
+    private readonly projectDetailCalculateService: ProjectDetailCalculateService,
   ) {}
 
   @Get(':project_id/shipping')
@@ -37,7 +44,23 @@ export class ProjectPlanningShippingController {
       await this.projectPlanningShippingService.findByProjectDetailId(
         project_id,
       );
-    return { data };
+    const approval = await this.projectPlanningApprovalService.findOneApproval(
+      project_id,
+      TypeProjectDetailCalculateEnum.Shipping,
+    );
+    const compare =
+      await this.projectDetailCalculateService.compareCostingPlanningIsPassed(
+        project_id,
+        TypeProjectDetailCalculateEnum.Shipping,
+      );
+    if (approval !== null && approval.status === StatusApprovalEnum.approved) {
+      compare.is_passed = true;
+    }
+    return {
+      data,
+      approval,
+      compare,
+    };
   }
   @Post(':project_id/shipping')
   async createProjectShipping(
@@ -52,6 +75,18 @@ export class ProjectPlanningShippingController {
       projectPlanningShippingDto,
       req.user.id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningShippingService.sumGrandAvgPriceTotalShipping(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.Shipping,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return { data };
   }
   @Put(':project_id/shipping/:shipping_id')
@@ -68,6 +103,18 @@ export class ProjectPlanningShippingController {
       projectPlanningShippingDto,
       req.user.id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningShippingService.sumGrandAvgPriceTotalShipping(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.Shipping,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return { data };
   }
   @Get(':project_id/shipping/:shipping_id')
@@ -92,6 +139,18 @@ export class ProjectPlanningShippingController {
     const data = await this.projectPlanningShippingService.deleteShipping(
       shipping_id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningShippingService.sumGrandAvgPriceTotalShipping(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.Shipping,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return { data };
   }
   @Get(':project_id/shipping/compare')
@@ -109,5 +168,20 @@ export class ProjectPlanningShippingController {
         project_id,
       );
     return { costing, planning };
+  }
+  @Post(':project_id/shipping/approval-request')
+  async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
+    const data =
+      await this.projectPlanningApprovalService.createPlanningApproval(
+        {
+          relation_id: project_id,
+          status: StatusApprovalEnum.waiting,
+          type: TypeProjectDetailCalculateEnum.Shipping,
+          name: `${TypeProjectDetailCalculateEnum.Shipping}`,
+          project_id,
+        },
+        req.user.id,
+      );
+    return { data };
   }
 }

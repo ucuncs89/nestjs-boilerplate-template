@@ -15,6 +15,10 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectPlanningVendorProductionService } from '../services/project-planning-vendor-production.service';
 import { ProjectPlanningVendorProductionDetailDto } from '../dto/project-planning-vendor-production.dto';
 import { ProjectCostingVendorProductionService } from '../../costing/services/project-costing-vendor-production.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -24,6 +28,8 @@ export class ProjectPlanningVendorProductionController {
   constructor(
     private projectPlanningVendorProductionService: ProjectPlanningVendorProductionService,
     private projectCostingVendorProductionService: ProjectCostingVendorProductionService,
+    private projectPlanningApprovalService: ProjectPlanningApprovalService,
+    private projectDetailCalculateService: ProjectDetailCalculateService,
   ) {}
 
   @Get(':project_id/vendor-production')
@@ -36,7 +42,23 @@ export class ProjectPlanningVendorProductionController {
       await this.projectPlanningVendorProductionService.findVendorProduction(
         project_id,
       );
-    return { data };
+    const approval = await this.projectPlanningApprovalService.findOneApproval(
+      project_id,
+      TypeProjectDetailCalculateEnum.Production,
+    );
+    const compare =
+      await this.projectDetailCalculateService.compareCostingPlanningIsPassed(
+        project_id,
+        TypeProjectDetailCalculateEnum.Production,
+      );
+    if (approval !== null && approval.status === StatusApprovalEnum.approved) {
+      compare.is_passed = true;
+    }
+    return {
+      data,
+      approval,
+      compare,
+    };
   }
 
   @Post(':project_id/vendor-production')
@@ -77,6 +99,7 @@ export class ProjectPlanningVendorProductionController {
         projectPlanningVendorProductionDetailDto,
         req.user.id,
         i18n,
+        project_id,
       );
     return { data };
   }
@@ -96,6 +119,7 @@ export class ProjectPlanningVendorProductionController {
         project_vendor_id,
         project_vendor_production_detail_id,
         req.user.id,
+        project_id,
       );
     return { data };
   }
@@ -115,5 +139,20 @@ export class ProjectPlanningVendorProductionController {
         project_id,
       );
     return { costing, planning };
+  }
+  @Post(':project_id/production/approval-request')
+  async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
+    const data =
+      await this.projectPlanningApprovalService.createPlanningApproval(
+        {
+          relation_id: project_id,
+          status: StatusApprovalEnum.waiting,
+          type: TypeProjectDetailCalculateEnum.Production,
+          name: `${TypeProjectDetailCalculateEnum.Production}`,
+          project_id,
+        },
+        req.user.id,
+      );
+    return { data };
   }
 }

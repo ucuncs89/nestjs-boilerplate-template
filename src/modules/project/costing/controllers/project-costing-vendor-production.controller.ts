@@ -75,6 +75,7 @@ export class ProjectCostingVendorProductionController {
         projectCostingVendorProductionDetailDto,
         req.user.id,
         i18n,
+        project_id,
       );
     return { data };
   }
@@ -94,6 +95,7 @@ export class ProjectCostingVendorProductionController {
         project_vendor_id,
         project_vendor_production_detail_id,
         req.user.id,
+        project_id,
       );
     return { data };
   }

@@ -14,6 +14,11 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectPlanningAdditionalCostService } from '../services/project-planning-additional-cost.service';
 import { ProjectPlanningAdditionalCostDto } from '../dto/project-planning-additional-cost.dto';
 import { ProjectCostingAdditionalCostService } from '../../costing/services/project-costing-additional-cost.service';
+import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
+import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
+import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -23,6 +28,8 @@ export class ProjectPlanningAdditionalCostController {
   constructor(
     private readonly projectPlanningAdditionalCostService: ProjectPlanningAdditionalCostService,
     private readonly projectCostingAdditionalCostService: ProjectCostingAdditionalCostService,
+    private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
+    private readonly projectDetailCalculateService: ProjectDetailCalculateService,
   ) {}
 
   @Get(':project_id/additional-cost')
@@ -30,8 +37,22 @@ export class ProjectPlanningAdditionalCostController {
     const data = await this.projectPlanningAdditionalCostService.findAll(
       project_id,
     );
+    const compare =
+      await this.projectDetailCalculateService.compareTotalPricePlanningIsPassed(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+      );
+    const approval = await this.projectPlanningApprovalService.findOneApproval(
+      project_id,
+      TypeProjectDetailCalculateEnum.AdditionalCost,
+    );
+    if (approval !== null && approval.status === StatusApprovalEnum.approved) {
+      compare.is_passed = true;
+    }
     return {
       data,
+      approval,
+      compare,
     };
   }
   @Post(':project_id/additional-cost')
@@ -45,6 +66,18 @@ export class ProjectPlanningAdditionalCostController {
       projectPlanningAdditionalCostDto,
       req.user.id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };
@@ -77,6 +110,18 @@ export class ProjectPlanningAdditionalCostController {
       projectPlanningAdditionalCostDto,
       req.user.id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };
@@ -90,6 +135,18 @@ export class ProjectPlanningAdditionalCostController {
       project_id,
       additional_id,
     );
+    if (data) {
+      const avgPrice =
+        await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
+          project_id,
+        );
+      this.projectDetailCalculateService.upsertCalculate(
+        project_id,
+        TypeProjectDetailCalculateEnum.AdditionalCost,
+        StatusProjectEnum.Planning,
+        avgPrice,
+      );
+    }
     return {
       data,
     };
@@ -107,5 +164,20 @@ export class ProjectPlanningAdditionalCostController {
       costing,
       planning,
     };
+  }
+  @Post(':project_id/additional-cost/approval-request')
+  async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
+    const data =
+      await this.projectPlanningApprovalService.createPlanningApproval(
+        {
+          relation_id: project_id,
+          status: StatusApprovalEnum.waiting,
+          type: TypeProjectDetailCalculateEnum.AdditionalCost,
+          name: 'Additional Cost',
+          project_id,
+        },
+        req.user.id,
+      );
+    return { data };
   }
 }

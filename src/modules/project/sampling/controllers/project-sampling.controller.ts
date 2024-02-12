@@ -13,6 +13,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectSamplingService } from '../services/project-sampling.service';
 import { ProjectSamplingDto } from '../dto/project-sampling.dto';
+import { ProjectCostingSamplingService } from '../../costing/services/project-costing-sampling.service';
 
 @ApiBearerAuth()
 @ApiTags('project sampling')
@@ -21,6 +22,7 @@ import { ProjectSamplingDto } from '../dto/project-sampling.dto';
 export class ProjectSamplingController {
   constructor(
     private readonly projectSamplingService: ProjectSamplingService,
+    private readonly projectCostingSamplingService: ProjectCostingSamplingService,
   ) {}
 
   @Get(':project_id')
@@ -41,6 +43,11 @@ export class ProjectSamplingController {
       projectSamplingDto,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
+        project_id,
+      );
+    }
     return {
       data,
     };
@@ -73,6 +80,11 @@ export class ProjectSamplingController {
       projectSamplingDto,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
+        project_id,
+      );
+    }
     return {
       data,
     };
@@ -88,6 +100,11 @@ export class ProjectSamplingController {
       sampling_id,
       req.user.id,
     );
+    if (data) {
+      this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
+        project_id,
+      );
+    }
     return {
       data,
     };
