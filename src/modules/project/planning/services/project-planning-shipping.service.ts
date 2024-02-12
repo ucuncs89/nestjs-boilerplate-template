@@ -120,7 +120,7 @@ export class ProjectPlanningShippingService {
     return data;
   }
 
-  async findCompareByProjectDetailId(project_id) {
+  async findCompareByProjectDetailId(project_id: number) {
     const costing = await this.projectShippingRepository.find({
       select: {
         id: true,

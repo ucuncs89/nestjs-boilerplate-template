@@ -117,6 +117,7 @@ export class ProjectPlanningAdditionalCostService {
         additional_name: true,
         additional_price: true,
         description: true,
+        added_in_section: true,
       },
       where: {
         project_id,
@@ -131,6 +132,7 @@ export class ProjectPlanningAdditionalCostService {
         additional_name: true,
         additional_price: true,
         description: true,
+        added_in_section: true,
       },
       where: {
         project_id,

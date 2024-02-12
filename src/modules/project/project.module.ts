@@ -67,6 +67,7 @@ import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detai
 import { ProjectPlanningApprovalService } from './general/services/project-planning-approval.service';
 import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_planning_approval.entity';
 import { ProjectDetailCalculateService } from './general/services/project-detail-calculate.service';
+import { ProjectPlanningApprovalController } from './general/controllers/project-planning-approval.controller';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { ProjectDetailCalculateService } from './general/services/project-detail
     ProjectVariantController,
     ProjectHistoryController,
     ProjectRemarksController,
+    ProjectPlanningApprovalController,
     ProjectCostingController,
     ProjectCostingMaterialController,
     ProjectCostingVendorMaterialController,

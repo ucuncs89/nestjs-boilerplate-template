@@ -2,9 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_planning_approval.entity';
 import { IsNull, Repository } from 'typeorm';
-import { ProjectPlanningApprovalDto } from '../dto/project-planning-approval.dto';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import {
+  ProjectApprovalPlanningStatusDto,
+  ProjectPlanningApprovalDto,
+} from '../dto/project-planning-approval.dto';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
 import { TypeProjectDetailCalculateEnum } from '../dto/project-detail.dto';
+import { ProjectAdditionalCostEntity } from 'src/entities/project/project_additional_cost.entity';
+import { StatusProjectEnum } from '../dto/get-list-project.dto';
+import { ProjectVendorProductionEntity } from 'src/entities/project/project_vendor_production.entity';
 
 @Injectable()
 export class ProjectPlanningApprovalService {
@@ -70,6 +79,17 @@ export class ProjectPlanningApprovalService {
     const data = await this.projectPlanningApprovalRepository.find({
       where: {
         project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        relation_id: true,
+        status: true,
+        status_desc: true,
+        project_id: true,
       },
     });
     return data;
@@ -78,6 +98,10 @@ export class ProjectPlanningApprovalService {
     const data = await this.projectPlanningApprovalRepository.findOne({
       where: { id: detail_id },
     });
+    if (!data) {
+      throw new AppErrorNotFoundException();
+    }
+
     return data;
   }
   async findAllMaterial(project_id: number) {
@@ -98,6 +122,16 @@ export class ProjectPlanningApprovalService {
         name: true,
       },
     });
+    return data;
+  }
+  async updateApproval(
+    id: number,
+    projectApprovalPlanningStatusDto: ProjectApprovalPlanningStatusDto,
+  ) {
+    const data = await this.projectPlanningApprovalRepository.update(
+      { id },
+      { status: projectApprovalPlanningStatusDto.status },
+    );
     return data;
   }
 }
