@@ -59,6 +59,9 @@ export class ProjectDetailCalculateService {
     if (planning && costing && costing.avg_price > planning.avg_price) {
       isPassed = true;
     }
+    if (!planning) {
+      isPassed = true;
+    }
 
     return { is_passed: isPassed, costing, planning };
   }
@@ -98,6 +101,9 @@ export class ProjectDetailCalculateService {
     let isPassed = false;
 
     if (planning && costing && costing.total_price > planning.total_price) {
+      isPassed = true;
+    }
+    if (!planning) {
       isPassed = true;
     }
 

@@ -47,12 +47,17 @@ export class ProjectPlanningVendorProductionService {
           total_price: true,
           start_date: true,
           end_date: true,
+          added_in_section: true,
         },
       },
       where: {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
+        added_in_section: In([StatusProjectEnum.Planning]),
+        vendor_production_detail: {
+          added_in_section: StatusProjectEnum.Planning,
+        },
       },
       relations: {
         vendor_production_detail: true,
@@ -84,6 +89,7 @@ export class ProjectPlanningVendorProductionService {
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
+        added_in_section: StatusProjectEnum.Planning,
       });
       await this.projectVendorProductionRepository.save(activity);
       return activity;
@@ -121,6 +127,7 @@ export class ProjectPlanningVendorProductionService {
         project_vendor_production_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
+        added_in_section: StatusProjectEnum.Planning,
       });
       await this.projectVendorProductionDetailRepository.save(vendor);
       this.updateTotalQuantitySubtotal(project_vendor_production_id);
