@@ -108,28 +108,29 @@ export class ProjectPlanningMaterialService {
       project_id,
     );
     for (const data of material) {
+      let passedApprovalCondition = false;
+      let passedCostingCondition = false;
+
       for (const objApproval of approval) {
         if (objApproval.relation_id === data.id) {
           data.approval = {
             id: objApproval.relation_id,
             ...objApproval,
           };
-          if (
-            data.costing_material_item !== null &&
-            data.costing_material_item.avg_price >= data.avg_price
-          ) {
-            data.is_passed = true;
-          } else {
-            data.is_passed = false;
-          }
-          if (
-            data.approval !== null &&
-            data.approval.status === StatusApprovalEnum.approved
-          ) {
-            data.is_passed = true;
+          if (objApproval.status === StatusApprovalEnum.approved) {
+            passedApprovalCondition = true;
           }
         }
       }
+
+      if (
+        data.costing_material_item !== null &&
+        data.costing_material_item.avg_price >= data.avg_price
+      ) {
+        passedCostingCondition = true;
+      }
+
+      data.is_passed = passedApprovalCondition || passedCostingCondition;
     }
 
     return material;

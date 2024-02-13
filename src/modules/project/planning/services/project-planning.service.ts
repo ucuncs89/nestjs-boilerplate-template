@@ -39,53 +39,51 @@ export class ProjectPlanningService {
       select: { id: true, status: true },
     });
 
-    if (
-      project.status === StatusProjectEnum.Costing ||
-      project.status === StatusProjectEnum.Sampling
-    ) {
-      const material =
-        await this.projectCostingMaterialService.findVendorMaterialCosting(
-          project_id,
-        );
-      const production =
-        await this.projectCostingVendorProductionService.findProductionCosting(
-          project_id,
-        );
-      const shipping =
-        await this.projectCostingShippingService.findShippingCosting(
-          project_id,
-        );
-      const additionalCost =
-        await this.projectCostingAdditionalCostService.findAdditionalCosting(
-          project_id,
-        );
-      const price = await this.projectCostingPriceService.findPriceCosting(
+    // if (
+    //   project.status === StatusProjectEnum.Costing ||
+    //   project.status === StatusProjectEnum.Sampling
+    // ) {
+    const material =
+      await this.projectCostingMaterialService.findVendorMaterialCosting(
         project_id,
       );
-      const sampling = await this.projectSamplingService.findSamplingAll(
+    const production =
+      await this.projectCostingVendorProductionService.findProductionCosting(
         project_id,
       );
-      const duplicate = await this.duplicateCostingToPlanning(
+    const shipping =
+      await this.projectCostingShippingService.findShippingCosting(project_id);
+    const additionalCost =
+      await this.projectCostingAdditionalCostService.findAdditionalCosting(
         project_id,
-        material,
-        production,
-        shipping,
-        additionalCost,
-        sampling,
-        price,
       );
-      return {
-        material,
-        production,
-        shipping,
-        additionalCost,
-        sampling,
-        price,
-        duplicate,
-      };
-    } else {
-      return true;
-    }
+    const price = await this.projectCostingPriceService.findPriceCosting(
+      project_id,
+    );
+    const sampling = await this.projectSamplingService.findSamplingAll(
+      project_id,
+    );
+    const duplicate = await this.duplicateCostingToPlanning(
+      project_id,
+      material,
+      production,
+      shipping,
+      additionalCost,
+      sampling,
+      price,
+    );
+    return {
+      material,
+      production,
+      shipping,
+      additionalCost,
+      sampling,
+      price,
+      duplicate,
+    };
+    // } else {
+    //   return true;
+    // }
   }
 
   async duplicateCostingToPlanning(
@@ -157,10 +155,35 @@ export class ProjectPlanningService {
             productionVendor.id;
           const insertProduction = await queryRunner.manager.insert(
             ProjectVendorProductionEntity,
-            { ...productionVendor, created_at: new Date().toISOString() },
+            {
+              ...productionVendor,
+              created_at: new Date().toISOString(),
+              added_in_section: StatusProjectEnum.Planning,
+            },
           );
 
           //update planning_project_vendor_production_id sebelumnya
+
+          arrResult.push({ production_id: insertProduction.raw[0].id });
+          if (
+            Array.isArray(productionVendor.vendor_production_detail) &&
+            productionVendor.vendor_production_detail.length > 0
+          ) {
+            for (const detail of productionVendor.vendor_production_detail) {
+              detail.added_in_section = StatusProjectEnum.Planning;
+              delete detail.id;
+              delete detail.project_vendor_production_id;
+              await queryRunner.manager.insert(
+                ProjectVendorProductionDetailEntity,
+                {
+                  ...detail,
+                  added_in_section: StatusProjectEnum.Planning,
+                  project_vendor_production_id: insertProduction.raw[0].id,
+                  created_at: new Date().toISOString(),
+                },
+              );
+            }
+          }
           await queryRunner.manager.update(
             ProjectVendorProductionEntity,
             { id: productionVendor.id },
@@ -168,23 +191,6 @@ export class ProjectPlanningService {
               planning_project_vendor_production_id: insertProduction.raw[0].id,
             },
           );
-          arrResult.push({ production_id: insertProduction.raw[0].id });
-          if (
-            Array.isArray(productionVendor.vendor_production_detail.length) &&
-            productionVendor.vendor_production_detail.length > 0
-          ) {
-            for (const detail of productionVendor.vendor_production_detail) {
-              detail.added_in_section = StatusProjectEnum.Planning;
-              await queryRunner.manager.insert(
-                ProjectVendorProductionDetailEntity,
-                {
-                  ...detail,
-                  project_vendor_production_id: insertProduction.raw[0].id,
-                  created_at: new Date().toISOString(),
-                },
-              );
-            }
-          }
         }
       }
 
