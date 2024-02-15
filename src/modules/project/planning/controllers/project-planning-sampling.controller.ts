@@ -65,7 +65,7 @@ export class ProjectPlanningSamplingController {
       req.user.id,
     );
     if (data) {
-      const avgPrice =
+      const calculateSampling =
         await this.projectPlanningSamplingService.sumGrandAvgPriceTotalSampling(
           project_id,
         );
@@ -73,7 +73,8 @@ export class ProjectPlanningSamplingController {
         project_id,
         TypeProjectDetailCalculateEnum.Sampling,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateSampling.avg_price,
+        calculateSampling.total_cost,
       );
     }
     return {
@@ -109,7 +110,7 @@ export class ProjectPlanningSamplingController {
       req.user.id,
     );
     if (data) {
-      const avgPrice =
+      const calculateSampling =
         await this.projectPlanningSamplingService.sumGrandAvgPriceTotalSampling(
           project_id,
         );
@@ -117,7 +118,8 @@ export class ProjectPlanningSamplingController {
         project_id,
         TypeProjectDetailCalculateEnum.Sampling,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateSampling.avg_price,
+        calculateSampling.total_cost,
       );
     }
     return {
@@ -134,7 +136,7 @@ export class ProjectPlanningSamplingController {
       sampling_id,
     );
     if (data) {
-      const avgPrice =
+      const calculateSampling =
         await this.projectPlanningSamplingService.sumGrandAvgPriceTotalSampling(
           project_id,
         );
@@ -142,7 +144,8 @@ export class ProjectPlanningSamplingController {
         project_id,
         TypeProjectDetailCalculateEnum.Sampling,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateSampling.avg_price,
+        calculateSampling.total_cost,
       );
     }
     return {
