@@ -453,4 +453,11 @@ export class ProjectService {
     );
     return data;
   }
+  async remove(id: number, user_id: number) {
+    const data = await this.projectRepository.update(
+      { id },
+      { deleted_at: new Date().toISOString(), deleted_by: user_id },
+    );
+    return data;
+  }
 }
