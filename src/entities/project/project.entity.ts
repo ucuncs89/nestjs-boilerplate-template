@@ -77,6 +77,9 @@ export class ProjectEntity {
   @Column({ type: 'boolean', default: false })
   can_production: boolean;
 
+  @Column({ type: 'varchar', nullable: true })
+  payment_method: string;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

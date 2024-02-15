@@ -101,6 +101,7 @@ export class ProjectService {
         updated_by: user_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
+        payment_method: createProjectDto.payment_method,
       });
       for (const documents of createProjectDto.project_document) {
         documents.project_id = id;
