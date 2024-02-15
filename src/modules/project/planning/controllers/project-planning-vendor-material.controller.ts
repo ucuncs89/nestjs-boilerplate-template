@@ -56,10 +56,6 @@ export class ProjectPlanningVendorMaterialController {
       await this.projectPlanningVendorMaterialService.updateTotalQuantitySubtotal(
         vendor_material_id,
       );
-      const material =
-        await this.projectPlanningMaterialService.findMaterilIdByMaterialVendor(
-          vendor_material_id,
-        );
       await this.projectPlanningMaterialService.updateTotalPlanningAndAvgCost(
         material,
       );
