@@ -14,6 +14,10 @@ import { ProjectCostingVendorMaterialService } from '../services/project-costing
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectCostingVendorMaterialDto } from '../dto/project-costing-vendor-material.dto';
 import { ProjectCostingMaterialService } from '../services/project-costing-material.service';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
 
 @ApiBearerAuth()
 @ApiTags('project costing')
@@ -34,6 +38,15 @@ export class ProjectCostingVendorMaterialController {
     projectCostingVendorMaterialDto: ProjectCostingVendorMaterialDto,
     @I18n() i18n: I18nContext,
   ) {
+    const material =
+      await this.projectCostingMaterialService.findMaterilIdByMaterialVendor(
+        vendor_material_id,
+      );
+    if (!material) {
+      throw new AppErrorException(
+        'vendor_material_id and material_id cannot relate',
+      );
+    }
     const data =
       await this.projectCostingVendorMaterialService.createVendorMaterialDetail(
         project_id,
@@ -46,10 +59,7 @@ export class ProjectCostingVendorMaterialController {
       await this.projectCostingVendorMaterialService.updateTotalQuantitySubtotal(
         vendor_material_id,
       );
-      const material =
-        await this.projectCostingMaterialService.findMaterilIdByMaterialVendor(
-          vendor_material_id,
-        );
+
       await this.projectCostingMaterialService.updateTotalCostingAndAvgCost(
         material,
       );
