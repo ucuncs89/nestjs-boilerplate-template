@@ -7,6 +7,7 @@ import {
   UseGuards,
   Req,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { ProjectService } from '../services/project.service';
 import {
@@ -194,5 +195,11 @@ export class ProjectController {
       );
     }
     return { data };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async delete(@Req() req, @Param('id') id: string, @I18n() i18n: I18nContext) {
+    const data = await this.projectService.remove(+id, req.user.id);
+    return { message: 'Successfully', data };
   }
 }
