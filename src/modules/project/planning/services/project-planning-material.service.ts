@@ -298,12 +298,16 @@ export class ProjectPlanningMaterialService {
           deleted_at: IsNull(),
           deleted_by: IsNull(),
         });
-      const avgPrice = sumTotalPrice / sumTotalConsumption;
+      const avgPrice = sumTotalPrice
+        ? sumTotalPrice
+        : 0 / sumTotalConsumption
+        ? sumTotalConsumption
+        : 0;
 
       const data = await this.projectMaterialItemRepository.update(
         { id: material_item_id },
         {
-          total_price: sumTotalPrice,
+          total_price: sumTotalPrice ? sumTotalPrice : 0,
           avg_price: avgPrice,
         },
       );
