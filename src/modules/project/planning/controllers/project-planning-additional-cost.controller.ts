@@ -67,7 +67,7 @@ export class ProjectPlanningAdditionalCostController {
       req.user.id,
     );
     if (data) {
-      const avgPrice =
+      const calculateAdditionalCost =
         await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
           project_id,
         );
@@ -75,7 +75,8 @@ export class ProjectPlanningAdditionalCostController {
         project_id,
         TypeProjectDetailCalculateEnum.AdditionalCost,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateAdditionalCost.avg_price,
+        calculateAdditionalCost.total_cost,
       );
     }
     return {
@@ -111,7 +112,7 @@ export class ProjectPlanningAdditionalCostController {
       req.user.id,
     );
     if (data) {
-      const avgPrice =
+      const calculateAdditionalCost =
         await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
           project_id,
         );
@@ -119,7 +120,8 @@ export class ProjectPlanningAdditionalCostController {
         project_id,
         TypeProjectDetailCalculateEnum.AdditionalCost,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateAdditionalCost.avg_price,
+        calculateAdditionalCost.total_cost,
       );
     }
     return {
@@ -136,7 +138,7 @@ export class ProjectPlanningAdditionalCostController {
       additional_id,
     );
     if (data) {
-      const avgPrice =
+      const calculateAdditionalCost =
         await this.projectPlanningAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
           project_id,
         );
@@ -144,7 +146,8 @@ export class ProjectPlanningAdditionalCostController {
         project_id,
         TypeProjectDetailCalculateEnum.AdditionalCost,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateAdditionalCost.avg_price,
+        calculateAdditionalCost.total_cost,
       );
     }
     return {

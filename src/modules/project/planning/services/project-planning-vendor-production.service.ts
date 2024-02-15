@@ -380,7 +380,7 @@ export class ProjectPlanningVendorProductionService {
       {
         project_id,
         type: TypeProjectDetailCalculateEnum.Production,
-        added_in_section: StatusProjectEnum.Production,
+        added_in_section: StatusProjectEnum.Planning,
         total_price: sumTotalPrice,
         avg_price: avgPrice,
       },
