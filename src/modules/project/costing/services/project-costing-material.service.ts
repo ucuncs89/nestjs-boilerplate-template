@@ -80,7 +80,7 @@ export class ProjectCostingMaterialService {
           getListProjectMaterialDto.type != null
             ? getListProjectMaterialDto.type
             : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
-        vendor_material: { added_in_section: StatusProjectEnum.Costing },
+        // vendor_material: { added_in_section: StatusProjectEnum.Costing },
       },
       relations: {
         vendor_material: { project_variant: true, detail: { vendors: true } },

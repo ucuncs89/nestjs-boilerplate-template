@@ -92,7 +92,6 @@ export class ProjectPlanningMaterialService {
             getListProjectMaterialDto.type != null
               ? getListProjectMaterialDto.type
               : In(['Fabric', 'Sewing', 'Packaging', 'Finished goods']),
-          vendor_material: { added_in_section: StatusProjectEnum.Planning },
           costing_material_item: { deleted_at: IsNull(), deleted_by: IsNull() },
         },
         relations: {
