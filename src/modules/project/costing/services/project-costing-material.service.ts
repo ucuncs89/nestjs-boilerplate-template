@@ -270,6 +270,8 @@ export class ProjectCostingMaterialService {
       );
       return data;
     } catch (error) {
+      console.log('error trx material costing', error);
+
       throw new AppErrorException(error);
     }
   }
