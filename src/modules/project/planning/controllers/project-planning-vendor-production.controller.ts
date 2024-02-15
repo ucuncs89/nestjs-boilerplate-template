@@ -140,7 +140,7 @@ export class ProjectPlanningVendorProductionController {
       );
     return { costing, planning };
   }
-  @Post(':project_id/production/approval-request')
+  @Post(':project_id/vendor-production/approval-request')
   async approvalRequest(@Req() req, @Param('project_id') project_id: number) {
     const data =
       await this.projectPlanningApprovalService.createPlanningApproval(

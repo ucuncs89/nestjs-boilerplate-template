@@ -76,7 +76,7 @@ export class ProjectPlanningShippingController {
       req.user.id,
     );
     if (data) {
-      const avgPrice =
+      const calculateShipping =
         await this.projectPlanningShippingService.sumGrandAvgPriceTotalShipping(
           project_id,
         );
@@ -84,7 +84,8 @@ export class ProjectPlanningShippingController {
         project_id,
         TypeProjectDetailCalculateEnum.Shipping,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateShipping.avg_price,
+        calculateShipping.total_cost,
       );
     }
     return { data };
@@ -104,7 +105,7 @@ export class ProjectPlanningShippingController {
       req.user.id,
     );
     if (data) {
-      const avgPrice =
+      const calculateShipping =
         await this.projectPlanningShippingService.sumGrandAvgPriceTotalShipping(
           project_id,
         );
@@ -112,7 +113,8 @@ export class ProjectPlanningShippingController {
         project_id,
         TypeProjectDetailCalculateEnum.Shipping,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateShipping.avg_price,
+        calculateShipping.total_cost,
       );
     }
     return { data };
@@ -140,7 +142,7 @@ export class ProjectPlanningShippingController {
       shipping_id,
     );
     if (data) {
-      const avgPrice =
+      const calculateShipping =
         await this.projectPlanningShippingService.sumGrandAvgPriceTotalShipping(
           project_id,
         );
@@ -148,7 +150,8 @@ export class ProjectPlanningShippingController {
         project_id,
         TypeProjectDetailCalculateEnum.Shipping,
         StatusProjectEnum.Planning,
-        avgPrice,
+        calculateShipping.avg_price,
+        calculateShipping.total_cost,
       );
     }
     return { data };

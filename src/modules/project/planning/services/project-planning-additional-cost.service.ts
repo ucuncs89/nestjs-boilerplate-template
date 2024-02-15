@@ -153,6 +153,18 @@ export class ProjectPlanningAdditionalCostService {
         added_in_section: StatusProjectEnum.Planning,
       },
     );
-    return avgPrice;
+    const totalCost = await this.projectAdditionalCostRepository.sum(
+      'additional_price',
+      {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: StatusProjectEnum.Planning,
+      },
+    );
+    return {
+      avg_price: avgPrice ? avgPrice : 0,
+      total_cost: totalCost ? totalCost : 0,
+    };
   }
 }
