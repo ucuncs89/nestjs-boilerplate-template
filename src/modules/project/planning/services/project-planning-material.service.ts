@@ -313,6 +313,8 @@ export class ProjectPlanningMaterialService {
       );
       return data;
     } catch (error) {
+      console.log('error: trx material', error);
+
       throw new AppErrorException(error);
     }
   }
