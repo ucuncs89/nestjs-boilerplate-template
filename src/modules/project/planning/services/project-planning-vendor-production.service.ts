@@ -225,6 +225,7 @@ export class ProjectPlanningVendorProductionService {
         project_id,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
+        added_in_section: In([StatusProjectEnum.Planning]),
       },
       select: {
         id: true,
