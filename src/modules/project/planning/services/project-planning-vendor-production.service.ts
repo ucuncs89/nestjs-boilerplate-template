@@ -392,4 +392,37 @@ export class ProjectPlanningVendorProductionService {
 
     return data;
   }
+  async findNameDetail(
+    project_vendor_production_id: number,
+    vendor_detail_id: number,
+  ) {
+    const data = await this.projectVendorProductionDetailRepository.findOne({
+      where: {
+        id: vendor_detail_id,
+        project_vendor_production_id,
+      },
+      select: {
+        id: true,
+        price: true,
+        quantity: true,
+        quantity_unit: true,
+        vendor_id: true,
+        vendor_name: true,
+        project_vendor_production_id: true,
+        price_unit: true,
+        total_price: true,
+        start_date: true,
+        end_date: true,
+        vendor_production: {
+          id: true,
+          activity_id: true,
+          activity_name: true,
+        },
+      },
+      relations: {
+        vendor_production: true,
+      },
+    });
+    return data;
+  }
 }
