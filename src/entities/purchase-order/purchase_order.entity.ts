@@ -64,6 +64,9 @@ export class PurchaseOrderEntity {
   @Column({ type: 'varchar', nullable: true })
   status: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  type: string;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

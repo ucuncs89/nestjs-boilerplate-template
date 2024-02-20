@@ -38,6 +38,9 @@ export class ProjectVendorMaterialDetailEntity {
   @Column({ type: 'varchar', nullable: true })
   type: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  status_purchase_order: string;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

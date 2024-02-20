@@ -19,6 +19,7 @@ import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.
 import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
 import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
+import { AppErrorException } from 'src/exceptions/app-exception';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -154,5 +155,27 @@ export class ProjectPlanningVendorProductionController {
         req.user.id,
       );
     return { data };
+  }
+  @Post(
+    ':project_id/vendor-production/:project_vendor_id/detail/:project_vendor_production_detail_id/request-purchase-order',
+  )
+  async requestPurchaseOrder(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('project_vendor_id') project_vendor_id: number,
+    @Param('project_vendor_production_detail_id')
+    project_vendor_production_detail_id: number,
+  ) {
+    const detail =
+      await this.projectPlanningVendorProductionService.findNameDetail(
+        project_vendor_id,
+        project_vendor_production_detail_id,
+      );
+    if (!detail) {
+      throw new AppErrorException(
+        'project vendor detail not sync or not found',
+      );
+    }
+    return { data: detail };
   }
 }

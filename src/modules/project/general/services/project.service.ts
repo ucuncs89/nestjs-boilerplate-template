@@ -253,6 +253,7 @@ export class ProjectService {
         can_planning: true,
         can_production: true,
         hold_description: true,
+        payment_method: true,
         size: {
           id: true,
           project_id: true,
