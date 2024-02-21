@@ -13,6 +13,9 @@ export class PurchaseOrderEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'int', nullable: true })
+  project_id: number;
+
   @Column({ type: 'varchar' })
   code: string;
 
