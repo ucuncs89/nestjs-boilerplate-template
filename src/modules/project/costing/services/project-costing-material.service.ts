@@ -142,7 +142,7 @@ export class ProjectCostingMaterialService {
     project_id: number,
     project_material_item_id: number,
   ) {
-    const data = await this.projectMaterialItemRepository.find({
+    const data = await this.projectMaterialItemRepository.findOne({
       select: {
         id: true,
         project_id: true,
@@ -255,11 +255,8 @@ export class ProjectCostingMaterialService {
           deleted_at: IsNull(),
           deleted_by: IsNull(),
         });
-      const avgPrice = sumTotalPrice
-        ? sumTotalPrice
-        : 0 / sumTotalConsumption
-        ? sumTotalConsumption
-        : 0;
+
+      const avgPrice = sumTotalPrice / sumTotalConsumption;
 
       const data = await this.projectMaterialItemRepository.update(
         { id: material_item_id },
