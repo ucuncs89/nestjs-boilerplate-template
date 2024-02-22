@@ -68,6 +68,15 @@ import { ProjectPlanningApprovalService } from './general/services/project-plann
 import { ProjectPlanningApprovalEntity } from 'src/entities/project/project_planning_approval.entity';
 import { ProjectDetailCalculateService } from './general/services/project-detail-calculate.service';
 import { ProjectPlanningApprovalController } from './general/controllers/project-planning-approval.controller';
+import { PurchaseOrderService } from '../purchase-order/services/purchase-order.service';
+import { PurchaseOrderEntity } from 'src/entities/purchase-order/purchase_order.entity';
+import { VendorsService } from '../vendors/services/vendors.service';
+import { VendorsEntity } from 'src/entities/vendors/vendors.entity';
+import { RolesPermissionGuard } from '../roles/roles-permission';
+import { UsersRolesEntity } from 'src/entities/users/users_roles.entity';
+import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_order_detail.entity';
+import { ProjectPurchaseOrderController } from './general/controllers/project-purchase-order.controller';
+import { ProjectPurchaseOrderService } from './general/services/project-purchase-order.service';
 
 @Module({
   imports: [
@@ -88,6 +97,10 @@ import { ProjectPlanningApprovalController } from './general/controllers/project
       ProjectVendorMaterialEntity,
       ProjectDetailCalculateEntity,
       ProjectPlanningApprovalEntity,
+      PurchaseOrderEntity,
+      VendorsEntity,
+      UsersRolesEntity,
+      PurchaseOrderDetailEntity,
     ]),
     RabbitMQModule,
   ],
@@ -117,6 +130,7 @@ import { ProjectPlanningApprovalController } from './general/controllers/project
     ProjectPlanningSamplingController,
     ProjectPlanningPriceController,
     ProjectPlanningRecapController,
+    ProjectPurchaseOrderController,
   ],
   providers: [
     ProjectService,
@@ -145,6 +159,10 @@ import { ProjectPlanningApprovalController } from './general/controllers/project
     ProjectPlanningRecapService,
     ProjectPlanningApprovalService,
     ProjectDetailCalculateService,
+    PurchaseOrderService,
+    VendorsService,
+    RolesPermissionGuard,
+    ProjectPurchaseOrderService,
   ],
 })
 export class ProjectModule {}

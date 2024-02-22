@@ -8,6 +8,7 @@ import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 import { ProjectPlanningVendorProductionDetailDto } from '../dto/project-planning-vendor-production.dto';
 import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 import { ProjectDetailCalculateEntity } from 'src/entities/project/project_detail_calculate.entity';
+import { StatusPurchaseOrderEnum } from 'src/modules/purchase-order/dto/purchase-order.dto';
 
 @Injectable()
 export class ProjectPlanningVendorProductionService {
@@ -48,6 +49,7 @@ export class ProjectPlanningVendorProductionService {
           start_date: true,
           end_date: true,
           added_in_section: true,
+          status_purchase_order: true,
         },
       },
       where: {
@@ -423,6 +425,18 @@ export class ProjectPlanningVendorProductionService {
         vendor_production: true,
       },
     });
+    return data;
+  }
+  async updateStatusPurchaseOrder(
+    project_vendor_production_detail_id: number,
+    status: StatusPurchaseOrderEnum,
+  ) {
+    const data = await this.projectVendorProductionDetailRepository.update(
+      {
+        id: project_vendor_production_detail_id,
+      },
+      { status_purchase_order: status },
+    );
     return data;
   }
 }

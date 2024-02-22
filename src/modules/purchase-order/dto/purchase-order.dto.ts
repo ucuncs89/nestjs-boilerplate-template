@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export enum PurchaseOrderTypeEnum {
+  Material = 'Material',
+  Production = 'Production',
+}
+
 export class PurchaseOrderDto {
+  company_name: string;
+  vendor_id: number;
+
   @ApiProperty()
   company_address?: string;
 
@@ -30,12 +38,19 @@ export class PurchaseOrderDto {
 
   @ApiProperty()
   notes?: string;
+
+  @ApiProperty()
+  type: PurchaseOrderTypeEnum;
+
+  @ApiProperty()
+  project_id: number;
 }
-export enum StatusApprovalEnum {
+export enum StatusPurchaseOrderEnum {
   Approved = 'Approved',
+  Waiting = 'Waiting',
   Rejected = 'Rejected',
 }
 export class ProjectApprovalDto {
-  @ApiProperty({ required: false, enum: StatusApprovalEnum })
-  status?: StatusApprovalEnum;
+  @ApiProperty({ required: false, enum: StatusPurchaseOrderEnum })
+  status?: StatusPurchaseOrderEnum;
 }
