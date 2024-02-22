@@ -74,6 +74,7 @@ export class ProjectPlanningMaterialService {
               quantity: true,
               quantity_unit: true,
               total_price: true,
+              status_purchase_order: true,
               vendors: { id: true, company_name: true },
             },
           },
@@ -297,12 +298,7 @@ export class ProjectPlanningMaterialService {
           deleted_at: IsNull(),
           deleted_by: IsNull(),
         });
-      const avgPrice = sumTotalPrice
-        ? sumTotalPrice
-        : 0 / sumTotalConsumption
-        ? sumTotalConsumption
-        : 0;
-
+      const avgPrice = sumTotalPrice / sumTotalConsumption;
       const data = await this.projectMaterialItemRepository.update(
         { id: material_item_id },
         {

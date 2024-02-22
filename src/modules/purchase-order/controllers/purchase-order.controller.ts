@@ -36,7 +36,6 @@ export class PurchaseOrderController {
       page_size: _page_size,
       sort_by: query.sort_by || 'created_at',
       order_by: query.order_by || 'DESC',
-
       keyword: query.keyword,
     });
     const pagination = await Pagination.pagination(

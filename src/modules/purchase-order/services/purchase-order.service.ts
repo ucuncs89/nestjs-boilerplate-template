@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePurchaseOrderDto } from '../dto/create-purchase-order.dto';
-import { UpdatePurchaseOrderDto } from '../dto/update-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrderEntity } from 'src/entities/purchase-order/purchase_order.entity';
 import { ILike, IsNull, Not, Repository } from 'typeorm';
@@ -12,9 +11,11 @@ import {
 
 import {
   PurchaseOrderDto,
-  StatusApprovalEnum,
+  PurchaseOrderTypeEnum,
+  StatusPurchaseOrderEnum,
 } from '../dto/purchase-order.dto';
-import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
+import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_order_detail.entity';
+import { PurchaseOrderDetailDto } from '../dto/purchase-order-detail.dto';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -22,11 +23,18 @@ export class PurchaseOrderService {
     @InjectRepository(PurchaseOrderEntity)
     private purchaseOrderRepository: Repository<PurchaseOrderEntity>,
 
-    @InjectRepository(PurchaseOrderApprovalEntity)
-    private purchaseOrderApprovalRepository: Repository<PurchaseOrderApprovalEntity>,
+    @InjectRepository(PurchaseOrderDetailEntity)
+    private purchaseOrderDetailRepository: Repository<PurchaseOrderDetailEntity>,
   ) {}
-  create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
-    return 'This action adds a new purchaseOrder';
+  async create(purchaseOrderDto: PurchaseOrderDto) {
+    const code = await this.generateCodePurchaseOrder();
+    const purchaseOrder = this.purchaseOrderRepository.create({
+      ...purchaseOrderDto,
+      code,
+      status: StatusPurchaseOrderEnum.Waiting,
+    });
+    await this.purchaseOrderRepository.save(purchaseOrder);
+    return purchaseOrder;
   }
 
   async findAll(query: GetListPurchaseOrderDto) {
@@ -207,115 +215,20 @@ export class PurchaseOrderService {
     // };
     return { data: 'belum karena diubah flow' };
   }
-  async findCostDetailsMaterialDetail(
-    project_detail_id: number,
-    vendor_id: number,
-    type: string,
-  ) {
-    // const arrResult = [];
-    // const vendorMaterialDetail =
-    //   await this.projectVendorMaterialDetailRepository.find({
-    //     where: {
-    //       vendor_id,
-    //       type,
-    //       vendor_material: {
-    //         project_detail_id,
-    //       },
-    //     },
-    //     select: {
-    //       id: true,
-    //       vendor_id: true,
-    //       price: true,
-    //       price_unit: true,
-    //       quantity: true,
-    //       quantity_unit: true,
-    //       total_price: true,
-    //       vendors: {
-    //         id: true,
-    //         company_name: true,
-    //       },
-    //     },
-    //     relations: {
-    //       vendor_material: {
-    //         project_material_item: true,
-    //         project_variant: {
-    //           size: true,
-    //           project_fabric: true,
-    //         },
-    //       },
-    //     },
-    //   });
-    // for (const data of vendorMaterialDetail) {
-    //   const description = data.vendor_material.project_material_item.name;
-    //   const variant = data.vendor_material.project_variant.name;
-    //   const arrVariantSize = [];
-    //   for (const variant of data.vendor_material.project_variant.size) {
-    //     arrVariantSize.push(`${variant.size_ratio}=${variant.number_of_item}`);
-    //   }
-    //   arrResult.push({
-    //     id: data.id,
-    //     description: `${description}/${variant}(${arrVariantSize})`,
-    //     price: data.price,
-    //     unit: data.quantity_unit,
-    //     quantity: data.quantity,
-    //     total_price: data.total_price,
-    //   });
-    // }
-    // return arrResult;
-    return { data: 'belum' };
+
+  async findByProjectIdType(project_id: number, type: PurchaseOrderTypeEnum) {
+    const data = await this.purchaseOrderRepository.findOne({
+      where: {
+        project_id,
+        type,
+        status: StatusPurchaseOrderEnum.Waiting,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    return data;
   }
 
-  async findCostDetailsProduction(
-    project_detail_id: number,
-    vendor_id: number,
-    type: string,
-  ) {
-    // const arrResult = [];
-    // const vendorProductionDetail =
-    //   await this.projectVendorProductionDetailEntityRepository.find({
-    //     where: {
-    //       vendor_id,
-    //       vendor_production: {
-    //         project_detail_id,
-    //         activity_name: type,
-    //       },
-    //     },
-    //     select: {
-    //       id: true,
-    //       quantity: true,
-    //       quantity_unit: true,
-    //       price: true,
-    //       vendor_name: true,
-    //     },
-    //     relations: { vendor_production: true },
-    //   });
-    // for (const data of vendorProductionDetail) {
-    //   const description = data.vendor_production.activity_name;
-    //   arrResult.push({
-    //     id: data.id,
-    //     description: `${description})`,
-    //     price: data.price / data.quantity,
-    //     unit: data.quantity_unit,
-    //     quantity: data.quantity,
-    //     total_price: data.price,
-    //   });
-    // }
-    // return arrResult;
-    return { data: 'belum' };
-  }
-  // async updateGrandTotal(purchase_order_id) {
-  //   const resultGrandTotal = await this.findDetail(purchase_order_id);
-  //   try {
-  //     return await this.purchaseOrderRepository.update(
-  //       { id: purchase_order_id },
-  //       {
-  //         grand_total: resultGrandTotal.grand_total || null,
-  //       },
-  //     );
-  //   } catch (error) {
-  //     throw new AppErrorNotFoundException();
-  //   }
-  // }
   // async updatePurchaseOrder(
   //   id,
   //   purchaseOrderDto: PurchaseOrderDto,
@@ -368,4 +281,36 @@ export class PurchaseOrderService {
   //     throw new AppErrorException(error);
   //   }
   // }
+  async upsertPurchaseOrderDetail(
+    purchase_order_id: number,
+    purchaseOrderDetailDto: PurchaseOrderDetailDto,
+  ) {
+    const detail = await this.purchaseOrderDetailRepository.findOne({
+      where: {
+        relation_id: purchaseOrderDetailDto.relation_id,
+        purchase_order_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+
+    if (!detail) {
+      return await this.purchaseOrderDetailRepository.insert({
+        purchase_order_id,
+        relation_id: purchaseOrderDetailDto.relation_id,
+        item: purchaseOrderDetailDto.item,
+        quantity: purchaseOrderDetailDto.quantity,
+        unit: purchaseOrderDetailDto.unit,
+        unit_price: purchaseOrderDetailDto.unit_price,
+        sub_total: purchaseOrderDetailDto.sub_total,
+      });
+    } else {
+      detail.item = purchaseOrderDetailDto.item;
+      detail.quantity = purchaseOrderDetailDto.quantity;
+      detail.unit = purchaseOrderDetailDto.unit;
+      detail.unit_price = purchaseOrderDetailDto.unit_price;
+      detail.sub_total = purchaseOrderDetailDto.sub_total;
+      return await this.purchaseOrderDetailRepository.save(detail);
+    }
+  }
 }

@@ -6,6 +6,7 @@ import { Connection, IsNull, Not, Repository } from 'typeorm';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 import { ProjectPlanningVendorMaterialDto } from '../dto/project-planning-vendor-material.dto';
+import { StatusPurchaseOrderEnum } from 'src/modules/purchase-order/dto/purchase-order.dto';
 
 @Injectable()
 export class ProjectPlanningVendorMaterialService {
@@ -147,6 +148,33 @@ export class ProjectPlanningVendorMaterialService {
         detail: true,
       },
     });
+    return data;
+  }
+  async findNameDetail(
+    vendor_material_id: number,
+    vendor_material_detail_id: number,
+  ) {
+    const data = await this.projectVendorMaterialDetailRepository.findOne({
+      where: {
+        id: vendor_material_detail_id,
+        project_vendor_material_id: vendor_material_id,
+      },
+      relations: {
+        vendor_material: { project_material_item: true, project_variant: true },
+      },
+    });
+    return data;
+  }
+  async updateStatusPurchaseOrder(
+    project_vendor_material_detail_id: number,
+    status: StatusPurchaseOrderEnum,
+  ) {
+    const data = await this.projectVendorMaterialDetailRepository.update(
+      {
+        id: project_vendor_material_detail_id,
+      },
+      { status_purchase_order: status },
+    );
     return data;
   }
 }

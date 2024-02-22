@@ -20,6 +20,12 @@ import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail
 import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
 import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
 import { AppErrorException } from 'src/exceptions/app-exception';
+import { PurchaseOrderService } from 'src/modules/purchase-order/services/purchase-order.service';
+import {
+  PurchaseOrderTypeEnum,
+  StatusPurchaseOrderEnum,
+} from 'src/modules/purchase-order/dto/purchase-order.dto';
+import { VendorsService } from 'src/modules/vendors/services/vendors.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -31,6 +37,8 @@ export class ProjectPlanningVendorProductionController {
     private projectCostingVendorProductionService: ProjectCostingVendorProductionService,
     private projectPlanningApprovalService: ProjectPlanningApprovalService,
     private projectDetailCalculateService: ProjectDetailCalculateService,
+    private purchaseOrderService: PurchaseOrderService,
+    private vendorsService: VendorsService,
   ) {}
 
   @Get(':project_id/vendor-production')
@@ -176,6 +184,51 @@ export class ProjectPlanningVendorProductionController {
         'project vendor detail not sync or not found',
       );
     }
-    return { data: detail };
+    const purchaseOrder = await this.purchaseOrderService.findByProjectIdType(
+      project_id,
+      PurchaseOrderTypeEnum.Production,
+    );
+    if (!purchaseOrder) {
+      const detailVendor = await this.vendorsService.findOne(detail.vendor_id);
+      const insertPurchaseOrder = await this.purchaseOrderService.create({
+        vendor_id: detail.vendor_id,
+        company_name: detailVendor.company_name,
+        project_id,
+        type: PurchaseOrderTypeEnum.Production,
+        bank_name: detailVendor.bank_name,
+        company_address: detailVendor.company_address,
+        bank_account_number: detailVendor.bank_account_number,
+        bank_account_houlders_name: detailVendor.bank_account_holder_name,
+        company_phone_number: detailVendor.company_phone_number,
+      });
+      await this.purchaseOrderService.upsertPurchaseOrderDetail(
+        insertPurchaseOrder.id,
+        {
+          relation_id: detail.id,
+          item: `${detail.vendor_name} - ${detail.vendor_production.activity_name}`,
+          quantity: detail.quantity,
+          unit_price: detail.price,
+          unit: detail.quantity_unit,
+          sub_total: detail.total_price,
+        },
+      );
+    } else {
+      await this.purchaseOrderService.upsertPurchaseOrderDetail(
+        purchaseOrder.id,
+        {
+          relation_id: detail.id,
+          item: `${detail.vendor_name} - ${detail.vendor_production.activity_name}`,
+          quantity: detail.quantity,
+          unit_price: detail.price,
+          unit: detail.quantity_unit,
+          sub_total: detail.total_price,
+        },
+      );
+    }
+    this.projectPlanningVendorProductionService.updateStatusPurchaseOrder(
+      project_vendor_production_detail_id,
+      StatusPurchaseOrderEnum.Waiting,
+    );
+    return { data: detail, purchaseOrder };
   }
 }

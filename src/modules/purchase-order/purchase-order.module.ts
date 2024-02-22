@@ -8,13 +8,14 @@ import { PurchaseOrderPdfController } from './controllers/purchase-order-pdf.con
 import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
 import { PurchaseOrderExcelController } from './controllers/purchase-order-excel.controller';
 import { PurchaseOrderExcelService } from './services/purchase-order-excel.service';
+import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_order_detail.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       PurchaseOrderApprovalEntity,
       PurchaseOrderEntity,
-      PurchaseOrderExcelController,
+      PurchaseOrderDetailEntity,
     ]),
   ],
   controllers: [
