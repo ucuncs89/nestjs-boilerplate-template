@@ -50,9 +50,12 @@ export enum StatusPurchaseOrderEnum {
   Waiting = 'Waiting',
   Rejected = 'Rejected',
 }
-export class ProjectApprovalDto {
+export class PurchaseApprovalDto {
   @ApiProperty({ required: false, enum: StatusPurchaseOrderEnum })
   status?: StatusPurchaseOrderEnum;
+
+  @ApiProperty({ required: false })
+  reason?: string;
 }
 
 export enum PurchaseOrderStatusEnum {
