@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PurchaseOrderHistoryEntity } from './purchase_order_history.entity';
-import { PurchaseOrderApprovalEntity } from './purchase_order_approval.entity';
+import { PurchaseOrderStatusEntity } from './purchase_order_status.entity';
 
 @Entity('purchase_order')
 export class PurchaseOrderEntity {
@@ -104,10 +104,11 @@ export class PurchaseOrderEntity {
   @JoinColumn({ name: 'purchase_order_id' })
   history: PurchaseOrderHistoryEntity[];
 
-  @OneToMany(
-    () => PurchaseOrderApprovalEntity,
-    (history: PurchaseOrderApprovalEntity) => history.purchase_order,
-  )
-  @JoinColumn({ name: 'purchase_order_id' })
-  approval: PurchaseOrderApprovalEntity[];
+  // @OneToMany(
+  //   () => PurchaseOrderStatusEntity,
+  //   (status: PurchaseOrderStatusEntity) => status.po,
+  //   { eager: true },
+  // )
+  // @JoinColumn({ name: 'purchase_order_id' })
+  // po_status: PurchaseOrderStatusEntity[];
 }

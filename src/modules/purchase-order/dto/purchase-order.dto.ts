@@ -54,3 +54,9 @@ export class ProjectApprovalDto {
   @ApiProperty({ required: false, enum: StatusPurchaseOrderEnum })
   status?: StatusPurchaseOrderEnum;
 }
+
+export enum PurchaseOrderStatusEnum {
+  CreatedByThe = 'Created by the production team',
+  SendByThe = 'Sent by the finance team',
+  PaymentStatusConfirm = 'Payment status is confirmed by the finance team',
+}

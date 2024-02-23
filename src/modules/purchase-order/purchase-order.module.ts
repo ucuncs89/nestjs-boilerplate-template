@@ -5,17 +5,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PurchaseOrderEntity } from 'src/entities/purchase-order/purchase_order.entity';
 import { PurchaseOrderPdfService } from './services/purchase-order-pdf.service';
 import { PurchaseOrderPdfController } from './controllers/purchase-order-pdf.controller';
-import { PurchaseOrderApprovalEntity } from 'src/entities/purchase-order/purchase_order_approval.entity';
 import { PurchaseOrderExcelController } from './controllers/purchase-order-excel.controller';
 import { PurchaseOrderExcelService } from './services/purchase-order-excel.service';
 import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_order_detail.entity';
+import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_order_status.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      PurchaseOrderApprovalEntity,
       PurchaseOrderEntity,
       PurchaseOrderDetailEntity,
+      PurchaseOrderStatusEntity,
     ]),
   ],
   controllers: [
