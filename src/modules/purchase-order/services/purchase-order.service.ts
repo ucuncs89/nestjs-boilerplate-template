@@ -11,11 +11,13 @@ import {
 
 import {
   PurchaseOrderDto,
+  PurchaseOrderStatusEnum,
   PurchaseOrderTypeEnum,
   StatusPurchaseOrderEnum,
 } from '../dto/purchase-order.dto';
 import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_order_detail.entity';
 import { PurchaseOrderDetailDto } from '../dto/purchase-order-detail.dto';
+import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_order_status.entity';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -25,16 +27,42 @@ export class PurchaseOrderService {
 
     @InjectRepository(PurchaseOrderDetailEntity)
     private purchaseOrderDetailRepository: Repository<PurchaseOrderDetailEntity>,
+
+    @InjectRepository(PurchaseOrderStatusEntity)
+    private purchaseOrderStatusRepository: Repository<PurchaseOrderStatusEntity>,
   ) {}
-  async create(purchaseOrderDto: PurchaseOrderDto) {
-    const code = await this.generateCodePurchaseOrder();
-    const purchaseOrder = this.purchaseOrderRepository.create({
-      ...purchaseOrderDto,
-      code,
-      status: StatusPurchaseOrderEnum.Waiting,
-    });
-    await this.purchaseOrderRepository.save(purchaseOrder);
-    return purchaseOrder;
+  async create(purchaseOrderDto: PurchaseOrderDto, user_id: number) {
+    try {
+      const code = await this.generateCodePurchaseOrder();
+      const purchaseOrder = this.purchaseOrderRepository.create({
+        ...purchaseOrderDto,
+        code,
+        created_by: user_id,
+        status: StatusPurchaseOrderEnum.Waiting,
+      });
+      await this.purchaseOrderRepository.save(purchaseOrder);
+
+      const status = this.purchaseOrderStatusRepository.create([
+        {
+          purchase_order_id: purchaseOrder.id,
+          status_desc: PurchaseOrderStatusEnum.CreatedByThe,
+          updated_by: user_id,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          purchase_order_id: purchaseOrder.id,
+          status_desc: PurchaseOrderStatusEnum.SendByThe,
+        },
+        {
+          purchase_order_id: purchaseOrder.id,
+          status_desc: PurchaseOrderStatusEnum.PaymentStatusConfirm,
+        },
+      ]);
+      await this.purchaseOrderStatusRepository.save(status);
+      return purchaseOrder;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
   }
 
   async findAll(query: GetListPurchaseOrderDto) {
@@ -116,28 +144,6 @@ export class PurchaseOrderService {
         status: true,
         delivery_date: true,
         grand_total: true,
-        approval: {
-          id: true,
-          status: true,
-          status_desc: true,
-          purchase_order_id: true,
-          created_by: true,
-          created_at: true,
-          updated_at: true,
-          updated_by: true,
-          users: {
-            id: true,
-            full_name: true,
-          },
-        },
-      },
-      relations: {
-        approval: {
-          users: true,
-        },
-      },
-      order: {
-        approval: { id: 'ASC' },
       },
     });
     if (!data) {
@@ -177,48 +183,39 @@ export class PurchaseOrderService {
     }
   }
   async findDetail(id: number) {
-    // const purchaseOrder = await this.findOne(id);
-    // const projectPurchaseOrder =
-    //   await this.projectPurchaseOrderRepository.findOne({
-    //     where: {
-    //       purchase_order_id: id,
-    //     },
-    //   });
-    // let costDetails = [];
-    // if (projectPurchaseOrder.vendor_type === 'Material') {
-    //   costDetails = await this.findCostDetailsMaterialDetail(
-    //     projectPurchaseOrder.project_detail_id,
-    //     purchaseOrder.vendor_id,
-    //     projectPurchaseOrder.material_type,
-    //   );
-    // } else if (projectPurchaseOrder.vendor_type === 'Production') {
-    //   costDetails = await this.findCostDetailsProduction(
-    //     projectPurchaseOrder.project_detail_id,
-    //     purchaseOrder.vendor_id,
-    //     projectPurchaseOrder.material_type,
-    //   );
-    // }
-    // const subGrandTotal = costDetails.reduce((accumulator, currentItem) => {
-    //   return accumulator + currentItem.total_price;
-    // }, 0);
-    // const pph_result = (purchaseOrder.pph * subGrandTotal) / 100;
-    // const ppn_result = (purchaseOrder.ppn * subGrandTotal) / 100;
-    // const resultGrandTotal =
-    //   subGrandTotal + pph_result + ppn_result - purchaseOrder.discount;
-    // return {
-    //   ...purchaseOrder,
-    //   cost_details: costDetails,
-    //   pph_result,
-    //   ppn_result,
-    //   total: subGrandTotal,
-    //   grand_total: resultGrandTotal,
-    // };
-    return { data: 'belum karena diubah flow' };
+    const purchaseOrder = await this.findOne(id);
+    const costDetails = await this.purchaseOrderDetailRepository.find({
+      where: {
+        purchase_order_id: id,
+      },
+    });
+    const subGrandTotal = costDetails.reduce((accumulator, currentItem) => {
+      return accumulator + currentItem.sub_total;
+    }, 0);
+    const pph_result = (purchaseOrder.pph * subGrandTotal) / 100;
+    const ppn_result = (purchaseOrder.ppn * subGrandTotal) / 100;
+    const resultGrandTotal =
+      subGrandTotal + pph_result + ppn_result - purchaseOrder.discount;
+    const purchase_order_status = await this.findPurchaseOrderStatus(id);
+    return {
+      ...purchaseOrder,
+      purchase_order_status,
+      cost_details: costDetails,
+      pph_result,
+      ppn_result,
+      total: subGrandTotal,
+      grand_total: resultGrandTotal,
+    };
   }
 
-  async findByProjectIdType(project_id: number, type: PurchaseOrderTypeEnum) {
+  async findByProjectIdType(
+    project_id: number,
+    type: PurchaseOrderTypeEnum,
+    vendor_id: number,
+  ) {
     const data = await this.purchaseOrderRepository.findOne({
       where: {
+        vendor_id,
         project_id,
         type,
         status: StatusPurchaseOrderEnum.Waiting,
@@ -312,5 +309,30 @@ export class PurchaseOrderService {
       detail.sub_total = purchaseOrderDetailDto.sub_total;
       return await this.purchaseOrderDetailRepository.save(detail);
     }
+  }
+  async findPurchaseOrderStatus(purchase_order_id: number) {
+    const data = await this.purchaseOrderStatusRepository.find({
+      where: {
+        purchase_order_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        purchase_order_id: true,
+        status_desc: true,
+        status: true,
+        reason: true,
+        updated_at: true,
+        updated_by: true,
+        users: {
+          id: true,
+          full_name: true,
+        },
+      },
+      relations: { users: true },
+      order: { id: 'asc' },
+    });
+    return data;
   }
 }

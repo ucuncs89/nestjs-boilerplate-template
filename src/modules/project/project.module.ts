@@ -77,6 +77,7 @@ import { UsersRolesEntity } from 'src/entities/users/users_roles.entity';
 import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_order_detail.entity';
 import { ProjectPurchaseOrderController } from './general/controllers/project-purchase-order.controller';
 import { ProjectPurchaseOrderService } from './general/services/project-purchase-order.service';
+import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_order_status.entity';
 
 @Module({
   imports: [
@@ -101,6 +102,7 @@ import { ProjectPurchaseOrderService } from './general/services/project-purchase
       VendorsEntity,
       UsersRolesEntity,
       PurchaseOrderDetailEntity,
+      PurchaseOrderStatusEntity,
     ]),
     RabbitMQModule,
   ],
