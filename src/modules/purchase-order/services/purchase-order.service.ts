@@ -10,6 +10,7 @@ import {
 } from 'src/exceptions/app-exception';
 
 import {
+  PurchaseApprovalDto,
   PurchaseOrderDto,
   PurchaseOrderStatusEnum,
   PurchaseOrderTypeEnum,
@@ -259,25 +260,33 @@ export class PurchaseOrderService {
   //     throw new AppErrorException(error);
   //   }
   // }
-  // async updatePurchaseOrderApproval(
-  //   purchase_order_id: number,
-  //   approval_id: number,
-  //   status: StatusApprovalEnum,
-  //   user_id: number,
-  // ) {
-  //   try {
-  //     const data = await this.purchaseOrderApprovalRepository.update(
-  //       {
-  //         id: approval_id,
-  //         purchase_order_id,
-  //       },
-  //       { status, updated_by: user_id, updated_at: new Date().toISOString() },
-  //     );
-  //     return data;
-  //   } catch (error) {
-  //     throw new AppErrorException(error);
-  //   }
-  // }
+  async updatePurchaseOrderApproval(
+    purchase_order_id: number,
+    status_id: number,
+    purchaseApprovalDto: PurchaseApprovalDto,
+    user_id: number,
+  ) {
+    try {
+      let logupdate: string;
+      const status = await this.purchaseOrderStatusRepository.findOne({
+        where: { id: status_id, purchase_order_id },
+      });
+      if (!status) {
+        throw new AppErrorNotFoundException();
+      }
+      status.updated_at = new Date().toISOString();
+      status.updated_by = user_id;
+      status.status = purchaseApprovalDto.status;
+      status.reason = purchaseApprovalDto.reason;
+      await this.purchaseOrderStatusRepository.save(status);
+      if (status.status_desc === PurchaseOrderStatusEnum.PaymentStatusConfirm) {
+        logupdate = 'masuk ke approval semua tapi belum';
+      }
+      return { status, logupdate };
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
   async upsertPurchaseOrderDetail(
     purchase_order_id: number,
     purchaseOrderDetailDto: PurchaseOrderDetailDto,
