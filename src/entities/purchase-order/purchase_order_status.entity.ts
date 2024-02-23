@@ -8,8 +8,8 @@ import {
 import { PurchaseOrderEntity } from './purchase_order.entity';
 import { UsersEntity } from '../users/users.entity';
 
-@Entity('purchase_order_approval')
-export class PurchaseOrderApprovalEntity {
+@Entity('purchase_order_status')
+export class PurchaseOrderStatusEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,10 +17,13 @@ export class PurchaseOrderApprovalEntity {
   purchase_order_id: number;
 
   @Column({ type: 'varchar', nullable: true })
+  status_desc: string;
+
+  @Column({ type: 'varchar', nullable: true })
   status: string;
 
   @Column({ type: 'varchar', nullable: true })
-  status_desc: string;
+  reason: string;
 
   @Column({
     type: 'timestamp with time zone',
@@ -43,26 +46,20 @@ export class PurchaseOrderApprovalEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
-  @ManyToOne(
-    () => PurchaseOrderEntity,
-    (purchase_order: PurchaseOrderEntity) => purchase_order.approval,
-    {
-      cascade: true,
-    },
-  )
-  @JoinColumn({ name: 'purchase_order_id' })
-  public purchase_order: PurchaseOrderEntity;
+  // @ManyToOne(
+  //   () => PurchaseOrderEntity,
+  //   (purchase_order: PurchaseOrderEntity) => purchase_order.po_status,
+  //   {
+  //     cascade: true,
+  //   },
+  // )
+  // @JoinColumn({ name: 'purchase_order_id' })
+  // public po: PurchaseOrderEntity;
 
   @ManyToOne(
     () => UsersEntity,
-    (users: UsersEntity) => users.purchase_order_approval,
-    {
-      cascade: true,
-    },
+    (users: UsersEntity) => users.purchase_order_status_approval,
   )
   @JoinColumn({ name: 'updated_by' })
   public users: UsersEntity;
 }
-// status : Approved, Rejected
-// status_desc : Made by, Sent by the finance team, Approved by
-// insert 3 nya saat insert dan statusnya Rejected dulu

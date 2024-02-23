@@ -11,8 +11,8 @@ import {
 } from 'typeorm';
 import { RolesEntity } from '../roles/roles.entity';
 import { UsersDetailEntity } from './users_detail.entity';
-import { PurchaseOrderApprovalEntity } from '../purchase-order/purchase_order_approval.entity';
 import { ProjectHistoryEntity } from '../project/project_history.entity';
+import { PurchaseOrderStatusEntity } from '../purchase-order/purchase_order_status.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -89,16 +89,16 @@ export class UsersEntity {
   user_detail: UsersEntity;
 
   @OneToMany(
-    () => PurchaseOrderApprovalEntity,
-    (approval: PurchaseOrderApprovalEntity) => approval.users,
-  )
-  @JoinColumn({ name: 'updated_by' })
-  purchase_order_approval: PurchaseOrderApprovalEntity[];
-
-  @OneToMany(
     () => ProjectHistoryEntity,
     (history: ProjectHistoryEntity) => history.users,
   )
   @JoinColumn({ name: 'created_by' })
   history: ProjectHistoryEntity[];
+
+  @OneToMany(
+    () => PurchaseOrderStatusEntity,
+    (status: PurchaseOrderStatusEntity) => status.users,
+  )
+  @JoinColumn({ name: 'updated_by' })
+  purchase_order_status_approval: PurchaseOrderStatusEntity[];
 }

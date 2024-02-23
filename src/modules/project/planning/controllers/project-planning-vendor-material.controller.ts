@@ -157,20 +157,24 @@ export class ProjectPlanningVendorMaterialController {
     const purchaseOrder = await this.purchaseOrderService.findByProjectIdType(
       project_id,
       PurchaseOrderTypeEnum.Material,
+      detail.vendor_id,
     );
     if (!purchaseOrder) {
       const detailVendor = await this.vendorsService.findOne(detail.vendor_id);
-      const insertPurchaseOrder = await this.purchaseOrderService.create({
-        vendor_id: detail.vendor_id,
-        company_name: detailVendor.company_name,
-        project_id,
-        type: PurchaseOrderTypeEnum.Material,
-        bank_name: detailVendor.bank_name,
-        company_address: detailVendor.company_address,
-        bank_account_number: detailVendor.bank_account_number,
-        bank_account_houlders_name: detailVendor.bank_account_holder_name,
-        company_phone_number: detailVendor.company_phone_number,
-      });
+      const insertPurchaseOrder = await this.purchaseOrderService.create(
+        {
+          vendor_id: detail.vendor_id,
+          company_name: detailVendor.company_name,
+          project_id,
+          type: PurchaseOrderTypeEnum.Material,
+          bank_name: detailVendor.bank_name,
+          company_address: detailVendor.company_address,
+          bank_account_number: detailVendor.bank_account_number,
+          bank_account_houlders_name: detailVendor.bank_account_holder_name,
+          company_phone_number: detailVendor.company_phone_number,
+        },
+        req.user.id,
+      );
       await this.purchaseOrderService.upsertPurchaseOrderDetail(
         insertPurchaseOrder.id,
         {
