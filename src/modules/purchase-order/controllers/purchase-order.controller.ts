@@ -16,7 +16,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { GetListPurchaseOrderDto } from '../dto/get-list-purchase-order.dto';
 import { Pagination } from 'src/utils/pagination';
 import {
-  ProjectApprovalDto,
+  PurchaseApprovalDto,
   PurchaseOrderDto,
 } from '../dto/purchase-order.dto';
 
@@ -89,14 +89,14 @@ export class PurchaseOrderController {
     @Req() req,
     @Param('id') id: number,
     @Param('approval_id') approval_id: number,
-    @Body() projectApprovalDto: ProjectApprovalDto,
+    @Body() purchaseApprovalDto: PurchaseApprovalDto,
   ) {
-    // const data = await this.purchaseOrderService.updatePurchaseOrderApproval(
-    //   id,
-    //   approval_id,
-    //   projectApprovalDto.status,
-    //   req.user.id,
-    // );
-    // return { data };
+    const data = await this.purchaseOrderService.updatePurchaseOrderApproval(
+      id,
+      approval_id,
+      purchaseApprovalDto,
+      req.user.id,
+    );
+    return { data };
   }
 }
