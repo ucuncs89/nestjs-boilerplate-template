@@ -156,6 +156,7 @@ export class PurchaseOrderService {
         grand_total: true,
         type: true,
         project_id: true,
+        created_at: true,
       },
     });
     if (!data) {
