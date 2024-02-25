@@ -105,12 +105,11 @@ export class PurchaseOrderController {
     @Param('id') id: number,
     @Param('approval_id') approval_id: number,
   ) {
-    // const data = await this.purchaseOrderService.updatePurchaseOrderApproval(
-    //   id,
-    //   approval_id,
-    //   purchaseApprovalDto,
-    //   req.user.id,
-    // );
-    return { data: 'data cancel belum' };
+    const data = await this.purchaseOrderService.cancelPurchaseOrderApproval(
+      id,
+      approval_id,
+      req.user.id,
+    );
+    return { data };
   }
 }
