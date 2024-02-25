@@ -303,9 +303,9 @@ export class PurchaseOrderService {
           purchaseApprovalDto.status,
         );
       }
-      await this.purchaseOrderStatusRepository.update(
+      await this.purchaseOrderRepository.update(
         { id: purchase_order_id },
-        { status: purchaseApprovalDto.status, status_desc: status.status_desc },
+        { status: purchaseApprovalDto.status },
       );
       return { status, updateToProject };
     } catch (error) {
