@@ -99,4 +99,18 @@ export class PurchaseOrderController {
     );
     return { data };
   }
+  @Post(':id/cancel/:approval_id')
+  async cancelApproval(
+    @Req() req,
+    @Param('id') id: number,
+    @Param('approval_id') approval_id: number,
+  ) {
+    // const data = await this.purchaseOrderService.updatePurchaseOrderApproval(
+    //   id,
+    //   approval_id,
+    //   purchaseApprovalDto,
+    //   req.user.id,
+    // );
+    return { data: 'data cancel belum' };
+  }
 }
