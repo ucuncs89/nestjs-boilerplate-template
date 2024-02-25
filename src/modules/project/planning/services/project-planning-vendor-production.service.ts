@@ -430,12 +430,13 @@ export class ProjectPlanningVendorProductionService {
   async updateStatusPurchaseOrder(
     project_vendor_production_detail_id: number,
     status: StatusPurchaseOrderEnum,
+    purchase_order_detail_id: number,
   ) {
     const data = await this.projectVendorProductionDetailRepository.update(
       {
         id: project_vendor_production_detail_id,
       },
-      { status_purchase_order: status },
+      { status_purchase_order: status, purchase_order_detail_id },
     );
     return data;
   }

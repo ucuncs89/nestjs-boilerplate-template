@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePurchaseOrderDto } from '../dto/create-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrderEntity } from 'src/entities/purchase-order/purchase_order.entity';
-import { ILike, IsNull, Not, Repository } from 'typeorm';
+import { ILike, In, IsNull, Not, Repository } from 'typeorm';
 import { GetListPurchaseOrderDto } from '../dto/get-list-purchase-order.dto';
 import {
   AppErrorException,
@@ -19,6 +19,8 @@ import {
 import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_order_detail.entity';
 import { PurchaseOrderDetailDto } from '../dto/purchase-order-detail.dto';
 import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_order_status.entity';
+import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -31,6 +33,12 @@ export class PurchaseOrderService {
 
     @InjectRepository(PurchaseOrderStatusEntity)
     private purchaseOrderStatusRepository: Repository<PurchaseOrderStatusEntity>,
+
+    @InjectRepository(ProjectVendorProductionDetailEntity)
+    private projectVendorProductionDetailRepository: Repository<ProjectVendorProductionDetailEntity>,
+
+    @InjectRepository(ProjectVendorMaterialDetailEntity)
+    private projectVendorMaterialDetailRepository: Repository<ProjectVendorMaterialDetailEntity>,
   ) {}
   async create(purchaseOrderDto: PurchaseOrderDto, user_id: number) {
     try {
@@ -49,6 +57,7 @@ export class PurchaseOrderService {
           status_desc: PurchaseOrderStatusEnum.CreatedByThe,
           updated_by: user_id,
           updated_at: new Date().toISOString(),
+          status: StatusPurchaseOrderEnum.Approved,
         },
         {
           purchase_order_id: purchaseOrder.id,
@@ -145,6 +154,8 @@ export class PurchaseOrderService {
         status: true,
         delivery_date: true,
         grand_total: true,
+        type: true,
+        project_id: true,
       },
     });
     if (!data) {
@@ -227,39 +238,39 @@ export class PurchaseOrderService {
     return data;
   }
 
-  // async updatePurchaseOrder(
-  //   id,
-  //   purchaseOrderDto: PurchaseOrderDto,
-  //   user_id: number,
-  // ) {
-  //   try {
-  //     const data = await this.purchaseOrderRepository.update(
-  //       {
-  //         id,
-  //         deleted_at: IsNull(),
-  //         deleted_by: IsNull(),
-  //       },
-  //       {
-  //         company_address: purchaseOrderDto.company_address,
-  //         company_phone_number: purchaseOrderDto.company_phone_number,
-  //         ppn: purchaseOrderDto.ppn,
-  //         pph: purchaseOrderDto.pph,
-  //         discount: purchaseOrderDto.discount,
-  //         bank_name: purchaseOrderDto.bank_name,
-  //         bank_account_houlders_name:
-  //           purchaseOrderDto.bank_account_houlders_name,
-  //         bank_account_number: purchaseOrderDto.bank_account_number,
-  //         payment_term: purchaseOrderDto.payment_term,
-  //         notes: purchaseOrderDto.notes,
-  //         updated_at: new Date().toISOString(),
-  //         updated_by: user_id,
-  //       },
-  //     );
-  //     return data;
-  //   } catch (error) {
-  //     throw new AppErrorException(error);
-  //   }
-  // }
+  async updatePurchaseOrder(
+    id,
+    purchaseOrderDto: PurchaseOrderDto,
+    user_id: number,
+  ) {
+    try {
+      const data = await this.purchaseOrderRepository.update(
+        {
+          id,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        {
+          company_address: purchaseOrderDto.company_address,
+          company_phone_number: purchaseOrderDto.company_phone_number,
+          ppn: purchaseOrderDto.ppn,
+          pph: purchaseOrderDto.pph,
+          discount: purchaseOrderDto.discount,
+          bank_name: purchaseOrderDto.bank_name,
+          bank_account_houlders_name:
+            purchaseOrderDto.bank_account_houlders_name,
+          bank_account_number: purchaseOrderDto.bank_account_number,
+          payment_term: purchaseOrderDto.payment_term,
+          notes: purchaseOrderDto.notes,
+          updated_at: new Date().toISOString(),
+          updated_by: user_id,
+        },
+      );
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
   async updatePurchaseOrderApproval(
     purchase_order_id: number,
     status_id: number,
@@ -267,7 +278,7 @@ export class PurchaseOrderService {
     user_id: number,
   ) {
     try {
-      let logupdate: string;
+      let updateToProject: any;
       const status = await this.purchaseOrderStatusRepository.findOne({
         where: { id: status_id, purchase_order_id },
       });
@@ -280,9 +291,22 @@ export class PurchaseOrderService {
       status.reason = purchaseApprovalDto.reason;
       await this.purchaseOrderStatusRepository.save(status);
       if (status.status_desc === PurchaseOrderStatusEnum.PaymentStatusConfirm) {
-        logupdate = 'masuk ke approval semua tapi belum';
+        updateToProject = await this.updateToProject(
+          purchase_order_id,
+          purchaseApprovalDto.status,
+        );
       }
-      return { status, logupdate };
+      if (purchaseApprovalDto.status === StatusPurchaseOrderEnum.Rejected) {
+        updateToProject = await this.updateToProject(
+          purchase_order_id,
+          purchaseApprovalDto.status,
+        );
+      }
+      await this.purchaseOrderStatusRepository.update(
+        { id: purchase_order_id },
+        { status: purchaseApprovalDto.status, status_desc: status.status_desc },
+      );
+      return { status, updateToProject };
     } catch (error) {
       throw new AppErrorException(error);
     }
@@ -290,7 +314,7 @@ export class PurchaseOrderService {
   async upsertPurchaseOrderDetail(
     purchase_order_id: number,
     purchaseOrderDetailDto: PurchaseOrderDetailDto,
-  ) {
+  ): Promise<number> {
     const detail = await this.purchaseOrderDetailRepository.findOne({
       where: {
         relation_id: purchaseOrderDetailDto.relation_id,
@@ -301,7 +325,7 @@ export class PurchaseOrderService {
     });
 
     if (!detail) {
-      return await this.purchaseOrderDetailRepository.insert({
+      const insert = await this.purchaseOrderDetailRepository.insert({
         purchase_order_id,
         relation_id: purchaseOrderDetailDto.relation_id,
         item: purchaseOrderDetailDto.item,
@@ -310,13 +334,15 @@ export class PurchaseOrderService {
         unit_price: purchaseOrderDetailDto.unit_price,
         sub_total: purchaseOrderDetailDto.sub_total,
       });
+      return insert.raw[0].id;
     } else {
       detail.item = purchaseOrderDetailDto.item;
       detail.quantity = purchaseOrderDetailDto.quantity;
       detail.unit = purchaseOrderDetailDto.unit;
       detail.unit_price = purchaseOrderDetailDto.unit_price;
       detail.sub_total = purchaseOrderDetailDto.sub_total;
-      return await this.purchaseOrderDetailRepository.save(detail);
+      await this.purchaseOrderDetailRepository.save(detail);
+      return detail.id;
     }
   }
   async findPurchaseOrderStatus(purchase_order_id: number) {
@@ -343,5 +369,41 @@ export class PurchaseOrderService {
       order: { id: 'asc' },
     });
     return data;
+  }
+  async updateToProject(
+    purchase_order_id: number,
+    status: StatusPurchaseOrderEnum,
+  ) {
+    // const arrRelationsIds = [];
+    const arrPurchaseDetailIds = [];
+    const purchaseOrder = await this.findOne(purchase_order_id);
+    if (!purchaseOrder) {
+      return false;
+    }
+    const detail = await this.purchaseOrderDetailRepository.find({
+      where: {
+        purchase_order_id,
+      },
+    });
+    if (detail.length < 1) {
+      return false;
+    }
+    // detail.map((v) => arrRelationsIds.push(v.relation_id));
+    detail.map((v) => arrPurchaseDetailIds.push(v.id));
+    if (purchaseOrder.type === PurchaseOrderTypeEnum.Material) {
+      this.projectVendorMaterialDetailRepository.update(
+        {
+          purchase_order_detail_id: In(arrPurchaseDetailIds),
+        },
+        { status_purchase_order: status },
+      );
+    } else if (purchaseOrder.type === PurchaseOrderTypeEnum.Production) {
+      this.projectVendorProductionDetailRepository.update(
+        {
+          purchase_order_detail_id: In(arrPurchaseDetailIds),
+        },
+        { status_purchase_order: status },
+      );
+    }
   }
 }

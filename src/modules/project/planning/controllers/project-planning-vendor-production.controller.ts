@@ -174,6 +174,7 @@ export class ProjectPlanningVendorProductionController {
     @Param('project_vendor_production_detail_id')
     project_vendor_production_detail_id: number,
   ) {
+    let purchase_order_detail_id: number;
     const detail =
       await this.projectPlanningVendorProductionService.findNameDetail(
         project_vendor_id,
@@ -205,33 +206,36 @@ export class ProjectPlanningVendorProductionController {
         },
         req.user.id,
       );
-      await this.purchaseOrderService.upsertPurchaseOrderDetail(
-        insertPurchaseOrder.id,
-        {
-          relation_id: detail.id,
-          item: `${detail.vendor_name} - ${detail.vendor_production.activity_name}`,
-          quantity: detail.quantity,
-          unit_price: detail.price,
-          unit: detail.quantity_unit,
-          sub_total: detail.total_price,
-        },
-      );
+      purchase_order_detail_id =
+        await this.purchaseOrderService.upsertPurchaseOrderDetail(
+          insertPurchaseOrder.id,
+          {
+            relation_id: detail.id,
+            item: `${detail.vendor_name} - ${detail.vendor_production.activity_name}`,
+            quantity: detail.quantity,
+            unit_price: detail.price,
+            unit: detail.quantity_unit,
+            sub_total: detail.total_price,
+          },
+        );
     } else {
-      await this.purchaseOrderService.upsertPurchaseOrderDetail(
-        purchaseOrder.id,
-        {
-          relation_id: detail.id,
-          item: `${detail.vendor_name} - ${detail.vendor_production.activity_name}`,
-          quantity: detail.quantity,
-          unit_price: detail.price,
-          unit: detail.quantity_unit,
-          sub_total: detail.total_price,
-        },
-      );
+      purchase_order_detail_id =
+        await this.purchaseOrderService.upsertPurchaseOrderDetail(
+          purchaseOrder.id,
+          {
+            relation_id: detail.id,
+            item: `${detail.vendor_name} - ${detail.vendor_production.activity_name}`,
+            quantity: detail.quantity,
+            unit_price: detail.price,
+            unit: detail.quantity_unit,
+            sub_total: detail.total_price,
+          },
+        );
     }
     this.projectPlanningVendorProductionService.updateStatusPurchaseOrder(
       project_vendor_production_detail_id,
       StatusPurchaseOrderEnum.Waiting,
+      purchase_order_detail_id,
     );
     return { data: detail, purchaseOrder };
   }

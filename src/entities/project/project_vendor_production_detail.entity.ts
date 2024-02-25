@@ -72,6 +72,9 @@ export class ProjectVendorProductionDetailEntity {
   @Column({ type: 'varchar', nullable: true })
   status_purchase_order: string;
 
+  @Column({ type: 'int', nullable: true })
+  purchase_order_detail_id: number;
+
   @ManyToOne(
     () => ProjectVendorProductionEntity,
     (vendor_production: ProjectVendorProductionEntity) =>

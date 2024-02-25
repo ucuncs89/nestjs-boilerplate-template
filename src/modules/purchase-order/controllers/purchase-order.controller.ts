@@ -76,12 +76,12 @@ export class PurchaseOrderController {
     @Param('id') id: number,
     @Body() purchaseOrderDto: PurchaseOrderDto,
   ) {
-    // const data = await this.purchaseOrderService.updatePurchaseOrder(
-    //   id,
-    //   purchaseOrderDto,
-    //   req.user.id,
-    // );
-    // return { message: 'Successfully', data };
+    const data = await this.purchaseOrderService.updatePurchaseOrder(
+      id,
+      purchaseOrderDto,
+      req.user.id,
+    );
+    return { message: 'Successfully', data };
   }
 
   @Post(':id/approval/:approval_id')
