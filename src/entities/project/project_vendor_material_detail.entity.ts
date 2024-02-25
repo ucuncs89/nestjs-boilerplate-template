@@ -41,6 +41,9 @@ export class ProjectVendorMaterialDetailEntity {
   @Column({ type: 'varchar', nullable: true })
   status_purchase_order: string;
 
+  @Column({ type: 'int', nullable: true })
+  purchase_order_detail_id: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
