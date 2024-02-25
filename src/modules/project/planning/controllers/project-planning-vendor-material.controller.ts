@@ -144,6 +144,7 @@ export class ProjectPlanningVendorMaterialController {
     @Param('vendor_material_detail_id') vendor_material_detail_id: number,
     @I18n() i18n: I18nContext,
   ) {
+    let purchase_order_detail_id: number;
     const detail =
       await this.projectPlanningVendorMaterialService.findNameDetail(
         vendor_material_id,
@@ -175,33 +176,36 @@ export class ProjectPlanningVendorMaterialController {
         },
         req.user.id,
       );
-      await this.purchaseOrderService.upsertPurchaseOrderDetail(
-        insertPurchaseOrder.id,
-        {
-          relation_id: detail.id,
-          item: `${detail.vendor_material.project_material_item.name} ${detail.vendor_material.project_material_item.category} - ${detail.vendor_material.project_material_item.used_for} - ${detail.vendor_material.project_variant.name}`,
-          quantity: detail.quantity,
-          unit_price: detail.price,
-          unit: detail.quantity_unit,
-          sub_total: detail.total_price,
-        },
-      );
+      purchase_order_detail_id =
+        await this.purchaseOrderService.upsertPurchaseOrderDetail(
+          insertPurchaseOrder.id,
+          {
+            relation_id: detail.id,
+            item: `${detail.vendor_material.project_material_item.name} ${detail.vendor_material.project_material_item.category} - ${detail.vendor_material.project_material_item.used_for} - ${detail.vendor_material.project_variant.name}`,
+            quantity: detail.quantity,
+            unit_price: detail.price,
+            unit: detail.quantity_unit,
+            sub_total: detail.total_price,
+          },
+        );
     } else {
-      await this.purchaseOrderService.upsertPurchaseOrderDetail(
-        purchaseOrder.id,
-        {
-          relation_id: detail.id,
-          item: `${detail.vendor_material.project_material_item.name} ${detail.vendor_material.project_material_item.category} ${detail.vendor_material.project_material_item.used_for} - ${detail.vendor_material.project_variant.name}`,
-          quantity: detail.quantity,
-          unit_price: detail.price,
-          unit: detail.quantity_unit,
-          sub_total: detail.total_price,
-        },
-      );
+      purchase_order_detail_id =
+        await this.purchaseOrderService.upsertPurchaseOrderDetail(
+          purchaseOrder.id,
+          {
+            relation_id: detail.id,
+            item: `${detail.vendor_material.project_material_item.name} ${detail.vendor_material.project_material_item.category} ${detail.vendor_material.project_material_item.used_for} - ${detail.vendor_material.project_variant.name}`,
+            quantity: detail.quantity,
+            unit_price: detail.price,
+            unit: detail.quantity_unit,
+            sub_total: detail.total_price,
+          },
+        );
     }
     this.projectPlanningVendorMaterialService.updateStatusPurchaseOrder(
       vendor_material_detail_id,
       StatusPurchaseOrderEnum.Waiting,
+      purchase_order_detail_id,
     );
     return { data: detail, purchaseOrder };
   }

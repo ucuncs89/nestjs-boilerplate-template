@@ -9,6 +9,8 @@ import { PurchaseOrderExcelController } from './controllers/purchase-order-excel
 import { PurchaseOrderExcelService } from './services/purchase-order-excel.service';
 import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_order_detail.entity';
 import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_order_status.entity';
+import { ProjectVendorProductionDetailEntity } from 'src/entities/project/project_vendor_production_detail.entity';
+import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_
       PurchaseOrderEntity,
       PurchaseOrderDetailEntity,
       PurchaseOrderStatusEntity,
+      ProjectVendorProductionDetailEntity,
+      ProjectVendorMaterialDetailEntity,
     ]),
   ],
   controllers: [

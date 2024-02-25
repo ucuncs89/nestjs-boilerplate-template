@@ -42,7 +42,7 @@ export class PurchaseOrderDto {
   @ApiProperty()
   type: PurchaseOrderTypeEnum;
 
-  @ApiProperty()
+  // @ApiProperty()
   project_id: number;
 }
 export enum StatusPurchaseOrderEnum {
