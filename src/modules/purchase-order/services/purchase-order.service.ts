@@ -406,4 +406,30 @@ export class PurchaseOrderService {
       );
     }
   }
+
+  async cancelPurchaseOrderApproval(
+    purchase_order_id: number,
+    status_id: number,
+    user_id: number,
+  ) {
+    let updateToProject: any;
+    const status = await this.purchaseOrderStatusRepository.findOne({
+      where: { id: status_id, purchase_order_id },
+    });
+    if (!status) {
+      throw new AppErrorNotFoundException();
+    }
+    status.updated_at = null;
+    status.updated_by = null;
+    status.status = null;
+    status.reason = null;
+    await this.purchaseOrderStatusRepository.save(status);
+    if (status.status_desc === PurchaseOrderStatusEnum.PaymentStatusConfirm) {
+      updateToProject = await this.updateToProject(
+        purchase_order_id,
+        StatusPurchaseOrderEnum.Waiting,
+      );
+    }
+    return { status, updateToProject };
+  }
 }
