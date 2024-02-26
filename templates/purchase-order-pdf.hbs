@@ -1,175 +1,199 @@
 <html lang='en'>
-
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
     <link
-      href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css'
+      href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css'
       rel='stylesheet'
-      integrity='sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN'
+      integrity='sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC'
       crossorigin='anonymous'
     />
     <link rel='preconnect' href='https://fonts.googleapis.com' />
-    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin='' />
     <link
-      href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap'
+      href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;500;600;700;800&amp;display=swap'
       rel='stylesheet'
     />
     <style>
-      body { font-family: "Plus Jakarta Sans", sans-serif; } .text-low { color:
-      #64748b; } @media print { .pagebreak { page-break-inside: avoid; } /*
-      page-break-after works, as well */ }
+      * { font-family: "Plus Jakarta Sans", sans-serif; } body { padding: 32px;
+      } .logo { height: 32px; width: 103px; } .text-low { color: #64748b; }
+      .text-brand { color: #6e7859; } @media print { .pagebreak {
+      page-break-inside: avoid; } /* page-break-after works, as well */ }
     </style>
-
-    <title>{{title}}</title>
+    <title></title>
   </head>
-
-  <body class='p-4' id='body' onload='download()'>
-    <div class='container-fluid'>
-      <div class='row'>
-        <div class='col-12'>
-          <div class='row'>
-            <div class='col-10'>
-              <h3 class='mb-4'>Purchase Order Details</h3>
-              <div class='d-flex gap-4'>
-                <p>Number : {{code}}</p>
-                <p>
-                  <u><i>{{status}}</i></u>
-                </p>
-              </div>
-            </div>
-            <div class='col-2'>
-              <img
-                src='data:image/png;base64,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'
-                alt=''
-              />
+  <body id='body' onload='download()'>
+    <div class='d-flex flex-column gap-4'>
+      <img
+        src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAzIiBoZWlnaHQ9IjMyIiB2aWV3Qm94PSIwIDAgMTAzIDMyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfMTE4MV8yNjIzMTYpIj4KPHBhdGggZD0iTTEyLjIxNCAwLjk4OTk4NUMxMi4xNDAxIDAuNzA0NSAxMS44NDgzIDAuNTMyMTMyIDExLjU2NTUgMC42MTU1NTJDOS4wMzEwOCAxLjM2Mjk4IDYuNzE4MDEgMi43MjY3MyA0LjgzNDkzIDQuNTg4MjVDMi44MjUxNCA2LjU3NTA1IDEuMzc2NzMgOS4wNTgxNiAwLjYzNjY2MiAxMS43ODU2Qy0wLjEwMzM5OSAxNC41MTMxIC0wLjEwODc1OSAxNy4zODc3IDAuNjIxMTI5IDIwLjExNzlDMS4zNTEwMiAyMi44NDgxIDIuNzkwMTcgMjUuMzM2NSA0Ljc5MjUzIDI3LjMzMDlDNi43OTQ5IDI5LjMyNTEgOS4yODkyMiAzMC43NTQyIDEyLjAyMjMgMzEuNDczMUMxNC43NTU0IDMyLjE5MTkgMTcuNjMwMSAzMi4xNzQ4IDIwLjM1NDUgMzEuNDIzOEMyMy4wNzkgMzAuNjcyNiAyNS41NTYyIDI5LjIxNDIgMjcuNTM0NyAyNy4xOTY0QzI5LjM4ODYgMjUuMzA1OCAzMC43NDMxIDIyLjk4NzIgMzEuNDgwMiAyMC40NDk4QzMxLjU2MjUgMjAuMTY2NiAzMS4zODg5IDE5Ljg3NTYgMzEuMTAzMiAxOS44MDI4TDI1Ljk5MzQgMTguNTAxM0MyNS43MDc2IDE4LjQyODUgMjUuNDE4NCAxOC42MDE3IDI1LjMyOTkgMTguODgzMUMyNC44NzI5IDIwLjMzNzEgMjQuMDc4IDIxLjY2NTEgMjMuMDA3NCAyMi43NTY5QzIxLjgxMiAyMy45NzYgMjAuMzE1MyAyNC44NTcyIDE4LjY2OTIgMjUuMzExQzE3LjAyMzIgMjUuNzY0OCAxNS4yODY0IDI1Ljc3NSAxMy42MzUxIDI1LjM0MDhDMTEuOTgzOSAyNC45MDY0IDEwLjQ3NjkgMjQuMDQzMSA5LjI2NzA3IDIyLjgzODJDOC4wNTcyOSAyMS42MzMzIDcuMTg3NzkgMjAuMTI5OCA2Ljc0NjgxIDE4LjQ4MDNDNi4zMDU4MiAxNi44MzA3IDYuMzA5MDYgMTUuMDk0IDYuNzU2MTggMTMuNDQ2MUM3LjIwMzMyIDExLjc5ODIgOC4wNzg0MiAxMC4yOTggOS4yOTI2OCA5LjA5NzZDMTAuMzgwMSA4LjAyMjU3IDExLjcwNSA3LjIyMjMyIDEzLjE1NyA2Ljc1OTM4QzEzLjQzODEgNi42Njk4IDEzLjYxMDIgNi4zNzk4NiAxMy41MzYxIDYuMDk0MzhMMTIuMjE0IDAuOTg5OTg1WiIgZmlsbD0iIzIxMjkwRiIvPgo8cGF0aCBkPSJNMTYuNjUwMyAwQzE2LjM1NTUgLTIuNTc4MTVlLTA4IDE2LjExNTUgMC4yMzkxNDggMTYuMTI1MyAwLjUzMzg5MUMxNi4xODk0IDIuNDU1NDcgMTYuNTk4OSA0LjM1MTM1IDE3LjMzNTcgNi4xMzAzMUMxOC4xNDA5IDguMDczODcgMTkuMzIwOCA5LjgzOTgzIDIwLjgwODMgMTEuMzI3NEMyMi4yOTU5IDEyLjgxNDkgMjQuMDYxOCAxMy45OTQ5IDI2LjAwNTQgMTQuNzk5OUMyNy43ODQzIDE1LjUzNjcgMjkuNjgwMiAxNS45NDYzIDMxLjYwMTggMTYuMDEwM0MzMS44OTY1IDE2LjAyMDMgMzIuMTM1NiAxNS43ODAzIDMyLjEzNTYgMTUuNDg1M1YxMC4yMTI1QzMyLjEzNTYgOS45MTc1NyAzMS44OTY0IDkuNjgwMDMgMzEuNjAyIDkuNjYzNzhDMzAuNTEzMyA5LjYwMzY1IDI5LjQ0MTUgOS4zNTk5NiAyOC40MzE5IDguOTQxNzdDMjcuMjU3NyA4LjQ1NTM3IDI2LjE5MDcgNy43NDI0NiAyNS4yOTE5IDYuODQzNzNDMjQuMzkzMiA1Ljk0NSAyMy42ODAzIDQuODc4MDUgMjMuMTkzOSAzLjcwMzhDMjIuNzc1NyAyLjY5NDIgMjIuNTMyIDEuNjIyMjggMjIuNDcyIDAuNTMzNzE2QzIyLjQ1NTYgMC4yMzkyNTggMjIuMjE4MSA0Ljg2NzQ5ZS0wNyAyMS45MjMyIDQuNjA5NjdlLTA3TDE2LjY1MDMgMFoiIGZpbGw9IiMyMTI5MEYiLz4KPHBhdGggZD0iTTQ0Ljc3MDkgMjIuMTUxOUM0My45MTc2IDIyLjE1MTkgNDMuMTIyOSAyMS45OTcyIDQyLjM4NjkgMjEuNjg3OUM0MS42NjE2IDIxLjM3ODYgNDEuMDI2OSAyMC45NDY2IDQwLjQ4MjkgMjAuMzkxOUMzOS45Mzg5IDE5LjgzNzIgMzkuNTEyMiAxOS4xODY2IDM5LjIwMjkgMTguNDM5OUMzOC45MDQyIDE3LjY5MzIgMzguNzU0OSAxNi44NzcyIDM4Ljc1NDkgMTUuOTkxOUMzOC43NTQ5IDE1LjEwNjYgMzguOTA0MiAxNC4yOTA2IDM5LjIwMjkgMTMuNTQzOUMzOS41MDE2IDEyLjc4NjYgMzkuOTIyOSAxMi4xMzU5IDQwLjQ2NjkgMTEuNTkxOUM0MS4wMTA5IDExLjAzNzIgNDEuNjQ1NiAxMC42MTA2IDQyLjM3MDkgMTAuMzExOUM0My4xMDY5IDEwLjAwMjYgNDMuOTA2OSA5Ljg0NzkgNDQuNzcwOSA5Ljg0NzlDNDUuNjM0OSA5Ljg0NzkgNDYuNDA4MiA5Ljk5MTkgNDcuMDkwOSAxMC4yNzk5QzQ3Ljc4NDIgMTAuNTY3OSA0OC4zNzA5IDEwLjk1MTkgNDguODUwOSAxMS40MzE5QzQ5LjMzMDkgMTEuOTExOSA0OS42NzIyIDEyLjQ0NTIgNDkuODc0OSAxMy4wMzE5TDQ3LjY4MjkgMTQuMDg3OUM0Ny40ODAyIDEzLjUxMTkgNDcuMTIyOSAxMy4wMzcyIDQ2LjYxMDkgMTIuNjYzOUM0Ni4xMDk2IDEyLjI3OTkgNDUuNDk2MiAxMi4wODc5IDQ0Ljc3MDkgMTIuMDg3OUM0NC4wNjY5IDEyLjA4NzkgNDMuNDQ4MiAxMi4yNTMyIDQyLjkxNDkgMTIuNTgzOUM0Mi4zODE2IDEyLjkxNDYgNDEuOTY1NiAxMy4zNzMyIDQxLjY2NjkgMTMuOTU5OUM0MS4zNzg5IDE0LjUzNTkgNDEuMjM0OSAxNS4yMTMyIDQxLjIzNDkgMTUuOTkxOUM0MS4yMzQ5IDE2Ljc3MDYgNDEuMzc4OSAxNy40NTMyIDQxLjY2NjkgMTguMDM5OUM0MS45NjU2IDE4LjYyNjYgNDIuMzgxNiAxOS4wODUyIDQyLjkxNDkgMTkuNDE1OUM0My40NDgyIDE5Ljc0NjYgNDQuMDY2OSAxOS45MTE5IDQ0Ljc3MDkgMTkuOTExOUM0NS40OTYyIDE5LjkxMTkgNDYuMTA5NiAxOS43MjUyIDQ2LjYxMDkgMTkuMzUxOUM0Ny4xMjI5IDE4Ljk2NzkgNDcuNDgwMiAxOC40ODc5IDQ3LjY4MjkgMTcuOTExOUw0OS44NzQ5IDE4Ljk2NzlDNDkuNjcyMiAxOS41NTQ2IDQ5LjMzMDkgMjAuMDg3OSA0OC44NTA5IDIwLjU2NzlDNDguMzcwOSAyMS4wNDc5IDQ3Ljc4NDIgMjEuNDMxOSA0Ny4wOTA5IDIxLjcxOTlDNDYuNDA4MiAyMi4wMDc5IDQ1LjYzNDkgMjIuMTUxOSA0NC43NzA5IDIyLjE1MTlaIiBmaWxsPSIjMjEyOTBGIi8+CjxwYXRoIGQ9Ik01MS40NjYxIDIxLjk2MDFWMTAuMDRINTMuOTQ2MVYxOS44MDAxSDU4Ljk4NjFWMjEuOTYwMUg1MS40NjYxWiIgZmlsbD0iIzIxMjkwRiIvPgo8cGF0aCBkPSJNNjUuODcxNSAyMi4xNTE5QzY0Ljk3NTUgMjIuMTUxOSA2NC4xNDM1IDIxLjk5NzIgNjMuMzc1NSAyMS42ODc5QzYyLjYwNzUgMjEuMzc4NiA2MS45MzU1IDIwLjk0NjYgNjEuMzU5NSAyMC4zOTE5QzYwLjc5NDIgMTkuODI2NiA2MC4zNTE1IDE5LjE3MDYgNjAuMDMxNSAxOC40MjM5QzU5LjcxMTUgMTcuNjc3MiA1OS41NTE1IDE2Ljg2NjYgNTkuNTUxNSAxNS45OTE5QzU5LjU1MTUgMTUuMTE3MiA1OS43MDYyIDE0LjMwNjYgNjAuMDE1NSAxMy41NTk5QzYwLjMzNTUgMTIuODEzMiA2MC43NzgyIDEyLjE2MjYgNjEuMzQzNSAxMS42MDc5QzYxLjkxOTUgMTEuMDUzMiA2Mi41OTE1IDEwLjYyMTIgNjMuMzU5NSAxMC4zMTE5QzY0LjEyNzUgMTAuMDAyNiA2NC45NjQ4IDkuODQ3OSA2NS44NzE1IDkuODQ3OUM2Ni43NzgyIDkuODQ3OSA2Ny42MTU1IDEwLjAwMjYgNjguMzgzNSAxMC4zMTE5QzY5LjE1MTUgMTAuNjIxMiA2OS44MTgyIDExLjA1MzIgNzAuMzgzNSAxMS42MDc5QzcwLjk1OTUgMTIuMTYyNiA3MS40MDIyIDEyLjgxMzIgNzEuNzExNSAxMy41NTk5QzcyLjAzMTUgMTQuMzA2NiA3Mi4xOTE1IDE1LjExNzIgNzIuMTkxNSAxNS45OTE5QzcyLjE5MTUgMTYuODY2NiA3Mi4wMzE1IDE3LjY3NzIgNzEuNzExNSAxOC40MjM5QzcxLjM5MTUgMTkuMTcwNiA3MC45NDM1IDE5LjgyNjYgNzAuMzY3NSAyMC4zOTE5QzY5LjgwMjIgMjAuOTQ2NiA2OS4xMzU1IDIxLjM3ODYgNjguMzY3NSAyMS42ODc5QzY3LjU5OTUgMjEuOTk3MiA2Ni43Njc1IDIyLjE1MTkgNjUuODcxNSAyMi4xNTE5Wk02NS44NzE1IDE5LjkxMTlDNjYuNDE1NSAxOS45MTE5IDY2LjkxNjggMTkuODE1OSA2Ny4zNzU1IDE5LjYyMzlDNjcuODQ0OCAxOS40MzE5IDY4LjI1NTUgMTkuMTY1MiA2OC42MDc1IDE4LjgyMzlDNjguOTU5NSAxOC40NzE5IDY5LjIzMTUgMTguMDU1OSA2OS40MjM1IDE3LjU3NTlDNjkuNjE1NSAxNy4wOTU5IDY5LjcxMTUgMTYuNTY3OSA2OS43MTE1IDE1Ljk5MTlDNjkuNzExNSAxNS40MTU5IDY5LjYxNTUgMTQuODkzMiA2OS40MjM1IDE0LjQyMzlDNjkuMjMxNSAxMy45NDM5IDY4Ljk1OTUgMTMuNTI3OSA2OC42MDc1IDEzLjE3NTlDNjguMjU1NSAxMi44MjM5IDY3Ljg0NDggMTIuNTU3MiA2Ny4zNzU1IDEyLjM3NTlDNjYuOTE2OCAxMi4xODM5IDY2LjQxNTUgMTIuMDg3OSA2NS44NzE1IDEyLjA4NzlDNjUuMzI3NSAxMi4wODc5IDY0LjgyMDggMTIuMTgzOSA2NC4zNTE1IDEyLjM3NTlDNjMuODkyOCAxMi41NTcyIDYzLjQ4NzUgMTIuODIzOSA2My4xMzU1IDEzLjE3NTlDNjIuNzgzNSAxMy41Mjc5IDYyLjUxMTUgMTMuOTQzOSA2Mi4zMTk1IDE0LjQyMzlDNjIuMTI3NSAxNC44OTMyIDYyLjAzMTUgMTUuNDE1OSA2Mi4wMzE1IDE1Ljk5MTlDNjIuMDMxNSAxNi41Njc5IDYyLjEyNzUgMTcuMDk1OSA2Mi4zMTk1IDE3LjU3NTlDNjIuNTExNSAxOC4wNTU5IDYyLjc4MzUgMTguNDcxOSA2My4xMzU1IDE4LjgyMzlDNjMuNDg3NSAxOS4xNjUyIDYzLjg5MjggMTkuNDMxOSA2NC4zNTE1IDE5LjYyMzlDNjQuODIwOCAxOS44MTU5IDY1LjMyNzUgMTkuOTExOSA2NS44NzE1IDE5LjkxMTlaIiBmaWxsPSIjMjEyOTBGIi8+CjxwYXRoIGQ9Ik03Mi41ODYyIDIxLjk2MDFMNzYuNjE4MiAxMC4wNEg3OS45MTQyTDgzLjk0NjIgMjEuOTYwMUg4MS4yNDIyTDgwLjQ0MjIgMTkuNTI4MUg3Ni4wNzQyTDc1LjI3NDIgMjEuOTYwMUg3Mi41ODYyWk03Ni43NjIyIDE3LjM2ODFINzkuNzU0Mkw3Ny45MzAyIDExLjczNjFINzguNjAyMkw3Ni43NjIyIDE3LjM2ODFaIiBmaWxsPSIjMjEyOTBGIi8+CjxwYXRoIGQ9Ik04NS4xODQ4IDIxLjk2MDFWMTAuMDRIODcuNTg0OEw5Mi4wNDg4IDE1Ljk2MDFIOTAuOTI4OEw5NS4yNjQ4IDEwLjA0SDk3LjY2NDhWMjEuOTYwMUg5NS4xODQ4VjEyLjc3NjFMOTYuMTc2OCAxM0w5MS41ODQ4IDE4LjkyMDFIOTEuMjY0OEw4Ni44MzI4IDEzTDg3LjY2NDggMTIuNzc2MVYyMS45NjAxSDg1LjE4NDhaIiBmaWxsPSIjMjEyOTBGIi8+CjxwYXRoIGQ9Ik05OS43Nzg2IDIxLjk2MDFWMTAuMDRIMTAyLjI1OVYyMS45NjAxSDk5Ljc3ODZaIiBmaWxsPSIjMjEyOTBGIi8+CjwvZz4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcDBfMTE4MV8yNjIzMTYiPgo8cmVjdCB3aWR0aD0iMTAyLjUwNyIgaGVpZ2h0PSIzMiIgZmlsbD0id2hpdGUiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K'
+        class='logo'
+        alt='cloami-logo'
+      />
+      <h2 class='fs-2 fw-bold'>Purchase Order</h2>
+      <div class='px-0'>
+        <div class='row'>
+          <div class='col-8'>
+            <div class='d-flex flex-column fs-6 text-low'>
+              <p>Purchase Order Number : {{code}}</p>
+              <p>{{dateLocalFormat created_at}}</p>
+              <p>Purchase {{type}}</p>
             </div>
           </div>
-          <br /><br />
-          <div class='row'>
-            <div class='col-6'>
-              <div class='card'>
-                <div class='card-body'>
-                  <p><strong>Origin of Shipment</strong></p>
-                  <p>{{company.name}}</p>
-                  <p>{{company.address}}</p>
-                  <p>{{company.phone_number}}</p>
-                </div>
-              </div>
-            </div>
-            <div class='col-6'>
-              <div class='card'>
-                <div class='card-body'>
-                  <p><strong>Delivery destination</strong></p>
-                  <p>{{company_name}}</p>
-                  <p>{{company_address}}</p>
-                  <p>{{company_phone_number}}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <br /><br />
-          <div class='row'>
-            <div class='col-12'>
-              <h5>Cost Details</h5>
-              <table class='table'>
-                <thead>
-                  <tr>
-                    <th>Number</th>
-                    <th>Description</th>
-                    <th>QTY</th>
-                    <th>Unit</th>
-                    <th>Unit price</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {{#each cost_details}}
-                    <tr>
-                      <td>{{incremented @index}}</td>
-                      <td style='word-break: break-all'>{{description}}</td>
-                      <td>{{formatCurrency price}}</td>
-                      <td>{{unit}}</td>
-                      <td>{{quantity}}</td>
-                      <td>{{formatCurrency total_price}}</td>
-                    </tr>
-                  {{/each}}
-                </tbody>
-              </table>
+          <div class='col-4'>
+            <div class='d-flex flex-column fs-6 text-low'>
+              <p class='fs-6 fw-bold'>Billed To</p>
+              <p class='fs-6 text-foundation-brand'>{{company_name}}</p>
+              <p>{{company_address}}</p>
+              <p>{{company_phone_number}}</p>
             </div>
           </div>
         </div>
       </div>
-      <div class='row pagebreak' id='page-break-row'>
-        <div class='col-5'>
-          <div class='card'>
-            <div class='card-body'>
-              <p class='fw-bold fs-5'>Payment</p>
-              <div>
-                <div class='d-flex justify-content-between'>
-                  <p>Bank name</p>
-                  <p class='text-low'>{{bank_name}}</p>
-                </div>
-                <div class='d-flex justify-content-between'>
-                  <p>Account</p>
-                  <p class='text-low'>{{bank_account_number}}</p>
-                </div>
-                <div class='d-flex justify-content-between'>
-                  <p>On behalf of</p>
-                  <p class='text-low'>{{bank_account_houlders_name}}</p>
-                </div>
+      <div class='row-cols-auto gap-6 max-width'>
+        <table class='w-100'>
+          <thead>
+            <tr class='fw-bold text-dark'>
+              <th width='{20}' class='p-4 border-end'>Number</th>
+              <th class='max-width p-4 border-end'>Item</th>
+              <th width='{170}' class='max-width p-4 border-end'>QTY</th>
+              <th width='{170}' class='max-width p-4 border-end'>Unit</th>
+              <th width='{170}' class='max-width p-4 border-end'>Unit Price</th>
+              <th width='{170}' class='max-width p-4'>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each cost_details}}
+              <tr class='fw-medium text-dark'>
+                <td class='p-4 align-top border-top border-end'>
+                  <p>{{incremented @index}}</p>
+                </td>
+                <td class='p-4 align-top border-top border-end'>
+                  <p>{{item}}</p>
+                </td>
+                <td class='p-4 align-top border-top border-end'>
+                  <p>{{quantity}}</p>
+                </td>
+                <td class='p-4 align-top border-top border-end'>
+                  <p>{{unit}}</p>
+                </td>
+                <td class='p-4 align-top border-top border-end'>
+                  <p>{{formatCurrency unit_price}}</p>
+                </td>
+                <td class='p-4 align-top border-top'>
+                  <p>{{formatCurrency sub_total}}</p>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        <div
+          class='d-flex justify-content-end fw-bold text-dark pagebreak'
+          id='page-break-row'
+        >
+          <div class='row-cols-auto' style='width: 320px'>
+            <div class='row'>
+              <div class='col gap-4'>
+                <p>Total</p>
               </div>
-              <div class='border-top pt-3'>
-                <div class='d-flex justify-content-between'>
-                  <p>Payment Term</p>
-                  <p class='text-low'>{{payment_term}}</p>
-                </div>
-                <div class='d-flex justify-content-between'>
-                  <p>Delivery Date</p>
-                  <p class='text-low'>{{delivery_date}}</p>
-                </div>
+              <div class='col gap-4'>
+                <p>{{formatCurrency total}}</p>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col gap-4'>
+                <p>Discount</p>
+              </div>
+              <div class='col gap-4'>
+                {{#if discount}}
+                  <p>{{formatCurrency discount}}</p>
+                {{else}}
+                  <p>{{formatCurrency 0}}</p>
+                {{/if}}
+
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col gap-4'>
+                {{#if ppn}}
+                  <p>PPN {{ppn}} %</p>
+                {{else}}
+                  <p>PPN 0 %</p>
+                {{/if}}
+              </div>
+              <div class='col gap-4'>
+                <p>{{formatCurrency ppn_result}}</p>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col gap-4 border-bottom'>
+                {{#if ppn}}
+                  <p>PPN {{ppn}} %</p>
+                {{else}}
+                  <p>PPN 0 %</p>
+                {{/if}}
+              </div>
+              <div class='col gap-4 border-bottom'>
+                <p>{{formatCurrency pph_result}}</p>
+              </div>
+            </div>
+            <div class='row py-4'>
+              <div class='col gap-4'>
+                <p class='fs-5 text-brand'>Grand Total</p>
+              </div>
+              <div class='col gap-4'>
+                <p>{{formatCurrency grand_total}}</p>
               </div>
             </div>
           </div>
         </div>
-        <div class='col-7'>
-          <div class='card'>
-            <div class='card-body'>
-              <div>
-                <div class='d-flex justify-content-between'>
-                  <p>Total</p>
-                  <p class='text-low'>{{formatCurrency total}}</p>
+        <div class='d-flex flex-column gap-3'>
+          <div class='row align-items-center'>
+            <p class='fs-2 fw-bold text-dark'>Thank you !</p>
+            <div class='col-5'>
+              <div
+                class='d-flex flex-column gap-2 py-4 text-lg border-t text-low border-top'
+              >
+                <p class='fs-5 fw-bold text-dark'>Payment Information</p>
+                <div class='d-flex justify-content-between max-width fs-6'>
+                  <p class='text-dark'>Bank Name</p>
+                  <p class='text-end text-low'>{{bank_name}}</p>
                 </div>
-                <div class='d-flex justify-content-between'>
-                  <p>Discount</p>
-                  <p class='text-low'>{{formatCurrency discount}}</p>
+                <div class='d-flex justify-content-between max-width fs-6'>
+                  <p class='text-dark'>Account Number</p>
+                  <p class='text-end text-low'>{{bank_account_number}}</p>
                 </div>
-                <div class='d-flex justify-content-between'>
-                  <p>PPN {{ppn}}%</p>
-                  <p class='text-low'>{{formatCurrency ppn_result}}</p>
-                </div>
-                <div class='d-flex justify-content-between'>
-                  <p>PPH {{pph}}%</p>
-                  <p class='text-low'>{{formatCurrency pph_result}}</p>
-                </div>
-              </div>
-              <div class='border-top pt-3'>
-                <div class='d-flex justify-content-between'>
-                  <p>Grand Total</p>
-                  <p style='color: #6e7859; font-size: 24px; font-weight: 700;'>
-
-                    {{formatCurrency grand_total}}
+                <div class='d-flex justify-content-between max-width fs-6'>
+                  <p class='text-dark'>Account Name</p>
+                  <p class='text-end text-low'>
+                    {{bank_account_houlders_name}}
                   </p>
                 </div>
               </div>
+              <div
+                class='d-flex flex-column gap-2 py-4 fs-4 border-top text-low'
+              >
+                <div class='d-flex justify-content-between max-width fs-6'>
+                  <p class='text-dark'>Payment Term</p>
+                  <p class='text-end text-low'>{{payment_term}}</p>
+                </div>
+                <div class='d-flex justify-content-between max-width fs-6'>
+                  <p class='text-dark'>Delivery Date</p>
+                  <p class='text-end text-low'>{{delivery_date}}</p>
+                </div>
+              </div>
+            </div>
+            <div class='col-7 d-flex flex-column gap-2 text-end text-low'>
+              <p class='fs-2 fw-bold text-brand'>Cloami</p>
+              <p>{{company.address}}</p>
+              <p>{{company.phone_number}}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
     <script
-      src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
-      integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz'
+      src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js'
+      integrity='sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM'
       crossorigin='anonymous'
     ></script>
     <script
@@ -180,12 +204,11 @@
     ></script>
     <script>
       async function download() { var element = document.getElementById("body");
-      const pdfOptions = { margin: 10, filename: "purchase-order.pdf", image: {
-      type: "jpeg", quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit:
-      "mm", format: "a4", orientation: "potrait" }, pagebreak: { mode:
-      "avoid-all", before: "#page-break-row" }, }; await
-      html2pdf().from(element).set(pdfOptions).save(); return window.close(); }
+      const pdfOptions = { margin: 8, filename: "{{code}}.pdf", image: { type:
+      "jpeg", quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: "mm",
+      format: "a4", orientation: "landscape" }, pagebreak: { mode: "avoid-all",
+      before: "#page-break-row" }, }; await
+      html2pdf().from(element).set(pdfOptions).save(); }
     </script>
   </body>
-
 </html>
