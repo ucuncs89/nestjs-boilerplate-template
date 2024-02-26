@@ -181,7 +181,13 @@ export class ProjectPlanningVendorMaterialController {
           insertPurchaseOrder.id,
           {
             relation_id: detail.id,
-            item: `${detail.vendor_material.project_material_item.name} ${detail.vendor_material.project_material_item.category} - ${detail.vendor_material.project_material_item.used_for} - ${detail.vendor_material.project_variant.name}`,
+            item: `${detail.vendor_material.project_material_item.name} ${
+              detail.vendor_material.project_material_item.category
+            }${
+              detail.vendor_material.project_material_item.used_for
+                ? ' - ' + detail.vendor_material.project_material_item.used_for
+                : ''
+            } - ${detail.vendor_material.project_variant.name}`,
             quantity: detail.quantity,
             unit_price: detail.price,
             unit: detail.quantity_unit,
@@ -194,7 +200,13 @@ export class ProjectPlanningVendorMaterialController {
           purchaseOrder.id,
           {
             relation_id: detail.id,
-            item: `${detail.vendor_material.project_material_item.name} ${detail.vendor_material.project_material_item.category} ${detail.vendor_material.project_material_item.used_for} - ${detail.vendor_material.project_variant.name}`,
+            item: `${detail.vendor_material.project_material_item.name} ${
+              detail.vendor_material.project_material_item.category
+            }${
+              detail.vendor_material.project_material_item.used_for
+                ? ' - ' + detail.vendor_material.project_material_item.used_for
+                : ''
+            } - ${detail.vendor_material.project_variant.name}`,
             quantity: detail.quantity,
             unit_price: detail.price,
             unit: detail.quantity_unit,
