@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as handlebars from 'handlebars';
 import { AppErrorException } from 'src/exceptions/app-exception';
+// import moment from 'moment';
 
 @Injectable()
 export class PurchaseOrderPdfService {
@@ -24,11 +25,35 @@ export class PurchaseOrderPdfService {
         }
         return value;
       });
+      handlebars.registerHelper('dateLocalFormat', function (date) {
+        const months = [
+          'Januari',
+          'Februari',
+          'Maret',
+          'April',
+          'Mei',
+          'Juni',
+          'Juli',
+          'Agustus',
+          'September',
+          'Oktober',
+          'November',
+          'Desember',
+        ];
+
+        const day = date.getDate();
+        const month = months[date.getMonth()];
+        const year = date.getFullYear();
+
+        return `${day} ${month} ${year}`;
+      });
       const compiledTemplate = handlebars.compile(template);
       const html = compiledTemplate(data);
 
       return html;
     } catch (error) {
+      console.log(error);
+
       throw new AppErrorException(error);
     }
   }

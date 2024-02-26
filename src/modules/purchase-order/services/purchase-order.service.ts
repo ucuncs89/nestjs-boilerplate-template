@@ -48,6 +48,7 @@ export class PurchaseOrderService {
         code,
         created_by: user_id,
         status: StatusPurchaseOrderEnum.Waiting,
+        created_at: new Date().toISOString(),
       });
       await this.purchaseOrderRepository.save(purchaseOrder);
 
