@@ -78,6 +78,8 @@ import { PurchaseOrderDetailEntity } from 'src/entities/purchase-order/purchase_
 import { ProjectPurchaseOrderController } from './general/controllers/project-purchase-order.controller';
 import { ProjectPurchaseOrderService } from './general/services/project-purchase-order.service';
 import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_order_status.entity';
+import { ProjectProductionController } from './production/controllers/project-production.controller';
+import { ProjectProductionService } from './production/services/project-production.service';
 
 @Module({
   imports: [
@@ -133,6 +135,7 @@ import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_
     ProjectPlanningPriceController,
     ProjectPlanningRecapController,
     ProjectPurchaseOrderController,
+    ProjectProductionController,
   ],
   providers: [
     ProjectService,
@@ -165,6 +168,7 @@ import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_
     VendorsService,
     RolesPermissionGuard,
     ProjectPurchaseOrderService,
+    ProjectProductionService,
   ],
 })
 export class ProjectModule {}
