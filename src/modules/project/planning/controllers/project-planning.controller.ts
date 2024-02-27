@@ -36,12 +36,12 @@ export class ProjectPlanningController {
     const data = await this.projectPlanningService.generatePlanning(project_id);
     return { data };
   }
-  //   @Post(':project_id/publish')
-  //   async publish(@Req() req, @Param('project_id') project_id: number) {
-  //     const data = await this.projectCostingService.publishCosting(
-  //       project_id,
-  //       req.user.id,
-  //     );
-  //     return { data };
-  //   }
+  @Post(':project_id/publish')
+  async publish(@Req() req, @Param('project_id') project_id: number) {
+    const data = await this.projectPlanningService.publishPlanning(
+      project_id,
+      req.user.id,
+    );
+    return { data };
+  }
 }

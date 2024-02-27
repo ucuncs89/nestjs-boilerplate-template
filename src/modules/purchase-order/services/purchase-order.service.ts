@@ -426,12 +426,11 @@ export class PurchaseOrderService {
     status.status = null;
     status.reason = null;
     await this.purchaseOrderStatusRepository.save(status);
-    if (status.status_desc === PurchaseOrderStatusEnum.PaymentStatusConfirm) {
-      updateToProject = await this.updateToProject(
-        purchase_order_id,
-        StatusPurchaseOrderEnum.Waiting,
-      );
-    }
+    await this.updateToProject(
+      purchase_order_id,
+      StatusPurchaseOrderEnum.Waiting,
+    );
+
     return { status, updateToProject };
   }
 }
