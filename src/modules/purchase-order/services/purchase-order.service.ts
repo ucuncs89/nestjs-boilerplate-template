@@ -430,6 +430,10 @@ export class PurchaseOrderService {
     status.status = null;
     status.reason = null;
     await this.purchaseOrderStatusRepository.save(status);
+    await this.purchaseOrderRepository.update(
+      { id: purchase_order_id },
+      { status: StatusPurchaseOrderEnum.Waiting },
+    );
     await this.updateToProject(
       purchase_order_id,
       StatusPurchaseOrderEnum.Waiting,
