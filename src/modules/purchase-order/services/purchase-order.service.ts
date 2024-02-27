@@ -297,17 +297,21 @@ export class PurchaseOrderService {
           purchase_order_id,
           purchaseApprovalDto.status,
         );
+        await this.purchaseOrderRepository.update(
+          { id: purchase_order_id },
+          { status: purchaseApprovalDto.status },
+        );
       }
       if (purchaseApprovalDto.status === StatusPurchaseOrderEnum.Rejected) {
         updateToProject = await this.updateToProject(
           purchase_order_id,
           purchaseApprovalDto.status,
         );
+        await this.purchaseOrderRepository.update(
+          { id: purchase_order_id },
+          { status: purchaseApprovalDto.status },
+        );
       }
-      await this.purchaseOrderRepository.update(
-        { id: purchase_order_id },
-        { status: purchaseApprovalDto.status },
-      );
       return { status, updateToProject };
     } catch (error) {
       throw new AppErrorException(error);
