@@ -276,4 +276,18 @@ export class ProjectPlanningService {
       await queryRunner.release();
     }
   }
+
+  async publishPlanning(project_id: number, user_id: number) {
+    const project = await this.projectRepository.findOne({
+      where: { id: project_id, deleted_at: IsNull(), deleted_by: IsNull() },
+    });
+    if (project.status === StatusProjectEnum.Planning) {
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        { can_production: true, updated_by: user_id },
+      );
+      return data;
+    }
+    return { data: 'Already' };
+  }
 }
