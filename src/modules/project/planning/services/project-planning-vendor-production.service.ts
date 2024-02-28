@@ -50,6 +50,7 @@ export class ProjectPlanningVendorProductionService {
           end_date: true,
           added_in_section: true,
           status_purchase_order: true,
+          purchase_order_detail_id: true,
         },
       },
       where: {

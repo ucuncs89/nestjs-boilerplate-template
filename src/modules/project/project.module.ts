@@ -80,6 +80,9 @@ import { ProjectPurchaseOrderService } from './general/services/project-purchase
 import { PurchaseOrderStatusEntity } from 'src/entities/purchase-order/purchase_order_status.entity';
 import { ProjectProductionController } from './production/controllers/project-production.controller';
 import { ProjectProductionService } from './production/services/project-production.service';
+import { ProjectProductionStageController } from './production/controllers/project-production-stage.controller';
+import { ProjectProductionStageService } from './production/services/project-production-stage.service';
+import { ProjectVendorProductionStageEntity } from 'src/entities/project/project_vendor_production_stage.entity';
 
 @Module({
   imports: [
@@ -105,6 +108,7 @@ import { ProjectProductionService } from './production/services/project-producti
       UsersRolesEntity,
       PurchaseOrderDetailEntity,
       PurchaseOrderStatusEntity,
+      ProjectVendorProductionStageEntity,
     ]),
     RabbitMQModule,
   ],
@@ -136,6 +140,7 @@ import { ProjectProductionService } from './production/services/project-producti
     ProjectPlanningRecapController,
     ProjectPurchaseOrderController,
     ProjectProductionController,
+    ProjectProductionStageController,
   ],
   providers: [
     ProjectService,
@@ -169,6 +174,7 @@ import { ProjectProductionService } from './production/services/project-producti
     RolesPermissionGuard,
     ProjectPurchaseOrderService,
     ProjectProductionService,
+    ProjectProductionStageService,
   ],
 })
 export class ProjectModule {}
