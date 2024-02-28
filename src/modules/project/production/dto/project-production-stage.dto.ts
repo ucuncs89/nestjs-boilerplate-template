@@ -24,4 +24,10 @@ export class ProjectProductionStageDto {
 
   @ApiProperty()
   description: string;
+
+  @ApiProperty()
+  quantity: number;
+
+  @ApiProperty()
+  quantity_unit: string;
 }
