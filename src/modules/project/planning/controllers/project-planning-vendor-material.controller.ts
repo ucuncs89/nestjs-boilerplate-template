@@ -182,7 +182,7 @@ export class ProjectPlanningVendorMaterialController {
           {
             relation_id: detail.id,
             item: `${detail.vendor_material.project_material_item.name} ${
-              detail.vendor_material.project_material_item.category
+              detail.vendor_material.project_material_item.category || ''
             }${
               detail.vendor_material.project_material_item.used_for
                 ? ' - ' + detail.vendor_material.project_material_item.used_for
@@ -201,7 +201,7 @@ export class ProjectPlanningVendorMaterialController {
           {
             relation_id: detail.id,
             item: `${detail.vendor_material.project_material_item.name} ${
-              detail.vendor_material.project_material_item.category
+              detail.vendor_material.project_material_item.category || ''
             }${
               detail.vendor_material.project_material_item.used_for
                 ? ' - ' + detail.vendor_material.project_material_item.used_for
