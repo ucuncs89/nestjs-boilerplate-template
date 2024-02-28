@@ -40,4 +40,10 @@ export class ProjectVendorProductionStageEntity {
 
   @Column({ type: 'time with time zone', nullable: true })
   deleted_at: string;
+
+  @Column({ type: 'int', nullable: true })
+  quantity: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  quantity_unit: string;
 }
