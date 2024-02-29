@@ -35,6 +35,22 @@ export class ProjectProductionStageService {
     });
     return data;
   }
+
+  async findDetailStage(project_id: number, stage_id: number) {
+    const data = await this.projectRepository.findOne({
+      where: {
+        id: stage_id,
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      order: { id: 'ASC' },
+    });
+    if (!data) {
+      throw new AppErrorNotFoundException();
+    }
+    return data;
+  }
   async updateStage(
     project_id: number,
     stage_id: number,

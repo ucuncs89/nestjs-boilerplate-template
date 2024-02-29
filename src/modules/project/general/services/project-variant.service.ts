@@ -210,4 +210,12 @@ export class ProjectVariantService {
       await queryRunner.release();
     }
   }
+  async sumTotalItemByProjectId(project_id: number) {
+    const data = await this.projectVariantRepository.sum('total_item', {
+      project_id,
+      deleted_at: IsNull(),
+      deleted_by: IsNull(),
+    });
+    return data;
+  }
 }
