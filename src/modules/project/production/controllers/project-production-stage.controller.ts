@@ -14,6 +14,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectProductionStageService } from '../services/project-production-stage.service';
 import { ProjectProductionStageDto } from '../dto/project-production-stage.dto';
+import { ProjectVariantService } from '../../general/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project production')
@@ -22,6 +23,7 @@ import { ProjectProductionStageDto } from '../dto/project-production-stage.dto';
 export class ProjectProductionStageController {
   constructor(
     private projectProductionStageService: ProjectProductionStageService,
+    private projectVariantService: ProjectVariantService,
   ) {}
 
   @Get(':project_id/stage')
@@ -31,7 +33,29 @@ export class ProjectProductionStageController {
     @I18n() i18n: I18nContext,
   ) {
     const data = await this.projectProductionStageService.findStage(project_id);
-
+    let sum_quantity_stage = 0;
+    if (data.length > 0) {
+      sum_quantity_stage = data.reduce(
+        (total, item) => total + item.quantity,
+        0,
+      );
+    }
+    const total_item_variant =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const quantity_remaining = total_item_variant - sum_quantity_stage;
+    return { data, total_item_variant, quantity_remaining, sum_quantity_stage };
+  }
+  @Get(':project_id/stage/:stage_id')
+  async getDetailProductionStage(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('stage_id') stage_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectProductionStageService.findDetailStage(
+      project_id,
+      stage_id,
+    );
     return { data };
   }
   @Post(':project_id/stage')
