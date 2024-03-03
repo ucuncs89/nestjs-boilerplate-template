@@ -15,6 +15,9 @@ export class ProjectProductionShippingDto {
   @ApiProperty()
   shipping_cost?: number;
 
+  @ApiProperty()
+  receipt_number?: string;
+
   project_id?: number;
 
   created_by?: number;

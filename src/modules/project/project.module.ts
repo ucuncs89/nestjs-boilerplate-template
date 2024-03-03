@@ -83,6 +83,8 @@ import { ProjectProductionService } from './production/services/project-producti
 import { ProjectProductionStageController } from './production/controllers/project-production-stage.controller';
 import { ProjectProductionStageService } from './production/services/project-production-stage.service';
 import { ProjectVendorProductionStageEntity } from 'src/entities/project/project_vendor_production_stage.entity';
+import { ProjectProductionShippingController } from './production/controllers/project-production-shipping.controller';
+import { ProjectProductionShippingService } from './production/services/project-production-shipping.service';
 
 @Module({
   imports: [
@@ -141,6 +143,7 @@ import { ProjectVendorProductionStageEntity } from 'src/entities/project/project
     ProjectPurchaseOrderController,
     ProjectProductionController,
     ProjectProductionStageController,
+    ProjectProductionShippingController,
   ],
   providers: [
     ProjectService,
@@ -175,6 +178,7 @@ import { ProjectVendorProductionStageEntity } from 'src/entities/project/project
     ProjectPurchaseOrderService,
     ProjectProductionService,
     ProjectProductionStageService,
+    ProjectProductionShippingService,
   ],
 })
 export class ProjectModule {}
