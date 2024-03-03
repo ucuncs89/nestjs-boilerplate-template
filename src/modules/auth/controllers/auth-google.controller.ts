@@ -34,10 +34,18 @@ export class AuthGoogleController {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     const googlePayload = dataGoogle.getPayload();
-    if (
-      googlePayload.email === 'ucuncs89@gmail.com' ||
-      googlePayload.email === 'wildanym@gmail.com'
-    ) {
+
+    if (googlePayload.email === 'ucuncs89@gmail.com') {
+      const data = await this.authGoogleService.googleLogin(
+        googlePayload,
+        i18n,
+      );
+      return {
+        message: i18n.t('auth.login_success'),
+        data,
+      };
+    }
+    if (googlePayload.email === 'wildanym@gmail.com') {
       const data = await this.authGoogleService.googleLogin(
         googlePayload,
         i18n,
