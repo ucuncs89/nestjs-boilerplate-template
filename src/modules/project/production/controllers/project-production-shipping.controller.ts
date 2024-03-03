@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectProductionShippingService } from '../services/project-production-shipping.service';
 import { ProjectProductionShippingDto } from '../dto/project-production-shipping.dto';
+import { ProjectProductionShippingPackingDto } from '../dto/project-production-shipping-packing.dto';
 
 @ApiBearerAuth()
 @ApiTags('project production')
@@ -67,23 +68,10 @@ export class ProjectProductionShippingController {
       projectProductionShippingDto,
       req.user.id,
     );
-    // if (data) {
-    //   const calculateShipping =
-    //     await this.projectPlanningShippingService.sumGrandAvgPriceTotalShipping(
-    //       project_id,
-    //     );
-    //   this.projectDetailCalculateService.upsertCalculate(
-    //     project_id,
-    //     TypeProjectDetailCalculateEnum.Shipping,
-    //     StatusProjectEnum.Planning,
-    //     calculateShipping.avg_price,
-    //     calculateShipping.total_cost,
-    //   );
-    // }
     return { data };
   }
   @Get(':project_id/shipping/:shipping_id')
-  async getDetailProjectInvoice(
+  async getDetailProjectShipping(
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('shipping_id') shipping_id: number,
@@ -95,7 +83,7 @@ export class ProjectProductionShippingController {
     return { data };
   }
   @Delete(':project_id/shipping/:shipping_id')
-  async deleteDetailProjectInvoice(
+  async deleteDetailProjectShipping(
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('shipping_id') shipping_id: number,
@@ -103,6 +91,57 @@ export class ProjectProductionShippingController {
   ) {
     const data = await this.projectProductionShippingService.deleteShipping(
       shipping_id,
+    );
+    return { data };
+  }
+
+  @Post(':project_id/shipping/:shipping_id/packing-list')
+  async postPackingList(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @Body()
+    projectProductionShippingPackingDto: ProjectProductionShippingPackingDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectProductionShippingService.createPackingList(
+      shipping_id,
+      projectProductionShippingPackingDto,
+      req.user.id,
+    );
+    return { data };
+  }
+  @Put(':project_id/shipping/:shipping_id/packing-list/:packing_id')
+  async putPackingList(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @Param('packing_id') packing_id: number,
+    @Body()
+    projectProductionShippingPackingDto: ProjectProductionShippingPackingDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectProductionShippingService.updatePackingList(
+      shipping_id,
+      packing_id,
+      projectProductionShippingPackingDto,
+      req.user.id,
+    );
+    return { data };
+  }
+  @Delete(':project_id/shipping/:shipping_id/packing-list/:packing_id')
+  async deletePackingList(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @Param('packing_id') packing_id: number,
+
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectProductionShippingService.deletePackingList(
+      shipping_id,
+      packing_id,
+      req.user.id,
     );
     return { data };
   }

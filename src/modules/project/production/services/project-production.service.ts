@@ -81,6 +81,7 @@ export class ProjectProductionService {
             ProjectAdditionalCostEntity,
             {
               ...additionalCost,
+              project_id,
               created_at: new Date().toISOString(),
             },
           );
@@ -96,6 +97,8 @@ export class ProjectProductionService {
       return { new: arrResult, update };
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      console.log(error);
+
       throw new AppErrorException(error.message);
     } finally {
       await queryRunner.release();
