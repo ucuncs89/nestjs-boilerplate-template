@@ -37,6 +37,7 @@ export class ProjectProductionShippingService {
           project_shipping_id: true,
           variant_id: true,
           variant_name: true,
+          total_item: true,
           created_at: true,
           detail: {
             id: true,
