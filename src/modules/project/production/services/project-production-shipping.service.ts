@@ -214,14 +214,9 @@ export class ProjectProductionShippingService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const packing = await queryRunner.manager.update(
+      const packing = await queryRunner.manager.delete(
         ProjectShippingPackingEntity,
         { id: packing_id },
-        {
-          deleted_by: user_id,
-          deleted_at: new Date().toISOString(),
-          project_shipping_id: shipping_id,
-        },
       );
       await queryRunner.manager.delete(ProjectShippingPackingDetailEntity, {
         project_shipping_packing_id: packing_id,
