@@ -31,6 +31,7 @@ export class ProjectProductionShippingService {
         shipping_cost: true,
         created_at: true,
         added_in_section: true,
+        receipt_number: true,
         packing: {
           id: true,
           project_shipping_id: true,
