@@ -75,6 +75,9 @@ export class ProjectVendorProductionDetailEntity {
   @Column({ type: 'int', nullable: true })
   purchase_order_detail_id: number;
 
+  @Column({ type: 'int', nullable: true })
+  purchase_order_id: number;
+
   @ManyToOne(
     () => ProjectVendorProductionEntity,
     (vendor_production: ProjectVendorProductionEntity) =>

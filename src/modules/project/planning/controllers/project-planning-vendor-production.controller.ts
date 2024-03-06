@@ -175,6 +175,7 @@ export class ProjectPlanningVendorProductionController {
     project_vendor_production_detail_id: number,
   ) {
     let purchase_order_detail_id: number;
+    let purchase_order_id: number;
     const detail =
       await this.projectPlanningVendorProductionService.findNameDetail(
         project_vendor_id,
@@ -218,6 +219,7 @@ export class ProjectPlanningVendorProductionController {
             sub_total: detail.total_price,
           },
         );
+      purchase_order_id = insertPurchaseOrder.id;
     } else {
       purchase_order_detail_id =
         await this.purchaseOrderService.upsertPurchaseOrderDetail(
@@ -231,11 +233,13 @@ export class ProjectPlanningVendorProductionController {
             sub_total: detail.total_price,
           },
         );
+      purchase_order_id = purchaseOrder.id;
     }
     this.projectPlanningVendorProductionService.updateStatusPurchaseOrder(
       project_vendor_production_detail_id,
       StatusPurchaseOrderEnum.Waiting,
       purchase_order_detail_id,
+      purchase_order_id,
     );
     return { data: detail, purchaseOrder };
   }
