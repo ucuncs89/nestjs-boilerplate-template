@@ -76,6 +76,7 @@ export class ProjectPlanningMaterialService {
               total_price: true,
               status_purchase_order: true,
               purchase_order_detail_id: true,
+              purchase_order_id: true,
               vendors: { id: true, company_name: true },
             },
           },

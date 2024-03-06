@@ -169,12 +169,17 @@ export class ProjectPlanningVendorMaterialService {
     project_vendor_material_detail_id: number,
     status: StatusPurchaseOrderEnum,
     purchase_order_detail_id: number,
+    purchase_order_id: number,
   ) {
     const data = await this.projectVendorMaterialDetailRepository.update(
       {
         id: project_vendor_material_detail_id,
       },
-      { status_purchase_order: status, purchase_order_detail_id },
+      {
+        status_purchase_order: status,
+        purchase_order_detail_id,
+        purchase_order_id,
+      },
     );
     return data;
   }

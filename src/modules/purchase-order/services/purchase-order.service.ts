@@ -379,38 +379,39 @@ export class PurchaseOrderService {
   async updateToProject(
     purchase_order_id: number,
     status: StatusPurchaseOrderEnum,
+    // type: PurchaseOrderTypeEnum,
   ) {
     // const arrRelationsIds = [];
-    const arrPurchaseDetailIds = [];
-    const purchaseOrder = await this.findOne(purchase_order_id);
-    if (!purchaseOrder) {
-      return false;
-    }
-    const detail = await this.purchaseOrderDetailRepository.find({
-      where: {
+    // const arrPurchaseDetailIds = [];
+    // const purchaseOrder = await this.findOne(purchase_order_id);
+    // if (!purchaseOrder) {
+    //   return false;
+    // }
+    // const detail = await this.purchaseOrderDetailRepository.find({
+    //   where: {
+    //     purchase_order_id,
+    //   },
+    // });
+    // if (detail.length < 1) {
+    //   return false;
+    // }
+    // detail.map((v) => arrRelationsIds.push(v.relation_id));
+    // detail.map((v) => arrPurchaseDetailIds.push(v.id));
+    // if (type === PurchaseOrderTypeEnum.Material) {
+    this.projectVendorMaterialDetailRepository.update(
+      {
         purchase_order_id,
       },
-    });
-    if (detail.length < 1) {
-      return false;
-    }
-    // detail.map((v) => arrRelationsIds.push(v.relation_id));
-    detail.map((v) => arrPurchaseDetailIds.push(v.id));
-    if (purchaseOrder.type === PurchaseOrderTypeEnum.Material) {
-      this.projectVendorMaterialDetailRepository.update(
-        {
-          purchase_order_detail_id: In(arrPurchaseDetailIds),
-        },
-        { status_purchase_order: status },
-      );
-    } else if (purchaseOrder.type === PurchaseOrderTypeEnum.Production) {
-      this.projectVendorProductionDetailRepository.update(
-        {
-          purchase_order_detail_id: In(arrPurchaseDetailIds),
-        },
-        { status_purchase_order: status },
-      );
-    }
+      { status_purchase_order: status },
+    );
+    // } else if (type === PurchaseOrderTypeEnum.Production) {
+    this.projectVendorProductionDetailRepository.update(
+      {
+        purchase_order_id,
+      },
+      { status_purchase_order: status },
+    );
+    // }
   }
 
   async cancelPurchaseOrderApproval(

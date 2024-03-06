@@ -145,6 +145,7 @@ export class ProjectPlanningVendorMaterialController {
     @I18n() i18n: I18nContext,
   ) {
     let purchase_order_detail_id: number;
+    let purchase_order_id: number;
     const detail =
       await this.projectPlanningVendorMaterialService.findNameDetail(
         vendor_material_id,
@@ -194,6 +195,7 @@ export class ProjectPlanningVendorMaterialController {
             sub_total: detail.total_price,
           },
         );
+      purchase_order_id = insertPurchaseOrder.id;
     } else {
       purchase_order_detail_id =
         await this.purchaseOrderService.upsertPurchaseOrderDetail(
@@ -213,11 +215,13 @@ export class ProjectPlanningVendorMaterialController {
             sub_total: detail.total_price,
           },
         );
+      purchase_order_id = purchaseOrder.id;
     }
     this.projectPlanningVendorMaterialService.updateStatusPurchaseOrder(
       vendor_material_detail_id,
       StatusPurchaseOrderEnum.Waiting,
       purchase_order_detail_id,
+      purchase_order_id,
     );
     return { data: detail, purchaseOrder };
   }
