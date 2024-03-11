@@ -7,18 +7,18 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { InvoiceHistoryEntity } from './invoice_history.entity';
-import { InvoiceApprovalEntity } from './invoice_approval.entity';
+import { ProjectEntity } from '../project/project.entity';
 
 @Entity('invoice')
 export class InvoiceEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
-  code: string;
-
   @Column({ type: 'int', nullable: true })
   project_id: number;
+
+  @Column({ type: 'varchar' })
+  code: string;
 
   @Column({ type: 'int' })
   customer_id: number;
@@ -68,11 +68,8 @@ export class InvoiceEntity {
   @Column({ type: 'varchar', nullable: true })
   status: string;
 
-  @Column({ type: 'timestamp with time zone', nullable: true })
-  delivery_date: string;
-
-  @Column({ type: 'double precision', nullable: true })
-  grand_total: number;
+  @Column({ type: 'varchar', nullable: true })
+  type: string;
 
   @Column({
     type: 'timestamp with time zone',
@@ -95,6 +92,12 @@ export class InvoiceEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  delivery_date: string;
+
+  @Column({ type: 'double precision', nullable: true })
+  grand_total: number;
+
   @OneToMany(
     () => InvoiceHistoryEntity,
     (history: InvoiceHistoryEntity) => history.invoice,
@@ -102,10 +105,7 @@ export class InvoiceEntity {
   @JoinColumn({ name: 'invoice_id' })
   history: InvoiceHistoryEntity[];
 
-  @OneToMany(
-    () => InvoiceApprovalEntity,
-    (invoice: InvoiceApprovalEntity) => invoice.invoice,
-  )
-  @JoinColumn({ name: 'invoice_id' })
-  approval: InvoiceApprovalEntity[];
+  @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.invoice)
+  @JoinColumn({ name: 'project_id' })
+  public project: ProjectEntity;
 }

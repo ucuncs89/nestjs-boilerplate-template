@@ -14,6 +14,7 @@ import { CategoriesEntity } from '../categories/categories.entity';
 import { CustomersEntity } from '../customers/customers.entity';
 import { ProjectHistoryEntity } from './project_history.entity';
 import { ProjectVariantEntity } from './project_variant.entity';
+import { InvoiceEntity } from '../invoice/invoice.entity';
 
 @Entity('project')
 export class ProjectEntity {
@@ -177,4 +178,8 @@ export class ProjectEntity {
   )
   @JoinColumn({ name: 'project_id' })
   variant: ProjectVariantEntity[];
+
+  @OneToMany(() => InvoiceEntity, (invoice: InvoiceEntity) => invoice.project)
+  @JoinColumn({ name: 'project_id' })
+  invoice: InvoiceEntity[];
 }

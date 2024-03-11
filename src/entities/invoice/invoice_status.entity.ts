@@ -5,10 +5,10 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { InvoiceEntity } from './invoice.entity';
+import { UsersEntity } from '../users/users.entity';
 
-@Entity('invoice_history')
-export class InvoiceHistoryEntity {
+@Entity('invoice_status')
+export class InvoiceStatusEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -16,10 +16,13 @@ export class InvoiceHistoryEntity {
   invoice_id: number;
 
   @Column({ type: 'varchar', nullable: true })
+  status_desc: string;
+
+  @Column({ type: 'varchar', nullable: true })
   status: string;
 
   @Column({ type: 'varchar', nullable: true })
-  status_desc: string;
+  reason: string;
 
   @Column({
     type: 'timestamp with time zone',
@@ -42,9 +45,20 @@ export class InvoiceHistoryEntity {
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
 
-  @ManyToOne(() => InvoiceEntity, (invoice: InvoiceEntity) => invoice.history, {
-    cascade: true,
-  })
-  @JoinColumn({ name: 'invoice_id' })
-  public invoice: InvoiceEntity;
+  // @ManyToOne(
+  //   () => PurchaseOrderEntity,
+  //   (purchase_order: PurchaseOrderEntity) => purchase_order.po_status,
+  //   {
+  //     cascade: true,
+  //   },
+  // )
+  // @JoinColumn({ name: 'purchase_order_id' })
+  // public po: PurchaseOrderEntity;
+
+  @ManyToOne(
+    () => UsersEntity,
+    (users: UsersEntity) => users.purchase_order_status_approval,
+  )
+  @JoinColumn({ name: 'updated_by' })
+  public users: UsersEntity;
 }
