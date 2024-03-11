@@ -92,6 +92,9 @@ import { InvoiceService } from '../invoice/services/invoice.service';
 import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
 import { InvoiceStatusEntity } from 'src/entities/invoice/invoice_status.entity';
 import { InvoiceDetailEntity } from 'src/entities/invoice/invoice_detail.entity';
+import { ProjectReturController } from './general/controllers/project-retur.controller';
+import { ProjectReturService } from './general/services/project-retur.service';
+import { ProjectReturEntity } from 'src/entities/project/project_retur.entity';
 
 @Module({
   imports: [
@@ -121,6 +124,7 @@ import { InvoiceDetailEntity } from 'src/entities/invoice/invoice_detail.entity'
       InvoiceEntity,
       InvoiceStatusEntity,
       InvoiceDetailEntity,
+      ProjectReturEntity,
     ]),
     RabbitMQModule,
   ],
@@ -156,6 +160,7 @@ import { InvoiceDetailEntity } from 'src/entities/invoice/invoice_detail.entity'
     ProjectProductionShippingController,
     ProjectProductionAdditionalCostController,
     ProjectProductionInvoiceController,
+    ProjectReturController,
   ],
   providers: [
     ProjectService,
@@ -193,6 +198,7 @@ import { InvoiceDetailEntity } from 'src/entities/invoice/invoice_detail.entity'
     ProjectProductionShippingService,
     ProjectProductionAdditionalCostService,
     InvoiceService,
+    ProjectReturService,
   ],
 })
 export class ProjectModule {}
