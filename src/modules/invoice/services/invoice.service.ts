@@ -1,16 +1,86 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
-import { ILike, IsNull, Not, Repository } from 'typeorm';
+import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
 import { GetListInvoiceDto } from '../dto/get-list-invoice.dto';
-import { AppErrorNotFoundException } from 'src/exceptions/app-exception';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
+import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
+import {
+  InvoiceDetailDto,
+  InvoiceDto,
+  InvoiceStatusEnum,
+  StatusInvoiceEnum,
+} from '../dto/invoice.dto';
+import { InvoiceStatusEntity } from 'src/entities/invoice/invoice_status.entity';
+import { InvoiceDetailEntity } from 'src/entities/invoice/invoice_detail.entity';
 
 @Injectable()
 export class InvoiceService {
   constructor(
+    private connection: Connection,
+
     @InjectRepository(InvoiceEntity)
     private invoiceRepository: Repository<InvoiceEntity>,
+
+    @InjectRepository(InvoiceStatusEntity)
+    private invoiceStatusRepository: Repository<InvoiceStatusEntity>,
   ) {}
+
+  async create(
+    project_id: number,
+    invoiceDto: InvoiceDto,
+    user_id: number,
+    invoiceDetailDto: InvoiceDetailDto[],
+    grand_total: number,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const code = await this.generateCodeInvoice();
+      const invoice = await queryRunner.manager.insert(InvoiceEntity, {
+        ...invoiceDto,
+        code,
+        created_by: user_id,
+        status: StatusInvoiceEnum.Waiting,
+        created_at: new Date().toISOString(),
+        project_id,
+        grand_total,
+      });
+      await queryRunner.manager.insert(InvoiceStatusEntity, [
+        {
+          invoice_id: invoice.raw[0].id,
+          status_desc: InvoiceStatusEnum.CreatedByThe,
+          updated_by: user_id,
+          updated_at: new Date().toISOString(),
+          status: StatusInvoiceEnum.Approved,
+        },
+        {
+          invoice_id: invoice.raw[0].id,
+          status_desc: InvoiceStatusEnum.SendByThe,
+        },
+        {
+          invoice_id: invoice.raw[0].id,
+          status_desc: InvoiceStatusEnum.PaymentStatusConfirm,
+        },
+      ]);
+      if (invoiceDetailDto.length > 0) {
+        for (const detail of invoiceDetailDto) {
+          detail.invoice_id = invoice.raw[0].id;
+        }
+        await queryRunner.manager.insert(InvoiceDetailEntity, invoiceDetailDto);
+      }
+      await queryRunner.commitTransaction();
+      return invoiceDto;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AppErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
 
   async findAll(query: GetListInvoiceDto) {
     const { page, page_size, sort_by, order_by, keyword } = query;
@@ -46,7 +116,7 @@ export class InvoiceService {
       order: orderObj,
       take: page_size,
       skip: page,
-      // relations: { project: true },
+      relations: { project: true },
     });
     return {
       data,
@@ -79,19 +149,20 @@ export class InvoiceService {
         status: true,
         delivery_date: true,
         grand_total: true,
-        approval: {
-          id: true,
-          status: true,
-          status_desc: true,
-          invoice_id: true,
-        },
       },
-      relations: {
-        approval: true,
-      },
-      order: {
-        approval: { id: 'ASC' },
-      },
+      //   approval: {
+      //     id: true,
+      //     status: true,
+      //     status_desc: true,
+      //     invoice_id: true,
+      //   },
+      // },
+      // relations: {
+      //   approval: true,
+      // },
+      // order: {
+      //   approval: { id: 'ASC' },
+      // },
     });
     if (!data) {
       throw new AppErrorNotFoundException();
@@ -105,61 +176,6 @@ export class InvoiceService {
       { deleted_at: new Date().toISOString(), deleted_by: user_id },
     );
     return data;
-  }
-
-  async findDetail(id: number) {
-    // const invoice = await this.findOne(id);
-    // const projectInvoice = await this.projectInvoiceRepository.findOne({
-    //   where: {
-    //     invoice_id: id,
-    //   },
-    // });
-    // const projectDetailPlanning = await this.projectDetailRepository.findOne({
-    //   select: { id: true, project_id: true },
-    //   where: {
-    //     project_id: invoice.project_id,
-    //     deleted_at: IsNull(),
-    //     deleted_by: IsNull(),
-    //     type: 'Planning',
-    //   },
-    // });
-    // const projectPrice = await this.projectPriceRepository.findOne({
-    //   where: { project_detail_id: projectDetailPlanning.id },
-    //   select: {
-    //     id: true,
-    //     project_detail_id: true,
-    //     selling_price_per_item: true,
-    //     loss_percentage: true,
-    //   },
-    // });
-    // const selling_price_per_item = projectPrice
-    //   ? projectPrice.selling_price_per_item
-    //   : 0;
-    // const projectVariantSize = await this.findProjectVariantCalculate(
-    //   projectInvoice.project_detail_id,
-    //   selling_price_per_item,
-    // );
-    // const subGrandTotal = projectVariantSize.reduce(
-    //   (accumulator, currentItem) => {
-    //     return accumulator + currentItem.total_price;
-    //   },
-    //   0,
-    // );
-    // const pph_result = (invoice.pph * subGrandTotal) / 100;
-    // const ppn_result = (invoice.ppn * subGrandTotal) / 100;
-    // const resultGrandTotal =
-    //   subGrandTotal + pph_result + ppn_result - invoice.discount;
-    // return {
-    //   ...invoice,
-    //   cost_details: projectVariantSize,
-    //   pph_result,
-    //   ppn_result,
-    //   total: subGrandTotal,
-    //   grand_total: resultGrandTotal,
-    //   project_detail_id_production: projectInvoice.project_detail_id,
-    //   project_detail_planning: projectDetailPlanning.id,
-    // };
-    return { data: 'belum' };
   }
 
   async generateCodeInvoice() {
@@ -184,20 +200,6 @@ export class InvoiceService {
     } catch (error) {
       throw new Error(error);
     }
-  }
-  async updateGrandTotal(invoice_id: number) {
-    // const resultGrandTotal = await this.findDetail(invoice_id);
-    // try {
-    //   return await this.invoiceRepository.update(
-    //     { id: invoice_id },
-    //     {
-    //       grand_total: resultGrandTotal.grand_total || null,
-    //     },
-    //   );
-    // } catch (error) {
-    //   throw new AppErrorNotFoundException();
-    // }
-    return { data: 'belum' };
   }
 
   async findProjectVariantCalculate(project_detail_id: number, price: number) {
@@ -256,5 +258,15 @@ export class InvoiceService {
     // }
     // return arrResult;
     return { data: 'belum' };
+  }
+  async findByProjectId(project_id: number) {
+    const data = await this.invoiceRepository.findOne({
+      where: {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+    });
+    return data;
   }
 }

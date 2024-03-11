@@ -461,4 +461,18 @@ export class ProjectService {
     );
     return data;
   }
+  async findCustomerRelation(id: number) {
+    const data = await this.projectRepository.findOne({
+      where: {
+        id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      relations: { customers: true },
+    });
+    if (!data) {
+      return null;
+    }
+    return data.customers;
+  }
 }
