@@ -87,6 +87,10 @@ import { ProjectProductionShippingController } from './production/controllers/pr
 import { ProjectProductionShippingService } from './production/services/project-production-shipping.service';
 import { ProjectProductionAdditionalCostController } from './production/controllers/project-production-additional-cost.controller';
 import { ProjectProductionAdditionalCostService } from './production/services/project-production-additional-cost.service';
+import { ProjectProductionInvoiceController } from './production/controllers/project-production-invoice.controller';
+import { InvoiceService } from '../invoice/services/invoice.service';
+import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
+import { InvoiceStatusEntity } from 'src/entities/invoice/invoice_status.entity';
 
 @Module({
   imports: [
@@ -113,6 +117,8 @@ import { ProjectProductionAdditionalCostService } from './production/services/pr
       PurchaseOrderDetailEntity,
       PurchaseOrderStatusEntity,
       ProjectVendorProductionStageEntity,
+      InvoiceEntity,
+      InvoiceStatusEntity,
     ]),
     RabbitMQModule,
   ],
@@ -147,6 +153,7 @@ import { ProjectProductionAdditionalCostService } from './production/services/pr
     ProjectProductionStageController,
     ProjectProductionShippingController,
     ProjectProductionAdditionalCostController,
+    ProjectProductionInvoiceController,
   ],
   providers: [
     ProjectService,
@@ -183,6 +190,7 @@ import { ProjectProductionAdditionalCostService } from './production/services/pr
     ProjectProductionStageService,
     ProjectProductionShippingService,
     ProjectProductionAdditionalCostService,
+    InvoiceService,
   ],
 })
 export class ProjectModule {}

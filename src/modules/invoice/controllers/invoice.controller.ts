@@ -13,8 +13,10 @@ import { InvoiceService } from '../services/invoice.service';
 
 import { GetListInvoiceDto } from '../dto/get-list-invoice.dto';
 import { Pagination } from 'src/utils/pagination';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('invoice')
+@ApiTags('invoice')
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
@@ -61,11 +63,11 @@ export class InvoiceController {
       address: 'Jl. Manglid No. 21A / 41A, Bandung',
       phone_number: '0852 2010 0885',
     };
-    const detail = await this.invoiceService.findDetail(id);
+    // const detail = await this.invoiceService.findDetail(id);
 
     return {
       message: 'Successfully belum ambil dari refactor-project',
-      data: { ...detail, company },
+      // data: { ...detail, company },
     };
   }
 }

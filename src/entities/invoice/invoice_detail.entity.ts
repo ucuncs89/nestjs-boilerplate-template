@@ -1,14 +1,7 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { InvoiceEntity } from './invoice.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('invoice_approval')
-export class InvoiceApprovalEntity {
+@Entity('invoice_detail')
+export class InvoiceDetailEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -16,10 +9,19 @@ export class InvoiceApprovalEntity {
   invoice_id: number;
 
   @Column({ type: 'varchar', nullable: true })
-  status: string;
+  item: string;
+
+  @Column({ type: 'int', nullable: true })
+  quantity: number;
 
   @Column({ type: 'varchar', nullable: true })
-  status_desc: string;
+  unit: string;
+
+  @Column({ type: 'double precision', nullable: true })
+  unit_price: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  sub_total: number;
 
   @Column({
     type: 'timestamp with time zone',
@@ -41,17 +43,4 @@ export class InvoiceApprovalEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
-
-  @ManyToOne(
-    () => InvoiceEntity,
-    (invoice: InvoiceEntity) => invoice.approval,
-    {
-      cascade: true,
-    },
-  )
-  @JoinColumn({ name: 'invoice_id' })
-  public invoice: InvoiceEntity;
 }
-// status : Approved, Rejected
-// status_desc : Made by, Sent by the finance team, Approved by
-// insert 3 nya saat insert dan statusnya Rejected dulu
