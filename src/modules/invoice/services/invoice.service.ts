@@ -8,6 +8,7 @@ import {
 } from 'src/exceptions/app-exception';
 import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
 import {
+  InvoiceApprovalDto,
   InvoiceDetailDto,
   InvoiceDto,
   InvoiceStatusEnum,
@@ -26,6 +27,9 @@ export class InvoiceService {
 
     @InjectRepository(InvoiceStatusEntity)
     private invoiceStatusRepository: Repository<InvoiceStatusEntity>,
+
+    @InjectRepository(InvoiceDetailEntity)
+    private invoiceDetailRepository: Repository<InvoiceDetailEntity>,
   ) {}
 
   async create(
@@ -149,6 +153,7 @@ export class InvoiceService {
         status: true,
         delivery_date: true,
         grand_total: true,
+        created_at: true,
       },
       //   approval: {
       //     id: true,
@@ -201,64 +206,6 @@ export class InvoiceService {
       throw new Error(error);
     }
   }
-
-  async findProjectVariantCalculate(project_detail_id: number, price: number) {
-    // const arrResult = [];
-    // const data = await this.projectVariantRepository.find({
-    //   where: { project_detail_id, deleted_at: IsNull(), deleted_by: IsNull() },
-    //   select: {
-    //     id: true,
-    //     project_detail_id: true,
-    //     name: true,
-    //     total_item: true,
-    //     item_unit: true,
-    //     project_fabric: {
-    //       id: true,
-    //       project_variant_id: true,
-    //       color_id: true,
-    //       project_fabric_id: true,
-    //       color_name: true,
-    //       project_material_item: {
-    //         id: true,
-    //         name: true,
-    //         consumption: true,
-    //         consumption_unit: true,
-    //         type: true,
-    //         category: true,
-    //       },
-    //     },
-    //   },
-    //   relations: {
-    //     size: true,
-    //     project_fabric: { project_material_item: true },
-    //   },
-    // });
-    // if (data.length < 1) {
-    //   return [];
-    // }
-
-    // let no = 1;
-    // for (const variant of data) {
-    //   const arrVariantSize = [];
-    //   const arrVariantColorFabric = [];
-    //   for (const size of variant.size) {
-    //     arrVariantSize.push(`${size.size_ratio}=${size.number_of_item}`);
-    //   }
-    //   for (const fabric of variant.project_fabric) {
-    //     arrVariantColorFabric.push(`${fabric.color_name}`);
-    //   }
-    //   arrResult.push({
-    //     no: no++,
-    //     description: `${variant.name} (${arrVariantColorFabric}) (${arrVariantSize})`,
-    //     price,
-    //     unit: 'PCS',
-    //     quantity: variant.total_item,
-    //     total_price: price * variant.total_item,
-    //   });
-    // }
-    // return arrResult;
-    return { data: 'belum' };
-  }
   async findByProjectId(project_id: number) {
     const data = await this.invoiceRepository.findOne({
       where: {
@@ -268,5 +215,115 @@ export class InvoiceService {
       },
     });
     return data;
+  }
+
+  async findDetail(id: number) {
+    const invoice = await this.findOne(id);
+    const costDetails = await this.invoiceDetailRepository.find({
+      where: {
+        invoice_id: id,
+      },
+    });
+    const subGrandTotal = costDetails.reduce((accumulator, currentItem) => {
+      return accumulator + currentItem.sub_total;
+    }, 0);
+    const pph_result = (invoice.pph * subGrandTotal) / 100;
+    const ppn_result = (invoice.ppn * subGrandTotal) / 100;
+    const resultGrandTotal =
+      subGrandTotal + pph_result + ppn_result - invoice.discount;
+    const invoice_status = await this.findInvoiceStatus(id);
+    return {
+      ...invoice,
+      invoice_status,
+      cost_details: costDetails,
+      pph_result,
+      ppn_result,
+      total: subGrandTotal,
+      grand_total: resultGrandTotal,
+    };
+  }
+  async findInvoiceStatus(invoice_id: number) {
+    const data = await this.invoiceStatusRepository.find({
+      where: {
+        invoice_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+      },
+      select: {
+        id: true,
+        invoice_id: true,
+        status_desc: true,
+        status: true,
+        reason: true,
+        updated_at: true,
+        updated_by: true,
+        users: {
+          id: true,
+          full_name: true,
+        },
+      },
+      relations: { users: true },
+      order: { id: 'asc' },
+    });
+    return data;
+  }
+  async updateInvoiceApproval(
+    invoice_id: number,
+    status_id: number,
+    invoiceApprovalDto: InvoiceApprovalDto,
+    user_id: number,
+  ) {
+    try {
+      let updateToProject: any;
+      const status = await this.invoiceStatusRepository.findOne({
+        where: { id: status_id, invoice_id },
+      });
+      if (!status) {
+        throw new AppErrorNotFoundException();
+      }
+      status.updated_at = new Date().toISOString();
+      status.updated_by = user_id;
+      status.status = invoiceApprovalDto.status;
+      status.reason = invoiceApprovalDto.reason;
+      await this.invoiceStatusRepository.save(status);
+      if (status.status_desc === InvoiceStatusEnum.PaymentStatusConfirm) {
+        await this.invoiceRepository.update(
+          { id: invoice_id },
+          { status: invoiceApprovalDto.status },
+        );
+      }
+      if (invoiceApprovalDto.status === StatusInvoiceEnum.Rejected) {
+        await this.invoiceRepository.update(
+          { id: invoice_id },
+          { status: invoiceApprovalDto.status },
+        );
+      }
+      return { status, updateToProject };
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+  async cancelInvoiceApproval(
+    invoice_id: number,
+    status_id: number,
+    user_id: number,
+  ) {
+    let updateToProject: any;
+    const status = await this.invoiceStatusRepository.findOne({
+      where: { id: status_id, invoice_id },
+    });
+    if (!status) {
+      throw new AppErrorNotFoundException();
+    }
+    status.updated_at = null;
+    status.updated_by = null;
+    status.status = null;
+    status.reason = null;
+    await this.invoiceStatusRepository.save(status);
+    await this.invoiceRepository.update(
+      { id: invoice_id },
+      { status: StatusInvoiceEnum.Waiting },
+    );
+    return { status, updateToProject };
   }
 }
