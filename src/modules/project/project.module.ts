@@ -91,6 +91,7 @@ import { ProjectProductionInvoiceController } from './production/controllers/pro
 import { InvoiceService } from '../invoice/services/invoice.service';
 import { InvoiceEntity } from 'src/entities/invoice/invoice.entity';
 import { InvoiceStatusEntity } from 'src/entities/invoice/invoice_status.entity';
+import { InvoiceDetailEntity } from 'src/entities/invoice/invoice_detail.entity';
 
 @Module({
   imports: [
@@ -119,6 +120,7 @@ import { InvoiceStatusEntity } from 'src/entities/invoice/invoice_status.entity'
       ProjectVendorProductionStageEntity,
       InvoiceEntity,
       InvoiceStatusEntity,
+      InvoiceDetailEntity,
     ]),
     RabbitMQModule,
   ],

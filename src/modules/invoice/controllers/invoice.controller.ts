@@ -8,15 +8,19 @@ import {
   Put,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { InvoiceService } from '../services/invoice.service';
 
 import { GetListInvoiceDto } from '../dto/get-list-invoice.dto';
 import { Pagination } from 'src/utils/pagination';
 import { ApiTags } from '@nestjs/swagger';
+import { InvoiceApprovalDto } from '../dto/invoice.dto';
+import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
 @Controller('invoice')
 @ApiTags('invoice')
+@UseGuards(JwtAuthGuard)
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
@@ -42,32 +46,60 @@ export class InvoiceController {
       _page_size,
       `/invoice`,
     );
-    return { message: 'Data nya belum fix', ...data, pagination };
+    return { message: 'Successfully', ...data, pagination };
   }
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const data = await this.invoiceService.findOne(id);
-    return { message: 'Data nya belum fix', data };
+    return { message: 'Successfully', data };
   }
 
   @Delete(':id')
   async remove(@Req() req, @Param('id') id: string) {
     const data = await this.invoiceService.remove(+id, req.user.id);
-    return { message: 'Data nya belum fix', data };
+    return { message: 'Successfully', data };
   }
 
   @Get(':id/detail')
-  async findDetailPurchase(@Param('id') id: number) {
+  async findDetailInvoice(@Param('id') id: number) {
     const company = {
       name: 'Cloami',
       address: 'Jl. Manglid No. 21A / 41A, Bandung',
       phone_number: '0852 2010 0885',
     };
-    // const detail = await this.invoiceService.findDetail(id);
+    const detail = await this.invoiceService.findDetail(id);
 
     return {
-      message: 'Successfully belum ambil dari refactor-project',
-      // data: { ...detail, company },
+      data: { ...detail, company },
     };
+  }
+
+  @Post(':id/approval/:approval_id')
+  async updateApproval(
+    @Req() req,
+    @Param('id') id: number,
+    @Param('approval_id') approval_id: number,
+    @Body() invoiceApprovalDto: InvoiceApprovalDto,
+  ) {
+    const data = await this.invoiceService.updateInvoiceApproval(
+      id,
+      approval_id,
+      invoiceApprovalDto,
+      req.user.id,
+    );
+    return { data };
+  }
+  @Post(':id/cancel/:approval_id')
+  async cancelApproval(
+    @Req() req,
+    @Param('id') id: number,
+    @Param('approval_id') approval_id: number,
+  ) {
+    const data = await this.invoiceService.cancelInvoiceApproval(
+      id,
+      approval_id,
+      req.user.id,
+    );
+    return { data };
   }
 }
