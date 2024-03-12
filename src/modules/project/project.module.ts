@@ -95,6 +95,7 @@ import { InvoiceDetailEntity } from 'src/entities/invoice/invoice_detail.entity'
 import { ProjectReturController } from './general/controllers/project-retur.controller';
 import { ProjectReturService } from './general/services/project-retur.service';
 import { ProjectReturEntity } from 'src/entities/project/project_retur.entity';
+import { CustomersEntity } from 'src/entities/customers/customers.entity';
 
 @Module({
   imports: [
@@ -125,6 +126,7 @@ import { ProjectReturEntity } from 'src/entities/project/project_retur.entity';
       InvoiceStatusEntity,
       InvoiceDetailEntity,
       ProjectReturEntity,
+      CustomersEntity,
     ]),
     RabbitMQModule,
   ],

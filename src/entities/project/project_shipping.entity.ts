@@ -2,10 +2,12 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectShippingPackingEntity } from './project_shipping_packing.entity';
+import { ProjectEntity } from './project.entity';
 
 @Entity('project_shipping')
 export class ProjectShippingEntity {
@@ -76,4 +78,10 @@ export class ProjectShippingEntity {
   )
   @JoinColumn({ name: 'project_shipping_id' })
   packing: ProjectShippingPackingEntity[];
+
+  @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.size, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'project_id' })
+  public project: ProjectEntity;
 }
