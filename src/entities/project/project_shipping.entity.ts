@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProjectShippingPackingEntity } from './project_shipping_packing.entity';
-// import { ProjectShippingPackingEntity } from './project_shipping_packing.entity';
 
 @Entity('project_shipping')
 export class ProjectShippingEntity {
@@ -15,6 +14,15 @@ export class ProjectShippingEntity {
 
   @Column({ type: 'int' })
   project_id: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  send_to: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  relation_name: string;
+
+  @Column({ type: 'int', nullable: true })
+  relation_id: number;
 
   @Column({ type: 'varchar' })
   shipping_name: string;
