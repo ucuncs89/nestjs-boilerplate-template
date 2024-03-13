@@ -14,8 +14,16 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectProductionShippingService } from '../services/project-production-shipping.service';
-import { ProjectProductionShippingDto } from '../dto/project-production-shipping.dto';
+import {
+  ProjectProductionShippingDto,
+  ProjectProductionShippingSendtoEnum,
+} from '../dto/project-production-shipping.dto';
 import { ProjectProductionShippingPackingDto } from '../dto/project-production-shipping-packing.dto';
+import { AppErrorException } from 'src/exceptions/app-exception';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CustomersEntity } from 'src/entities/customers/customers.entity';
+import { Repository } from 'typeorm';
+import { VendorsEntity } from 'src/entities/vendors/vendors.entity';
 
 @ApiBearerAuth()
 @ApiTags('project production')
@@ -24,6 +32,12 @@ import { ProjectProductionShippingPackingDto } from '../dto/project-production-s
 export class ProjectProductionShippingController {
   constructor(
     private readonly projectProductionShippingService: ProjectProductionShippingService,
+
+    @InjectRepository(CustomersEntity)
+    private customersRepository: Repository<CustomersEntity>,
+
+    @InjectRepository(VendorsEntity)
+    private vendorsRepository: Repository<VendorsEntity>,
   ) {}
 
   @Get(':project_id/shipping')
@@ -144,5 +158,48 @@ export class ProjectProductionShippingController {
       req.user.id,
     );
     return { data };
+  }
+  @Get(':project_id/shipping/:shipping_id/delivery-note')
+  async getDetailProjectShippingDeliveryNote(
+    @Req() req,
+    @Param('project_id') project_id: number,
+    @Param('shipping_id') shipping_id: number,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.projectProductionShippingService.findDeliverDetail(
+      shipping_id,
+    );
+    if (!data) {
+      throw new AppErrorException('data project and shipping not recognize');
+    }
+    const style_name = data.project ? data.project.style_name : '';
+    const detail =
+      await this.projectProductionShippingService.findDeliverNoteItem(
+        shipping_id,
+        style_name,
+      );
+    let destination: object;
+    if (data.send_to === ProjectProductionShippingSendtoEnum.Buyer) {
+      destination = await this.customersRepository.findOne({
+        select: {
+          id: true,
+          company_name: true,
+          company_address: true,
+          company_phone_number: true,
+        },
+        where: { id: data.relation_id },
+      });
+    } else if (data.send_to === ProjectProductionShippingSendtoEnum.Vendor) {
+      destination = await this.vendorsRepository.findOne({
+        select: {
+          id: true,
+          company_name: true,
+          company_address: true,
+          company_phone_number: true,
+        },
+        where: { id: data.relation_id },
+      });
+    }
+    return { data: { ...data, detail, destination } };
   }
 }

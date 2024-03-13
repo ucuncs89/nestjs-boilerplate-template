@@ -230,4 +230,54 @@ export class ProjectProductionShippingService {
       await queryRunner.release();
     }
   }
+
+  async findDeliverNoteItem(shipping_id: number, style_name: string) {
+    const data = await this.connection.query(`
+  select
+    psp.variant_id,
+    psp.variant_name,
+    sum(psp.total_item) as total_item
+  from
+    project_shipping_packing psp
+  where 
+    psp.project_shipping_id = ${shipping_id}
+  group by
+    psp.variant_id,
+    psp.variant_name`);
+
+    for (const obj of data) {
+      obj.style_name = style_name;
+    }
+    return data;
+  }
+
+  async findDeliverDetail(shipping_id: number) {
+    const data = await this.projectShippingRepository.findOne({
+      select: {
+        id: true,
+        project_id: true,
+        shipping_name: true,
+        shipping_vendor_name: true,
+        shipping_date: true,
+        shipping_cost: true,
+        created_at: true,
+        added_in_section: true,
+        receipt_number: true,
+        send_to: true,
+        relation_id: true,
+        relation_name: true,
+        project: {
+          id: true,
+          style_name: true,
+        },
+      },
+      where: { id: shipping_id, deleted_at: IsNull(), deleted_by: IsNull() },
+      relations: { project: true },
+    });
+    const id = data.id.toString().padStart(4, '0'); // Mengonversi ID menjadi string dan menambahkan padding di depan jika kurang dari 4 digit
+    const dateParts = data.shipping_date.split('-');
+    const formattedDate = dateParts[0] + dateParts[1] + dateParts[2]; // Mengambil bagian tahun, bulan, dan tanggal dari tanggal pengiriman
+    const code = `DN-${formattedDate}-${id}`;
+    return { ...data, code };
+  }
 }
