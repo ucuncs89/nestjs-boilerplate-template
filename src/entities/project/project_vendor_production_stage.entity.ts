@@ -46,4 +46,7 @@ export class ProjectVendorProductionStageEntity {
 
   @Column({ type: 'varchar', nullable: true })
   quantity_unit: string;
+
+  @Column({ type: 'int', nullable: true })
+  retur_id: number;
 }
