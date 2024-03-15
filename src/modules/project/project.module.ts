@@ -96,6 +96,8 @@ import { ProjectReturController } from './general/controllers/project-retur.cont
 import { ProjectReturService } from './general/services/project-retur.service';
 import { ProjectReturEntity } from 'src/entities/project/project_retur.entity';
 import { CustomersEntity } from 'src/entities/customers/customers.entity';
+import { ProjectReturStageController } from './retur/controllers/project-retur-stage.controller';
+import { ProjectReturStageService } from './retur/services/project-retur-stage.service';
 
 @Module({
   imports: [
@@ -163,6 +165,7 @@ import { CustomersEntity } from 'src/entities/customers/customers.entity';
     ProjectProductionAdditionalCostController,
     ProjectProductionInvoiceController,
     ProjectReturController,
+    ProjectReturStageController,
   ],
   providers: [
     ProjectService,
@@ -201,6 +204,7 @@ import { CustomersEntity } from 'src/entities/customers/customers.entity';
     ProjectProductionAdditionalCostService,
     InvoiceService,
     ProjectReturService,
+    ProjectReturStageService,
   ],
 })
 export class ProjectModule {}
