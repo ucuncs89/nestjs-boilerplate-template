@@ -1,12 +1,11 @@
 import { Controller, Get, Param, Delete, UseGuards, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { InvoiceService } from '../services/invoice.service';
 import { InvoicePdfService } from '../services/invoice-pdf.service';
 
 @ApiBearerAuth()
 @ApiTags('invoice')
-@Controller('ivnoce')
+@Controller('invoice')
 export class InvoicePdfController {
   constructor(
     private readonly invoiceService: InvoiceService,
