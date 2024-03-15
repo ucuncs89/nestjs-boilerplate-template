@@ -71,6 +71,9 @@ export class ProjectShippingEntity {
   @Column({ type: 'int', nullable: true })
   costing_project_shipping_id: number;
 
+  @Column({ type: 'int', nullable: true })
+  retur_id: number;
+
   @OneToMany(
     () => ProjectShippingPackingEntity,
     (shipping_packing: ProjectShippingPackingEntity) =>
