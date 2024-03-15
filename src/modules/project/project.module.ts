@@ -101,6 +101,8 @@ import { ProjectReturStageService } from './retur/services/project-retur-stage.s
 import { ProjectReturShippingController } from './retur/controllers/project-retur-shipping.controller';
 import { ProjectReturShippingService } from './retur/services/project-retur-shipping.service';
 import { ProjectProductionShippingPdfService } from './production/services/project-production-shipping-pdf.service';
+import { ProjectReturAdditionalCostController } from './retur/controllers/project-retur-additional-cost.controller';
+import { ProjectReturAdditionalCostService } from './retur/services/project-retur-additional-cost.service';
 
 @Module({
   imports: [
@@ -170,6 +172,7 @@ import { ProjectProductionShippingPdfService } from './production/services/proje
     ProjectReturController,
     ProjectReturStageController,
     ProjectReturShippingController,
+    ProjectReturAdditionalCostController,
   ],
   providers: [
     ProjectService,
@@ -211,6 +214,7 @@ import { ProjectProductionShippingPdfService } from './production/services/proje
     ProjectReturStageService,
     ProjectReturShippingService,
     ProjectProductionShippingPdfService,
+    ProjectReturAdditionalCostService,
   ],
 })
 export class ProjectModule {}

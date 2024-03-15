@@ -20,6 +20,9 @@ export class ProjectAdditionalCostEntity {
   @Column({ type: 'varchar' })
   added_in_section: string;
 
+  @Column({ type: 'int', nullable: true })
+  retur_id: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
