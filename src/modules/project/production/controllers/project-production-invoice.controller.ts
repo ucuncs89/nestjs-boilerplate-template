@@ -5,7 +5,10 @@ import { InvoiceService } from 'src/modules/invoice/services/invoice.service';
 import { ProjectVariantService } from '../../general/services/project-variant.service';
 import { ProjectService } from '../../general/services/project.service';
 import { ProjectPlanningPriceService } from '../../planning/services/project-planning-price.service';
-import { InvoiceDetailDto } from 'src/modules/invoice/dto/invoice.dto';
+import {
+  InvoiceDetailDto,
+  InvoiceTypeEnum,
+} from 'src/modules/invoice/dto/invoice.dto';
 
 @ApiBearerAuth()
 @ApiTags('project production')
@@ -21,7 +24,10 @@ export class ProjectProductionInvoiceController {
 
   @Get(':project_id/invoice')
   async getProjectInvoice(@Req() req, @Param('project_id') project_id: number) {
-    const data = await this.invoiceService.findByProjectId(project_id);
+    const data = await this.invoiceService.findByProjectId(
+      project_id,
+      InvoiceTypeEnum.purchase,
+    );
     return { data };
   }
   @Post(':project_id/invoice')
@@ -31,7 +37,10 @@ export class ProjectProductionInvoiceController {
   ) {
     const invoiceDetailDto = [];
     let totalItem = 0;
-    const invoice = await this.invoiceService.findByProjectId(project_id);
+    const invoice = await this.invoiceService.findByProjectId(
+      project_id,
+      InvoiceTypeEnum.purchase,
+    );
     if (!invoice) {
       const variant = await this.projectVariantService.findVariant(project_id);
       const price = await this.projectPlanningPriceService.findPricePlanning(
@@ -40,7 +49,6 @@ export class ProjectProductionInvoiceController {
       const customer = await this.projectService.findCustomerRelation(
         project_id,
       );
-      console.log(variant);
 
       if (variant.length > 0) {
         for (const objVariant of variant) {
@@ -74,6 +82,7 @@ export class ProjectProductionInvoiceController {
           bank_account_number: customer.bank_account_number,
           company_address: customer.company_address,
           company_phone_number: customer.company_phone_number,
+          type: InvoiceTypeEnum.purchase,
         },
         req.user.id,
         invoiceDetailDto,

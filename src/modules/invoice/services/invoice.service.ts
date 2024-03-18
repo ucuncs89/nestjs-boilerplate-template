@@ -12,6 +12,7 @@ import {
   InvoiceDetailDto,
   InvoiceDto,
   InvoiceStatusEnum,
+  InvoiceTypeEnum,
   StatusInvoiceEnum,
 } from '../dto/invoice.dto';
 import { InvoiceStatusEntity } from 'src/entities/invoice/invoice_status.entity';
@@ -206,12 +207,29 @@ export class InvoiceService {
       throw new Error(error);
     }
   }
-  async findByProjectId(project_id: number) {
+  async findByProjectId(project_id: number, type: InvoiceTypeEnum) {
     const data = await this.invoiceRepository.findOne({
       where: {
         project_id,
+        type,
         deleted_at: IsNull(),
         deleted_by: IsNull(),
+      },
+    });
+    return data;
+  }
+  async findByProjectRetur(
+    project_id: number,
+    type: InvoiceTypeEnum,
+    retur_id: number,
+  ) {
+    const data = await this.invoiceRepository.findOne({
+      where: {
+        project_id,
+        type,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        retur_id,
       },
     });
     return data;
