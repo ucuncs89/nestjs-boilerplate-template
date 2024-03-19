@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString } from 'class-validator';
+import { IsDateString, IsNotEmpty } from 'class-validator';
 
 export enum ProjectReturShippingSendtoEnum {
   Vendor = 'Vendor',
@@ -17,7 +17,8 @@ export class ProjectReturShippingDto {
   shipping_date: string;
 
   @ApiProperty()
-  total_shipping_cost?: number;
+  @IsNotEmpty()
+  total_shipping_cost: number;
 
   @ApiProperty()
   receipt_number?: string;
