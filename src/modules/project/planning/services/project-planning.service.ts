@@ -244,7 +244,6 @@ export class ProjectPlanningService {
             ProjectSamplingEntity,
             { ...sampling, created_at: new Date().toISOString() },
           );
-          //update data sebelumnya
           console.log(samplingInsert);
 
           await queryRunner.manager.update(
