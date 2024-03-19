@@ -32,6 +32,7 @@ export class ProjectReturShippingService {
         created_at: true,
         added_in_section: true,
         receipt_number: true,
+        total_shipping_cost: true,
         packing: {
           id: true,
           project_shipping_id: true,
@@ -64,6 +65,7 @@ export class ProjectReturShippingService {
     projectReturShippingDto: ProjectReturShippingDto,
     user_id,
     retur_id: number,
+    cost_per_item: number,
   ) {
     try {
       const shipping = this.projectShippingRepository.create({
@@ -73,6 +75,7 @@ export class ProjectReturShippingService {
         created_at: new Date().toISOString(),
         created_by: user_id,
         retur_id,
+        shipping_cost: cost_per_item,
       });
       await this.projectShippingRepository.save(shipping);
       return shipping;
@@ -85,6 +88,7 @@ export class ProjectReturShippingService {
     projectReturShippingDto: ProjectReturShippingDto,
     user_id: number,
     retur_id: number,
+    cost_per_item: number,
   ) {
     try {
       await this.projectShippingRepository.update(
@@ -93,7 +97,8 @@ export class ProjectReturShippingService {
           retur_id,
         },
         {
-          shipping_cost: projectReturShippingDto.shipping_cost,
+          shipping_cost: cost_per_item,
+          total_shipping_cost: projectReturShippingDto.total_shipping_cost,
           shipping_date: projectReturShippingDto.shipping_date,
           shipping_name: projectReturShippingDto.shipping_name,
           shipping_vendor_name: projectReturShippingDto.shipping_vendor_name,
@@ -267,6 +272,7 @@ export class ProjectReturShippingService {
         shipping_vendor_name: true,
         shipping_date: true,
         shipping_cost: true,
+        total_shipping_cost: true,
         created_at: true,
         added_in_section: true,
         receipt_number: true,

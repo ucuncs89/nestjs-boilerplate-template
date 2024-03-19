@@ -13,6 +13,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectCostingSamplingService } from '../services/project-costing-sampling.service';
 import { ProjectCostingSamplingDto } from '../dto/project-costing-sampling.dto';
+import { ProjectVariantService } from '../../general/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project costing')
@@ -21,6 +22,7 @@ import { ProjectCostingSamplingDto } from '../dto/project-costing-sampling.dto';
 export class ProjectCostingSamplingController {
   constructor(
     private readonly projectCostingSamplingService: ProjectCostingSamplingService,
+    private readonly projectVariantService: ProjectVariantService,
   ) {}
 
   @Get(':project_id/sampling')
@@ -36,10 +38,15 @@ export class ProjectCostingSamplingController {
     @Param('project_id') project_id: number,
     @Body() projectCostingSamplingDto: ProjectCostingSamplingDto,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectCostingSamplingDto.total_cost / variantTotalItem;
     const data = await this.projectCostingSamplingService.create(
       project_id,
       projectCostingSamplingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
@@ -72,11 +79,16 @@ export class ProjectCostingSamplingController {
     @Param('sampling_id') sampling_id: number,
     @Body() projectCostingSamplingDto: ProjectCostingSamplingDto,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectCostingSamplingDto.total_cost / variantTotalItem;
     const data = await this.projectCostingSamplingService.update(
       project_id,
       sampling_id,
       projectCostingSamplingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(

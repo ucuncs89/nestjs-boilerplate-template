@@ -81,6 +81,12 @@ export class ProjectEntity {
   @Column({ type: 'varchar', nullable: true })
   payment_method: string;
 
+  @Column({ type: 'double precision', nullable: true })
+  down_payment_percentage: number;
+
+  @Column({ type: 'int', nullable: true })
+  payment_duration: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

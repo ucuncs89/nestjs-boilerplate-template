@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ProjectCostingShippingService } from '../services/project-costing-shipping.service';
 import { ProjectCostingShippingDto } from '../dto/project-costing-shipping.dto';
+import { ProjectVariantService } from '../../general/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project costing')
@@ -23,6 +24,7 @@ import { ProjectCostingShippingDto } from '../dto/project-costing-shipping.dto';
 export class ProjectCostingShippingController {
   constructor(
     private readonly projectCostingShippingService: ProjectCostingShippingService,
+    private readonly projectVariantService: ProjectVariantService,
   ) {}
 
   @Get(':project_id/shipping')
@@ -44,10 +46,15 @@ export class ProjectCostingShippingController {
     projectCostingShippingDto: ProjectCostingShippingDto,
     @I18n() i18n: I18nContext,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectCostingShippingDto.total_shipping_cost / variantTotalItem;
     const data = await this.projectCostingShippingService.createShipping(
       project_id,
       projectCostingShippingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       this.projectCostingShippingService.updateGrandAvgPriceTotalShipping(
@@ -65,10 +72,15 @@ export class ProjectCostingShippingController {
     projectCostingShippingDto: ProjectCostingShippingDto,
     @I18n() i18n: I18nContext,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectCostingShippingDto.total_shipping_cost / variantTotalItem;
     const data = await this.projectCostingShippingService.updateShipping(
       shipping_id,
       projectCostingShippingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       this.projectCostingShippingService.updateGrandAvgPriceTotalShipping(

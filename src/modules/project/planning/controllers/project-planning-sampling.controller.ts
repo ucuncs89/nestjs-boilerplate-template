@@ -19,6 +19,7 @@ import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.
 import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import { ProjectVariantService } from '../../general/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -30,6 +31,7 @@ export class ProjectPlanningSamplingController {
     private readonly projectCostingSamplingService: ProjectCostingSamplingService,
     private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
     private readonly projectDetailCalculateService: ProjectDetailCalculateService,
+    private readonly projectVariantService: ProjectVariantService,
   ) {}
 
   @Get(':project_id/sampling')
@@ -59,10 +61,15 @@ export class ProjectPlanningSamplingController {
     @Param('project_id') project_id: number,
     @Body() projectPlanningSamplingDto: ProjectPlanningSamplingDto,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectPlanningSamplingDto.total_cost / variantTotalItem;
     const data = await this.projectPlanningSamplingService.create(
       project_id,
       projectPlanningSamplingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       const calculateSampling =
@@ -103,11 +110,16 @@ export class ProjectPlanningSamplingController {
     @Param('sampling_id') sampling_id: number,
     @Body() projectPlanningSamplingDto: ProjectPlanningSamplingDto,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectPlanningSamplingDto.total_cost / variantTotalItem;
     const data = await this.projectPlanningSamplingService.update(
       project_id,
       sampling_id,
       projectPlanningSamplingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       const calculateSampling =

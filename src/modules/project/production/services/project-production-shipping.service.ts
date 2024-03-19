@@ -32,6 +32,7 @@ export class ProjectProductionShippingService {
         created_at: true,
         added_in_section: true,
         receipt_number: true,
+        total_shipping_cost: true,
         packing: {
           id: true,
           project_shipping_id: true,
@@ -62,10 +63,12 @@ export class ProjectProductionShippingService {
     project_id,
     projectProductionShippingDto: ProjectProductionShippingDto,
     user_id,
+    cost_per_item: number,
   ) {
     try {
       const shipping = this.projectShippingRepository.create({
         ...projectProductionShippingDto,
+        shipping_cost: cost_per_item,
         added_in_section: StatusProjectEnum.Production,
         project_id,
         created_at: new Date().toISOString(),
@@ -81,6 +84,7 @@ export class ProjectProductionShippingService {
     shipping_id: number,
     projectProductionShippingDto: ProjectProductionShippingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     try {
       await this.projectShippingRepository.update(
@@ -88,7 +92,8 @@ export class ProjectProductionShippingService {
           id: shipping_id,
         },
         {
-          shipping_cost: projectProductionShippingDto.shipping_cost,
+          total_shipping_cost: projectProductionShippingDto.total_shipping_cost,
+          shipping_cost: cost_per_item,
           shipping_date: projectProductionShippingDto.shipping_date,
           shipping_name: projectProductionShippingDto.shipping_name,
           shipping_vendor_name:
@@ -263,6 +268,7 @@ export class ProjectProductionShippingService {
         shipping_vendor_name: true,
         shipping_date: true,
         shipping_cost: true,
+        total_shipping_cost: true,
         created_at: true,
         added_in_section: true,
         receipt_number: true,

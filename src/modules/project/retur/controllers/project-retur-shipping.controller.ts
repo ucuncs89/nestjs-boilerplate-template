@@ -27,6 +27,7 @@ import { Repository } from 'typeorm';
 import { VendorsEntity } from 'src/entities/vendors/vendors.entity';
 import { ProjectEntity } from 'src/entities/project/project.entity';
 import { ProjectProductionShippingPdfService } from '../../production/services/project-production-shipping-pdf.service';
+import { ProjectReturService } from '../../general/services/project-retur.service';
 
 @ApiBearerAuth()
 @ApiTags('project retur')
@@ -36,6 +37,8 @@ export class ProjectReturShippingController {
     private readonly projectReturShippingService: ProjectReturShippingService,
 
     private readonly projectProductionShippingPdfService: ProjectProductionShippingPdfService,
+
+    private projectReturService: ProjectReturService,
 
     @InjectRepository(CustomersEntity)
     private customersRepository: Repository<CustomersEntity>,
@@ -74,11 +77,18 @@ export class ProjectReturShippingController {
     projectReturShippingDto: ProjectReturShippingDto,
     @I18n() i18n: I18nContext,
   ) {
+    const projecRetur = await this.projectReturService.findOne(
+      retur_id,
+      project_id,
+    );
+    const cost_per_item =
+      projectReturShippingDto.total_shipping_cost / projecRetur.quantity;
     const data = await this.projectReturShippingService.createShipping(
       project_id,
       projectReturShippingDto,
       req.user.id,
       retur_id,
+      cost_per_item,
     );
     return { data };
   }
@@ -94,11 +104,18 @@ export class ProjectReturShippingController {
     projectReturShippingDto: ProjectReturShippingDto,
     @I18n() i18n: I18nContext,
   ) {
+    const projecRetur = await this.projectReturService.findOne(
+      retur_id,
+      project_id,
+    );
+    const cost_per_item =
+      projectReturShippingDto.total_shipping_cost / projecRetur.quantity;
     const data = await this.projectReturShippingService.updateShipping(
       shipping_id,
       projectReturShippingDto,
       req.user.id,
       retur_id,
+      cost_per_item,
     );
     return { data };
   }

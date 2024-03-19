@@ -14,6 +14,9 @@ export class ProjectSamplingEntity {
   @Column({ type: 'double precision', nullable: true })
   cost: number;
 
+  @Column({ type: 'double precision', nullable: true })
+  total_cost: number;
+
   @Column({ type: 'varchar' })
   added_in_section: string;
 
