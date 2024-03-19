@@ -36,13 +36,13 @@ export class InvoiceEntity {
   ppn: number;
 
   @Column({ type: 'varchar', nullable: true })
-  ppn_unit: string;
+  ppn_type: string;
 
   @Column({ type: 'double precision', nullable: true })
   pph: number;
 
   @Column({ type: 'varchar', nullable: true })
-  pph_unit: number;
+  pph_type: number;
 
   @Column({ type: 'double precision', nullable: true })
   discount: number;
