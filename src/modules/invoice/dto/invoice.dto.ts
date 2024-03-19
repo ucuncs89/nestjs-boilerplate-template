@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-
+export enum InvoiceTypeEnum {
+  proforma = 'proforma',
+  retur = 'retur',
+  purchase = 'purchase',
+}
 export class InvoiceDto {
   company_name: string;
   customer_id: number;
@@ -34,8 +38,12 @@ export class InvoiceDto {
   @ApiProperty()
   notes?: string;
 
+  type: InvoiceTypeEnum;
+
   // @ApiProperty()
   project_id: number;
+
+  retur_id?: number;
 }
 export enum StatusInvoiceEnum {
   Approved = 'Approved',

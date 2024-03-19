@@ -26,7 +26,7 @@ export class ProjectReturStageController {
     private projectReturService: ProjectReturService,
   ) {}
 
-  @Get(':project_id/:retur_id/stage/')
+  @Get(':project_id/:retur_id/stage')
   async getReturStage(
     @Req() req,
     @Param('project_id') project_id: number,

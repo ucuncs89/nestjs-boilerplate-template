@@ -71,6 +71,9 @@ export class InvoiceEntity {
   @Column({ type: 'varchar', nullable: true })
   type: string;
 
+  @Column({ type: 'int', nullable: true })
+  retur_id: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

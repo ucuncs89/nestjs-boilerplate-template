@@ -14,26 +14,27 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
-import { ProjectProductionShippingService } from '../services/project-production-shipping.service';
+import { ProjectReturShippingService } from '../services/project-retur-shipping.service';
 import {
-  ProjectProductionShippingDto,
-  ProjectProductionShippingSendtoEnum,
-} from '../dto/project-production-shipping.dto';
-import { ProjectProductionShippingPackingDto } from '../dto/project-production-shipping-packing.dto';
+  ProjectReturShippingDto,
+  ProjectReturShippingSendtoEnum,
+} from '../dto/project-retur-shipping.dto';
+import { ProjectReturShippingPackingDto } from '../dto/project-retur-shipping-packing.dto';
 import { AppErrorException } from 'src/exceptions/app-exception';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CustomersEntity } from 'src/entities/customers/customers.entity';
 import { Repository } from 'typeorm';
 import { VendorsEntity } from 'src/entities/vendors/vendors.entity';
 import { ProjectEntity } from 'src/entities/project/project.entity';
-import { ProjectProductionShippingPdfService } from '../services/project-production-shipping-pdf.service';
+import { ProjectProductionShippingPdfService } from '../../production/services/project-production-shipping-pdf.service';
 
 @ApiBearerAuth()
-@ApiTags('project production')
-@Controller('project/production')
-export class ProjectProductionShippingController {
+@ApiTags('project retur')
+@Controller('project/retur')
+export class ProjectReturShippingController {
   constructor(
-    private readonly projectProductionShippingService: ProjectProductionShippingService,
+    private readonly projectReturShippingService: ProjectReturShippingService,
+
     private readonly projectProductionShippingPdfService: ProjectProductionShippingPdfService,
 
     @InjectRepository(CustomersEntity)
@@ -47,14 +48,16 @@ export class ProjectProductionShippingController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get(':project_id/shipping')
+  @Get(':project_id/:retur_id/shipping')
   async getShipping(
     @Req() req,
     @Param('project_id') project_id: number,
+    @Param('retur_id') retur_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectProductionShippingService.findShipping(
+    const data = await this.projectReturShippingService.findShipping(
       project_id,
+      retur_id,
     );
     return {
       data,
@@ -62,149 +65,160 @@ export class ProjectProductionShippingController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':project_id/shipping')
+  @Post(':project_id/:retur_id/shipping')
   async createProjectShipping(
     @Req() req,
     @Param('project_id') project_id: number,
+    @Param('retur_id') retur_id: number,
     @Body()
-    projectProductionShippingDto: ProjectProductionShippingDto,
+    projectReturShippingDto: ProjectReturShippingDto,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectProductionShippingService.createShipping(
+    const data = await this.projectReturShippingService.createShipping(
       project_id,
-      projectProductionShippingDto,
+      projectReturShippingDto,
       req.user.id,
+      retur_id,
     );
     return { data };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':project_id/shipping/:shipping_id')
+  @Put(':project_id/:retur_id/shipping/:shipping_id')
   async putProjectShipping(
     @Req() req,
     @Param('project_id') project_id: number,
+    @Param('retur_id') retur_id: number,
     @Param('shipping_id') shipping_id: number,
     @Body()
-    projectProductionShippingDto: ProjectProductionShippingDto,
+    projectReturShippingDto: ProjectReturShippingDto,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectProductionShippingService.updateShipping(
+    const data = await this.projectReturShippingService.updateShipping(
       shipping_id,
-      projectProductionShippingDto,
+      projectReturShippingDto,
       req.user.id,
+      retur_id,
     );
     return { data };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':project_id/shipping/:shipping_id')
+  @Get(':project_id/:retur_id/shipping/:shipping_id')
   async getDetailProjectShipping(
     @Req() req,
     @Param('project_id') project_id: number,
+    @Param('retur_id') retur_id: number,
     @Param('shipping_id') shipping_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectProductionShippingService.findDetailShipping(
+    const data = await this.projectReturShippingService.findDetailShipping(
       shipping_id,
     );
     return { data };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':project_id/shipping/:shipping_id')
+  @Delete(':project_id/:retur_id/shipping/:shipping_id')
   async deleteDetailProjectShipping(
     @Req() req,
     @Param('project_id') project_id: number,
+    @Param('retur_id') retur_id: number,
     @Param('shipping_id') shipping_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectProductionShippingService.deleteShipping(
+    const data = await this.projectReturShippingService.deleteShipping(
       shipping_id,
     );
     return { data };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':project_id/shipping/:shipping_id/packing-list')
+  @Post(':project_id/:retur_id/shipping/:shipping_id/packing-list')
   async postPackingList(
     @Req() req,
     @Param('project_id') project_id: number,
+    @Param('retur_id') retur_id: number,
     @Param('shipping_id') shipping_id: number,
     @Body()
-    projectProductionShippingPackingDto: ProjectProductionShippingPackingDto,
+    projectReturShippingPackingDto: ProjectReturShippingPackingDto,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectProductionShippingService.createPackingList(
+    const data = await this.projectReturShippingService.createPackingList(
       shipping_id,
-      projectProductionShippingPackingDto,
+      projectReturShippingPackingDto,
       req.user.id,
     );
     return { data };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':project_id/shipping/:shipping_id/packing-list/:packing_id')
+  @Put(':project_id/:retur_id/shipping/:shipping_id/packing-list/:packing_id')
   async putPackingList(
     @Req() req,
     @Param('project_id') project_id: number,
+    @Param('retur_id') retur_id: number,
     @Param('shipping_id') shipping_id: number,
     @Param('packing_id') packing_id: number,
     @Body()
-    projectProductionShippingPackingDto: ProjectProductionShippingPackingDto,
+    projectReturShippingPackingDto: ProjectReturShippingPackingDto,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectProductionShippingService.updatePackingList(
+    const data = await this.projectReturShippingService.updatePackingList(
       shipping_id,
       packing_id,
-      projectProductionShippingPackingDto,
+      projectReturShippingPackingDto,
       req.user.id,
     );
     return { data };
   }
+
   @UseGuards(JwtAuthGuard)
-  @Delete(':project_id/shipping/:shipping_id/packing-list/:packing_id')
+  @Delete(
+    ':project_id/:retur_id/shipping/:shipping_id/packing-list/:packing_id',
+  )
   async deletePackingList(
     @Req() req,
     @Param('project_id') project_id: number,
+    @Param('retur_id') retur_id: number,
     @Param('shipping_id') shipping_id: number,
     @Param('packing_id') packing_id: number,
 
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.projectProductionShippingService.deletePackingList(
+    const data = await this.projectReturShippingService.deletePackingList(
       shipping_id,
       packing_id,
       req.user.id,
     );
     return { data };
   }
-
   @UseGuards(JwtAuthGuard)
-  @Get(':project_id/shipping/:shipping_id/delivery-note')
+  @Get(':project_id/:retur_id/shipping/:shipping_id/delivery-note')
   async getDetailProjectShippingDeliveryNote(
     @Req() req,
     @Param('project_id') project_id: number,
     @Param('shipping_id') shipping_id: number,
+    @Param('retur_id') retur_id: number,
     @I18n() i18n: I18nContext,
   ) {
     const projectCustomer = await this.projectRepository.findOne({
       where: { id: project_id },
       select: { id: true, customer_id: true },
     });
-    const data = await this.projectProductionShippingService.findDeliverDetail(
+    const data = await this.projectReturShippingService.findDeliverDetail(
       shipping_id,
     );
     if (!data) {
       throw new AppErrorException('data project and shipping not recognize');
     }
     const style_name = data.project ? data.project.style_name : '';
-    const detail =
-      await this.projectProductionShippingService.findDeliverNoteItem(
-        shipping_id,
-        style_name,
-      );
+    const detail = await this.projectReturShippingService.findDeliverNoteItem(
+      shipping_id,
+      style_name,
+    );
     let destination: object;
-    if (data.send_to === ProjectProductionShippingSendtoEnum.Buyer) {
+    if (data.send_to === ProjectReturShippingSendtoEnum.Buyer) {
       destination = await this.customersRepository.findOne({
         select: {
           id: true,
@@ -214,7 +228,7 @@ export class ProjectProductionShippingController {
         },
         where: { id: projectCustomer.customer_id },
       });
-    } else if (data.send_to === ProjectProductionShippingSendtoEnum.Vendor) {
+    } else if (data.send_to === ProjectReturShippingSendtoEnum.Vendor) {
       destination = await this.vendorsRepository.findOne({
         select: {
           id: true,
@@ -228,32 +242,32 @@ export class ProjectProductionShippingController {
     return { data: { ...data, detail, destination } };
   }
 
-  @Get(':project_id/shipping/:shipping_id/delivery-note/download-pdf')
+  @Get(':project_id/:retur_id/shipping/:shipping_id/delivery-note/download-pdf')
   async downloadPdfProjectShippingDeliveryNote(
     @Req() req,
     @Res() res,
     @Param('project_id') project_id: number,
     @Param('shipping_id') shipping_id: number,
+    @Param('retur_id') retur_id: number,
     @I18n() i18n: I18nContext,
   ) {
     const projectCustomer = await this.projectRepository.findOne({
       where: { id: project_id },
       select: { id: true, customer_id: true },
     });
-    const data = await this.projectProductionShippingService.findDeliverDetail(
+    const data = await this.projectReturShippingService.findDeliverDetail(
       shipping_id,
     );
     if (!data) {
       throw new AppErrorException('data project and shipping not recognize');
     }
     const style_name = data.project ? data.project.style_name : '';
-    const detail =
-      await this.projectProductionShippingService.findDeliverNoteItem(
-        shipping_id,
-        style_name,
-      );
+    const detail = await this.projectReturShippingService.findDeliverNoteItem(
+      shipping_id,
+      style_name,
+    );
     let destination: object;
-    if (data.send_to === ProjectProductionShippingSendtoEnum.Buyer) {
+    if (data.send_to === ProjectReturShippingSendtoEnum.Buyer) {
       destination = await this.customersRepository.findOne({
         select: {
           id: true,
@@ -263,7 +277,7 @@ export class ProjectProductionShippingController {
         },
         where: { id: projectCustomer.customer_id },
       });
-    } else if (data.send_to === ProjectProductionShippingSendtoEnum.Vendor) {
+    } else if (data.send_to === ProjectReturShippingSendtoEnum.Vendor) {
       destination = await this.vendorsRepository.findOne({
         select: {
           id: true,

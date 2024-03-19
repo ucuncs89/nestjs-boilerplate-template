@@ -6,21 +6,21 @@ import {
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
 import { ProjectShippingEntity } from 'src/entities/project/project_shipping.entity';
-import { ProjectProductionShippingDto } from '../dto/project-production-shipping.dto';
+import { ProjectReturShippingDto } from '../dto/project-retur-shipping.dto';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
-import { ProjectProductionShippingPackingDto } from '../dto/project-production-shipping-packing.dto';
+import { ProjectReturShippingPackingDto } from '../dto/project-retur-shipping-packing.dto';
 import { ProjectShippingPackingEntity } from 'src/entities/project/project_shipping_packing.entity';
 import { ProjectShippingPackingDetailEntity } from 'src/entities/project/project_shipping_packing_detail.entity';
 
 @Injectable()
-export class ProjectProductionShippingService {
+export class ProjectReturShippingService {
   constructor(
     @InjectRepository(ProjectShippingEntity)
     private projectShippingRepository: Repository<ProjectShippingEntity>,
 
     private connection: Connection,
   ) {}
-  async findShipping(project_id) {
+  async findShipping(project_id: number, retur_id: number) {
     const shipping = await this.projectShippingRepository.find({
       select: {
         id: true,
@@ -50,9 +50,10 @@ export class ProjectProductionShippingService {
       },
       where: {
         project_id,
-        added_in_section: In([StatusProjectEnum.Production]),
+        added_in_section: In([StatusProjectEnum.Retur]),
         deleted_at: IsNull(),
         deleted_by: IsNull(),
+        retur_id,
       },
       relations: { packing: { detail: true } },
     });
@@ -60,16 +61,18 @@ export class ProjectProductionShippingService {
   }
   async createShipping(
     project_id,
-    projectProductionShippingDto: ProjectProductionShippingDto,
+    projectReturShippingDto: ProjectReturShippingDto,
     user_id,
+    retur_id: number,
   ) {
     try {
       const shipping = this.projectShippingRepository.create({
-        ...projectProductionShippingDto,
-        added_in_section: StatusProjectEnum.Production,
+        ...projectReturShippingDto,
+        added_in_section: StatusProjectEnum.Retur,
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
+        retur_id,
       });
       await this.projectShippingRepository.save(shipping);
       return shipping;
@@ -79,29 +82,30 @@ export class ProjectProductionShippingService {
   }
   async updateShipping(
     shipping_id: number,
-    projectProductionShippingDto: ProjectProductionShippingDto,
+    projectReturShippingDto: ProjectReturShippingDto,
     user_id: number,
+    retur_id: number,
   ) {
     try {
       await this.projectShippingRepository.update(
         {
           id: shipping_id,
+          retur_id,
         },
         {
-          shipping_cost: projectProductionShippingDto.shipping_cost,
-          shipping_date: projectProductionShippingDto.shipping_date,
-          shipping_name: projectProductionShippingDto.shipping_name,
-          shipping_vendor_name:
-            projectProductionShippingDto.shipping_vendor_name,
+          shipping_cost: projectReturShippingDto.shipping_cost,
+          shipping_date: projectReturShippingDto.shipping_date,
+          shipping_name: projectReturShippingDto.shipping_name,
+          shipping_vendor_name: projectReturShippingDto.shipping_vendor_name,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
-          receipt_number: projectProductionShippingDto.receipt_number,
-          send_to: projectProductionShippingDto.send_to,
-          relation_id: projectProductionShippingDto.relation_id,
-          relation_name: projectProductionShippingDto.relation_name,
+          receipt_number: projectReturShippingDto.receipt_number,
+          send_to: projectReturShippingDto.send_to,
+          relation_id: projectReturShippingDto.relation_id,
+          relation_name: projectReturShippingDto.relation_name,
         },
       );
-      return { id: shipping_id, ...projectProductionShippingDto };
+      return { id: shipping_id, ...projectReturShippingDto };
     } catch (error) {
       throw new AppErrorException(error);
     }
@@ -124,7 +128,7 @@ export class ProjectProductionShippingService {
   }
   async createPackingList(
     shipping_id: number,
-    projectProductionShippingPackingDto: ProjectProductionShippingPackingDto,
+    projectReturShippingPackingDto: ProjectReturShippingPackingDto,
     user_id: number,
   ) {
     const queryRunner = this.connection.createQueryRunner();
@@ -134,26 +138,26 @@ export class ProjectProductionShippingService {
       const packing = await queryRunner.manager.insert(
         ProjectShippingPackingEntity,
         {
-          ...projectProductionShippingPackingDto,
+          ...projectReturShippingPackingDto,
           created_by: user_id,
           created_at: new Date().toISOString(),
           project_shipping_id: shipping_id,
         },
       );
       if (
-        Array.isArray(projectProductionShippingPackingDto.detail) &&
-        projectProductionShippingPackingDto.detail.length > 0
+        Array.isArray(projectReturShippingPackingDto.detail) &&
+        projectReturShippingPackingDto.detail.length > 0
       ) {
-        for (const detail of projectProductionShippingPackingDto.detail) {
+        for (const detail of projectReturShippingPackingDto.detail) {
           detail.project_shipping_packing_id = packing.raw[0].id;
         }
         await queryRunner.manager.insert(
           ProjectShippingPackingDetailEntity,
-          projectProductionShippingPackingDto.detail,
+          projectReturShippingPackingDto.detail,
         );
       }
       await queryRunner.commitTransaction();
-      return { id: packing.raw[0].id, ...projectProductionShippingPackingDto };
+      return { id: packing.raw[0].id, ...projectReturShippingPackingDto };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
@@ -164,7 +168,7 @@ export class ProjectProductionShippingService {
   async updatePackingList(
     shipping_id: number,
     packing_id: number,
-    projectProductionShippingPackingDto: ProjectProductionShippingPackingDto,
+    projectReturShippingPackingDto: ProjectReturShippingPackingDto,
     user_id: number,
   ) {
     const queryRunner = this.connection.createQueryRunner();
@@ -175,9 +179,9 @@ export class ProjectProductionShippingService {
         ProjectShippingPackingEntity,
         { id: packing_id },
         {
-          variant_name: projectProductionShippingPackingDto.variant_name,
-          variant_id: projectProductionShippingPackingDto.variant_id,
-          total_item: projectProductionShippingPackingDto.total_item,
+          variant_name: projectReturShippingPackingDto.variant_name,
+          variant_id: projectReturShippingPackingDto.variant_id,
+          total_item: projectReturShippingPackingDto.total_item,
           created_by: user_id,
           created_at: new Date().toISOString(),
           project_shipping_id: shipping_id,
@@ -187,19 +191,19 @@ export class ProjectProductionShippingService {
         project_shipping_packing_id: packing_id,
       });
       if (
-        Array.isArray(projectProductionShippingPackingDto.detail) &&
-        projectProductionShippingPackingDto.detail.length > 0
+        Array.isArray(projectReturShippingPackingDto.detail) &&
+        projectReturShippingPackingDto.detail.length > 0
       ) {
-        for (const detail of projectProductionShippingPackingDto.detail) {
+        for (const detail of projectReturShippingPackingDto.detail) {
           detail.project_shipping_packing_id = packing_id;
         }
         await queryRunner.manager.insert(
           ProjectShippingPackingDetailEntity,
-          projectProductionShippingPackingDto.detail,
+          projectReturShippingPackingDto.detail,
         );
       }
       await queryRunner.commitTransaction();
-      return { id: packing_id, ...projectProductionShippingPackingDto };
+      return { id: packing_id, ...projectReturShippingPackingDto };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new AppErrorException(error.message);
@@ -280,7 +284,7 @@ export class ProjectProductionShippingService {
     const id = data.id.toString().padStart(4, '0'); // Mengonversi ID menjadi string dan menambahkan padding di depan jika kurang dari 4 digit
     const dateParts = data.shipping_date.split('-');
     const formattedDate = dateParts[0] + dateParts[1] + dateParts[2]; // Mengambil bagian tahun, bulan, dan tanggal dari tanggal pengiriman
-    const code = `DN-${formattedDate}-${id}`;
+    const code = `DN-RETUR-${formattedDate}-${id}`;
     return { ...data, code };
   }
 }

@@ -12,6 +12,7 @@ export enum StatusProjectEnum {
   Complete = 'Complete',
   Canceled = 'Canceled',
   Hold = 'Hold',
+  Retur = 'Retur',
 }
 
 export enum DeadlineFilterProjectEnum {
