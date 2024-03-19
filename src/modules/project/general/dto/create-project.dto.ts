@@ -33,6 +33,7 @@ export enum OrderTypeProjectEnum {
 export enum ProjectPaymentMethod {
   cash = 'cash',
   downpayment = 'downpayment',
+  tempo = 'tempo',
 }
 export class CreateProjectDto {
   @ApiProperty()
@@ -89,6 +90,12 @@ export class CreateProjectDto {
   @ApiProperty({ enum: ProjectPaymentMethod })
   @IsNotEmpty()
   payment_method: ProjectPaymentMethod;
+
+  @ApiProperty()
+  down_payment_percentage?: number;
+
+  @ApiProperty()
+  payment_duration?: number;
 }
 
 export enum MaterialSourceTypeProjectEnum {

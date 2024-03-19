@@ -21,6 +21,7 @@ export class ProjectPlanningShippingService {
     project_id,
     projectPlanningShippingDto: ProjectPlanningShippingDto,
     user_id,
+    cost_per_item: number,
   ) {
     try {
       const shipping = this.projectShippingRepository.create({
@@ -29,6 +30,7 @@ export class ProjectPlanningShippingService {
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
+        shipping_cost: cost_per_item,
       });
       await this.projectShippingRepository.save(shipping);
       return shipping;
@@ -42,6 +44,7 @@ export class ProjectPlanningShippingService {
     shipping_id: number,
     projectPlanningShippingDto: ProjectPlanningShippingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     try {
       await this.projectShippingRepository.update(
@@ -49,7 +52,8 @@ export class ProjectPlanningShippingService {
           id: shipping_id,
         },
         {
-          shipping_cost: projectPlanningShippingDto.shipping_cost,
+          total_shipping_cost: projectPlanningShippingDto.total_shipping_cost,
+          shipping_cost: cost_per_item,
           shipping_date: projectPlanningShippingDto.shipping_date,
           shipping_name: projectPlanningShippingDto.shipping_name,
           shipping_vendor_name: projectPlanningShippingDto.shipping_vendor_name,
@@ -88,6 +92,7 @@ export class ProjectPlanningShippingService {
         shipping_date: true,
         shipping_cost: true,
         created_at: true,
+        total_shipping_cost: true,
       },
       where: {
         project_id,
@@ -115,6 +120,7 @@ export class ProjectPlanningShippingService {
         shipping_date: true,
         shipping_cost: true,
         added_in_section: true,
+        total_shipping_cost: true,
       },
     });
     return data;
@@ -129,6 +135,7 @@ export class ProjectPlanningShippingService {
         shipping_vendor_name: true,
         shipping_date: true,
         shipping_cost: true,
+        total_shipping_cost: true,
         created_at: true,
       },
       where: {
@@ -146,6 +153,7 @@ export class ProjectPlanningShippingService {
         shipping_vendor_name: true,
         shipping_date: true,
         shipping_cost: true,
+        total_shipping_cost: true,
         created_at: true,
       },
       where: {
@@ -159,7 +167,7 @@ export class ProjectPlanningShippingService {
   }
   async sumGrandAvgPriceTotalShipping(project_id: number) {
     const avgPrice = await this.projectShippingRepository.average(
-      'shipping_cost',
+      'total_shipping_cost',
       {
         project_id,
         deleted_at: IsNull(),
@@ -168,7 +176,7 @@ export class ProjectPlanningShippingService {
       },
     );
     const totalCost = await this.projectShippingRepository.sum(
-      'shipping_cost',
+      'total_shipping_cost',
       {
         project_id,
         deleted_at: IsNull(),

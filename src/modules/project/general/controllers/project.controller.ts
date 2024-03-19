@@ -14,7 +14,7 @@ import {
   CreateProjectDto,
   ProjectMaterialSourceDto,
 } from '../dto/create-project.dto';
-import { ApiBearerAuth, ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { RabbitMQService } from 'src/rabbitmq/services/rabbit-mq.service';

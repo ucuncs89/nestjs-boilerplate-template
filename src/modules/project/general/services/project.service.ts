@@ -102,6 +102,8 @@ export class ProjectService {
         created_at: new Date().toISOString(),
         created_by: user_id,
         payment_method: createProjectDto.payment_method,
+        down_payment_percentage: createProjectDto.down_payment_percentage,
+        payment_duration: createProjectDto.payment_duration,
       });
       for (const documents of createProjectDto.project_document) {
         documents.project_id = id;
@@ -254,6 +256,8 @@ export class ProjectService {
         can_production: true,
         hold_description: true,
         payment_method: true,
+        down_payment_percentage: true,
+        payment_duration: true,
         size: {
           id: true,
           project_id: true,

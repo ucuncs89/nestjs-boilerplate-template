@@ -17,7 +17,7 @@ export class ProjectReturShippingDto {
   shipping_date: string;
 
   @ApiProperty()
-  shipping_cost?: number;
+  total_shipping_cost?: number;
 
   @ApiProperty()
   receipt_number?: string;

@@ -27,6 +27,7 @@ export class ProjectCostingSamplingService {
         id: true,
         name: true,
         cost: true,
+        total_cost: true,
       },
       where: {
         project_id,
@@ -44,11 +45,13 @@ export class ProjectCostingSamplingService {
     project_id: number,
     projectCostingSamplingDto: ProjectCostingSamplingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     try {
       const data = this.projectSamplingRepository.create({
         project_id,
         ...projectCostingSamplingDto,
+        cost: cost_per_item,
         added_in_section: StatusProjectEnum.Costing,
         created_at: new Date().toISOString(),
         created_by: user_id,
@@ -78,11 +81,13 @@ export class ProjectCostingSamplingService {
     sampling_id: number,
     projectCostingSamplingDto: ProjectCostingSamplingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     const data = await this.projectSamplingRepository.update(
       { project_id, id: sampling_id },
       {
         ...projectCostingSamplingDto,
+        cost: cost_per_item,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
       },

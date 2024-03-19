@@ -5,5 +5,5 @@ export class ProjectCostingSamplingDto {
   name: string;
 
   @ApiProperty()
-  cost: number;
+  total_cost: number;
 }

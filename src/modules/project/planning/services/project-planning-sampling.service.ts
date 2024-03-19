@@ -37,6 +37,7 @@ export class ProjectPlanningSamplingService {
     project_id: number,
     projectPlanningSamplingDto: ProjectPlanningSamplingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     try {
       const data = this.projectSamplingRepository.create({
@@ -45,6 +46,7 @@ export class ProjectPlanningSamplingService {
         added_in_section: StatusProjectEnum.Planning,
         created_at: new Date().toISOString(),
         created_by: user_id,
+        cost: cost_per_item,
       });
       await this.projectSamplingRepository.save(data);
       return data;
@@ -71,10 +73,12 @@ export class ProjectPlanningSamplingService {
     sampling_id: number,
     projectPlanningSamplingDto: ProjectPlanningSamplingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     const data = await this.projectSamplingRepository.update(
       { project_id, id: sampling_id },
       {
+        cost: cost_per_item,
         ...projectPlanningSamplingDto,
         updated_at: new Date().toISOString(),
         updated_by: user_id,
@@ -112,13 +116,16 @@ export class ProjectPlanningSamplingService {
     return { costing_sampling, planning };
   }
   async sumGrandAvgPriceTotalSampling(project_id: number) {
-    const avgPrice = await this.projectSamplingRepository.average('cost', {
-      project_id,
-      deleted_at: IsNull(),
-      deleted_by: IsNull(),
-      added_in_section: StatusProjectEnum.Planning,
-    });
-    const totalCost = await this.projectSamplingRepository.sum('cost', {
+    const avgPrice = await this.projectSamplingRepository.average(
+      'total_cost',
+      {
+        project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        added_in_section: StatusProjectEnum.Planning,
+      },
+    );
+    const totalCost = await this.projectSamplingRepository.sum('total_cost', {
       project_id,
       deleted_at: IsNull(),
       deleted_by: IsNull(),

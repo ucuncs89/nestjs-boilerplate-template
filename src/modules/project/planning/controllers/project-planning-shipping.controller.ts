@@ -21,6 +21,7 @@ import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.
 import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
 import { ProjectDetailCalculateService } from '../../general/services/project-detail-calculate.service';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
+import { ProjectVariantService } from '../../general/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -32,6 +33,7 @@ export class ProjectPlanningShippingController {
     private readonly projectCostingShippingService: ProjectCostingShippingService,
     private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
     private readonly projectDetailCalculateService: ProjectDetailCalculateService,
+    private readonly projectVariantService: ProjectVariantService,
   ) {}
 
   @Get(':project_id/shipping')
@@ -70,10 +72,15 @@ export class ProjectPlanningShippingController {
     projectPlanningShippingDto: ProjectPlanningShippingDto,
     @I18n() i18n: I18nContext,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectPlanningShippingDto.total_shipping_cost / variantTotalItem;
     const data = await this.projectPlanningShippingService.createShipping(
       project_id,
       projectPlanningShippingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       const calculateShipping =
@@ -99,10 +106,15 @@ export class ProjectPlanningShippingController {
     projectPlanningShippingDto: ProjectPlanningShippingDto,
     @I18n() i18n: I18nContext,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectPlanningShippingDto.total_shipping_cost / variantTotalItem;
     const data = await this.projectPlanningShippingService.updateShipping(
       shipping_id,
       projectPlanningShippingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       const calculateShipping =

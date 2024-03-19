@@ -13,7 +13,7 @@ export class ProjectCostingShippingDto {
   shipping_date: string;
 
   @ApiProperty()
-  shipping_cost?: number;
+  total_shipping_cost?: number;
 
   project_id?: number;
 
