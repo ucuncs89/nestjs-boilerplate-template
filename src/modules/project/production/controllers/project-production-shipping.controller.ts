@@ -27,6 +27,7 @@ import { Repository } from 'typeorm';
 import { VendorsEntity } from 'src/entities/vendors/vendors.entity';
 import { ProjectEntity } from 'src/entities/project/project.entity';
 import { ProjectProductionShippingPdfService } from '../services/project-production-shipping-pdf.service';
+import { ProjectVariantService } from '../../general/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project production')
@@ -35,6 +36,7 @@ export class ProjectProductionShippingController {
   constructor(
     private readonly projectProductionShippingService: ProjectProductionShippingService,
     private readonly projectProductionShippingPdfService: ProjectProductionShippingPdfService,
+    private readonly projectVariantService: ProjectVariantService,
 
     @InjectRepository(CustomersEntity)
     private customersRepository: Repository<CustomersEntity>,
@@ -70,10 +72,15 @@ export class ProjectProductionShippingController {
     projectProductionShippingDto: ProjectProductionShippingDto,
     @I18n() i18n: I18nContext,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectProductionShippingDto.total_shipping_cost / variantTotalItem;
     const data = await this.projectProductionShippingService.createShipping(
       project_id,
       projectProductionShippingDto,
       req.user.id,
+      cost_per_item,
     );
     return { data };
   }
@@ -88,10 +95,15 @@ export class ProjectProductionShippingController {
     projectProductionShippingDto: ProjectProductionShippingDto,
     @I18n() i18n: I18nContext,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item =
+      projectProductionShippingDto.total_shipping_cost / variantTotalItem;
     const data = await this.projectProductionShippingService.updateShipping(
       shipping_id,
       projectProductionShippingDto,
       req.user.id,
+      cost_per_item,
     );
     return { data };
   }

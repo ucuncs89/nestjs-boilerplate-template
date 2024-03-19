@@ -43,10 +43,12 @@ export class ProjectSamplingService {
     project_id: number,
     projectSamplingDto: ProjectSamplingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     try {
       const sampling = this.projectSamplingRepository.create({
         ...projectSamplingDto,
+        cost: cost_per_item,
         added_in_section: StatusProjectEnum.Sampling,
         project_id,
         created_at: new Date().toISOString(),
@@ -63,15 +65,17 @@ export class ProjectSamplingService {
     sampling_id: number,
     projectSamplingDto: ProjectSamplingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     try {
       const data = await this.projectSamplingRepository.update(
         { id: sampling_id, project_id },
         {
           name: projectSamplingDto.name,
-          cost: projectSamplingDto.cost,
+          total_cost: projectSamplingDto.total_cost,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
+          cost: cost_per_item,
         },
       );
       return data;
@@ -101,7 +105,10 @@ export class ProjectSamplingService {
         total_cost: 0,
       };
     }
-    const total_cost = sampling.reduce((total, item) => total + item.cost, 0);
+    const total_cost = sampling.reduce(
+      (total, item) => total + item.total_cost,
+      0,
+    );
     return { data: sampling, total_cost };
   }
   async findSamplingAll(project_id: number) {

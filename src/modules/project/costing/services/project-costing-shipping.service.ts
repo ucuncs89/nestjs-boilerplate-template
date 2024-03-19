@@ -26,11 +26,13 @@ export class ProjectCostingShippingService {
     project_id,
     projectCostingShippingDto: ProjectCostingShippingDto,
     user_id,
+    cost_per_item: number,
   ) {
     try {
       const shipping = this.projectShippingRepository.create({
         ...projectCostingShippingDto,
         added_in_section: StatusProjectEnum.Costing,
+        shipping_cost: cost_per_item,
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
@@ -47,6 +49,7 @@ export class ProjectCostingShippingService {
     shipping_id: number,
     projectCostingShippingDto: ProjectCostingShippingDto,
     user_id: number,
+    cost_per_item: number,
   ) {
     try {
       await this.projectShippingRepository.update(
@@ -54,7 +57,8 @@ export class ProjectCostingShippingService {
           id: shipping_id,
         },
         {
-          shipping_cost: projectCostingShippingDto.shipping_cost,
+          total_shipping_cost: projectCostingShippingDto.total_shipping_cost,
+          shipping_cost: cost_per_item,
           shipping_date: projectCostingShippingDto.shipping_date,
           shipping_name: projectCostingShippingDto.shipping_name,
           shipping_vendor_name: projectCostingShippingDto.shipping_vendor_name,
@@ -92,6 +96,7 @@ export class ProjectCostingShippingService {
         shipping_vendor_name: true,
         shipping_date: true,
         shipping_cost: true,
+        total_shipping_cost: true,
         created_at: true,
       },
       where: {
@@ -126,7 +131,7 @@ export class ProjectCostingShippingService {
   }
   async updateGrandAvgPriceTotalShipping(project_id: number) {
     const avgPrice = await this.projectShippingRepository.average(
-      'shipping_cost',
+      'total_shipping_cost',
       {
         project_id,
         deleted_at: IsNull(),

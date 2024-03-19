@@ -35,8 +35,11 @@ export class ProjectShippingEntity {
   @Column({ type: 'date' })
   shipping_date: string;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'double precision', nullable: true })
   shipping_cost?: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  total_shipping_cost?: number;
 
   @Column({ type: 'varchar' })
   added_in_section: string;

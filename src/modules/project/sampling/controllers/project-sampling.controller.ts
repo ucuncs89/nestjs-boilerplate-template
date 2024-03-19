@@ -14,6 +14,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ProjectSamplingService } from '../services/project-sampling.service';
 import { ProjectSamplingDto } from '../dto/project-sampling.dto';
 import { ProjectCostingSamplingService } from '../../costing/services/project-costing-sampling.service';
+import { ProjectVariantService } from '../../general/services/project-variant.service';
 
 @ApiBearerAuth()
 @ApiTags('project sampling')
@@ -23,6 +24,7 @@ export class ProjectSamplingController {
   constructor(
     private readonly projectSamplingService: ProjectSamplingService,
     private readonly projectCostingSamplingService: ProjectCostingSamplingService,
+    private readonly projectVariantService: ProjectVariantService,
   ) {}
 
   @Get(':project_id')
@@ -38,10 +40,14 @@ export class ProjectSamplingController {
     @Param('project_id') project_id: number,
     @Body() projectSamplingDto: ProjectSamplingDto,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item = projectSamplingDto.total_cost / variantTotalItem;
     const data = await this.projectSamplingService.create(
       project_id,
       projectSamplingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
@@ -74,11 +80,15 @@ export class ProjectSamplingController {
     @Param('sampling_id') sampling_id: number,
     @Body() projectSamplingDto: ProjectSamplingDto,
   ) {
+    const variantTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+    const cost_per_item = projectSamplingDto.total_cost / variantTotalItem;
     const data = await this.projectSamplingService.update(
       project_id,
       sampling_id,
       projectSamplingDto,
       req.user.id,
+      cost_per_item,
     );
     if (data) {
       this.projectCostingSamplingService.updateGrandAvgPriceTotalSampling(
