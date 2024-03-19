@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString } from 'class-validator';
+import { IsDateString, IsNotEmpty } from 'class-validator';
 
 export class ProjectCostingShippingDto {
   @ApiProperty()
@@ -13,7 +13,8 @@ export class ProjectCostingShippingDto {
   shipping_date: string;
 
   @ApiProperty()
-  total_shipping_cost?: number;
+  @IsNotEmpty()
+  total_shipping_cost: number;
 
   project_id?: number;
 
