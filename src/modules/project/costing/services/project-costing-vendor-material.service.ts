@@ -110,7 +110,7 @@ export class ProjectCostingVendorMaterialService {
       vendorMaterial.total_consumption = total_quantity ? total_quantity : 0;
       vendorMaterial.total_item = variant_total_item;
       vendorMaterial.total_price = sumPrice ? sumPrice : 0;
-      this.projectVendorMaterialRepository.save(vendorMaterial);
+      await this.projectVendorMaterialRepository.save(vendorMaterial);
     } catch (error) {
       console.log(error);
     }

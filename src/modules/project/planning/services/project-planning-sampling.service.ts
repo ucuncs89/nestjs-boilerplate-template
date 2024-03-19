@@ -23,6 +23,7 @@ export class ProjectPlanningSamplingService {
         id: true,
         name: true,
         cost: true,
+        total_cost: true,
       },
       where: {
         project_id,

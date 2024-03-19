@@ -125,6 +125,7 @@ export class ProjectCostingShippingService {
         shipping_date: true,
         shipping_cost: true,
         added_in_section: true,
+        total_shipping_cost: true,
       },
     });
     return data;
