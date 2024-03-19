@@ -112,6 +112,7 @@ export class ProjectCostingVendorProductionService {
       project_id,
       projectCostingVendorProductionDetailDto.activity_id,
     );
+
     if (!findVendorProductionActivity) {
       const insert = await this.createVendorProductionActivity(
         project_id,
@@ -133,8 +134,8 @@ export class ProjectCostingVendorProductionService {
         created_by: user_id,
       });
       await this.projectVendorProductionDetailRepository.save(vendor);
-      this.updateTotalQuantitySubtotal(project_vendor_production_id);
-      this.updateGrandTotalProductionPerProject(project_id);
+      await this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      await this.updateGrandTotalProductionPerProject(project_id);
       return vendor;
     } catch (error) {
       throw new AppErrorException(error);
@@ -150,14 +151,32 @@ export class ProjectCostingVendorProductionService {
     project_id,
   ) {
     try {
+      const findVendorProductionActivity = await this.findOneProductionActivty(
+        project_id,
+        projectCostingVendorProductionDetailDto.activity_id,
+      );
+
+      if (!findVendorProductionActivity) {
+        const insert = await this.createVendorProductionActivity(
+          project_id,
+          projectCostingVendorProductionDetailDto.activity_id,
+          projectCostingVendorProductionDetailDto.activity_name,
+          user_id,
+          i18n,
+        );
+
+        projectCostingVendorProductionDetailDto.project_vendor_production_id =
+          insert.id;
+      } else {
+        projectCostingVendorProductionDetailDto.project_vendor_production_id =
+          findVendorProductionActivity.id;
+      }
+
       delete projectCostingVendorProductionDetailDto.activity_id;
       delete projectCostingVendorProductionDetailDto.activity_name;
       const data = await this.projectVendorProductionDetailRepository.update(
         {
           id: project_vendor_production_detail_id,
-          project_vendor_production_id,
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
         },
         {
           ...projectCostingVendorProductionDetailDto,
@@ -165,8 +184,12 @@ export class ProjectCostingVendorProductionService {
           updated_by: user_id,
         },
       );
-      this.updateTotalQuantitySubtotal(project_vendor_production_id);
-      this.updateGrandTotalProductionPerProject(project_id);
+      await this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      await this.updateGrandTotalProductionPerProject(project_id);
+      await this.deleteIfNotExistActivity(
+        project_vendor_production_id,
+        user_id,
+      );
       return data;
     } catch (error) {
       throw new AppErrorException(error);
@@ -184,9 +207,12 @@ export class ProjectCostingVendorProductionService {
         project_vendor_production_id,
         id: project_vendor_production_detail_id,
       });
-      this.updateTotalQuantitySubtotal(project_vendor_production_id);
-      this.deleteIfNotExistActivity(project_vendor_production_id, user_id);
-      this.updateGrandTotalProductionPerProject(project_id);
+      await this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      await this.deleteIfNotExistActivity(
+        project_vendor_production_id,
+        user_id,
+      );
+      await this.updateGrandTotalProductionPerProject(project_id);
       return data;
     } catch (error) {
       throw new AppErrorException(error);
