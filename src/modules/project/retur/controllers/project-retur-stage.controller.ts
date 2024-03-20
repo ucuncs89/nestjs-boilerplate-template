@@ -46,7 +46,7 @@ export class ProjectReturStageController {
     }
     const retur = await this.projectReturService.findOne(retur_id, project_id);
     const quantity_remaining = retur.quantity
-      ? retur.quantity
+      ? retur.quantity - sum_quantity_stage
       : 0 - sum_quantity_stage;
     return {
       data,

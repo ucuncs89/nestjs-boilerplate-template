@@ -11,6 +11,8 @@ import {
   InvoiceApprovalDto,
   InvoiceDetailDto,
   InvoiceDto,
+  InvoicePPHTypeEnum,
+  InvoicePPNTypeEnum,
   InvoiceStatusEnum,
   InvoiceTypeEnum,
   StatusInvoiceEnum,
@@ -57,18 +59,14 @@ export class InvoiceService {
       await queryRunner.manager.insert(InvoiceStatusEntity, [
         {
           invoice_id: invoice.raw[0].id,
-          status_desc: InvoiceStatusEnum.CreatedByThe,
+          status_desc: InvoiceStatusEnum.RequestByTheProduction,
           updated_by: user_id,
           updated_at: new Date().toISOString(),
           status: StatusInvoiceEnum.Approved,
         },
         {
           invoice_id: invoice.raw[0].id,
-          status_desc: InvoiceStatusEnum.SendByThe,
-        },
-        {
-          invoice_id: invoice.raw[0].id,
-          status_desc: InvoiceStatusEnum.PaymentStatusConfirm,
+          status_desc: InvoiceStatusEnum.CreatedByTheFinance,
         },
       ]);
       if (invoiceDetailDto.length > 0) {
@@ -84,6 +82,49 @@ export class InvoiceService {
       throw new AppErrorException(error.message);
     } finally {
       await queryRunner.release();
+    }
+  }
+  async updateInvoice(id: number, invoiceDto: InvoiceDto, user_id: number) {
+    try {
+      // let
+      if (invoiceDto.ppn_type === InvoicePPNTypeEnum.Non_PPN) {
+        invoiceDto.ppn = null;
+      }
+      switch (invoiceDto.pph_type) {
+        case InvoicePPHTypeEnum.PPH_23:
+          invoiceDto.pph = 2;
+          break;
+        case InvoicePPHTypeEnum.PPH_4_2:
+          invoiceDto.pph = 0.5;
+          break;
+
+        default:
+          invoiceDto.pph = null;
+          break;
+      }
+
+      if (invoiceDto.pph_type === InvoicePPHTypeEnum.PPH_4_2) {
+        invoiceDto.pph = 0.5;
+      }
+      const data = await this.invoiceRepository.update(
+        { id },
+        {
+          company_address: invoiceDto.company_address,
+          company_phone_number: invoiceDto.company_phone_number,
+          ppn_type: invoiceDto.ppn_type,
+          ppn: invoiceDto.ppn,
+          pph_type: invoiceDto.pph_type,
+          discount: invoiceDto.discount,
+          bank_name: invoiceDto.bank_name,
+          bank_account_number: invoiceDto.bank_account_number,
+          bank_account_houlders_name: invoiceDto.bank_account_houlders_name,
+          payment_term: invoiceDto.payment_term,
+          notes: invoiceDto.notes,
+        },
+      );
+      return data;
+    } catch (error) {
+      throw new AppErrorException(error);
     }
   }
 
@@ -304,7 +345,7 @@ export class InvoiceService {
       status.status = invoiceApprovalDto.status;
       status.reason = invoiceApprovalDto.reason;
       await this.invoiceStatusRepository.save(status);
-      if (status.status_desc === InvoiceStatusEnum.PaymentStatusConfirm) {
+      if (status.status_desc === InvoiceStatusEnum.CreatedByTheFinance) {
         await this.invoiceRepository.update(
           { id: invoice_id },
           { status: invoiceApprovalDto.status },

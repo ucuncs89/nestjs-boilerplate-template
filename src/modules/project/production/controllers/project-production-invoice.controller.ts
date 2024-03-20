@@ -7,6 +7,8 @@ import { ProjectService } from '../../general/services/project.service';
 import { ProjectPlanningPriceService } from '../../planning/services/project-planning-price.service';
 import {
   InvoiceDetailDto,
+  InvoicePPHTypeEnum,
+  InvoicePPNTypeEnum,
   InvoiceTypeEnum,
 } from 'src/modules/invoice/dto/invoice.dto';
 
@@ -83,6 +85,8 @@ export class ProjectProductionInvoiceController {
           company_address: customer.company_address,
           company_phone_number: customer.company_phone_number,
           type: InvoiceTypeEnum.purchase,
+          pph_type: InvoicePPHTypeEnum.Non_PPH,
+          ppn_type: InvoicePPNTypeEnum.Non_PPN,
         },
         req.user.id,
         invoiceDetailDto,

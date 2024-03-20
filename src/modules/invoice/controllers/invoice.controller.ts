@@ -5,22 +5,23 @@ import {
   Body,
   Param,
   Delete,
-  Put,
   Query,
   Req,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { InvoiceService } from '../services/invoice.service';
 
 import { GetListInvoiceDto } from '../dto/get-list-invoice.dto';
 import { Pagination } from 'src/utils/pagination';
-import { ApiTags } from '@nestjs/swagger';
-import { InvoiceApprovalDto } from '../dto/invoice.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { InvoiceApprovalDto, InvoiceDto } from '../dto/invoice.dto';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
 @Controller('invoice')
 @ApiTags('invoice')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
@@ -48,9 +49,24 @@ export class InvoiceController {
     );
     return { message: 'Successfully', ...data, pagination };
   }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const data = await this.invoiceService.findOne(id);
+    return { message: 'Successfully', data };
+  }
+
+  @Put(':id')
+  async editInvoice(
+    @Req() req,
+    @Body() invoiceDto: InvoiceDto,
+    @Param('id') id: number,
+  ) {
+    const data = await this.invoiceService.updateInvoice(
+      id,
+      invoiceDto,
+      req.user.id,
+    );
     return { message: 'Successfully', data };
   }
 

@@ -4,7 +4,11 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { InvoiceService } from 'src/modules/invoice/services/invoice.service';
 import { ProjectService } from '../../general/services/project.service';
 import { ProjectPlanningPriceService } from '../../planning/services/project-planning-price.service';
-import { InvoiceTypeEnum } from 'src/modules/invoice/dto/invoice.dto';
+import {
+  InvoicePPHTypeEnum,
+  InvoicePPNTypeEnum,
+  InvoiceTypeEnum,
+} from 'src/modules/invoice/dto/invoice.dto';
 import { ProjectReturService } from '../../general/services/project-retur.service';
 
 @ApiBearerAuth()
@@ -81,6 +85,8 @@ export class ProjectReturInvoiceController {
             company_phone_number: customer.company_phone_number,
             retur_id,
             type: InvoiceTypeEnum.retur,
+            pph_type: InvoicePPHTypeEnum.Non_PPH,
+            ppn_type: InvoicePPNTypeEnum.Non_PPN,
           },
           req.user.id,
           invoiceDetailDto,
