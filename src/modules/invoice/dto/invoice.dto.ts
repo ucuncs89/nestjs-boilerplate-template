@@ -4,6 +4,15 @@ export enum InvoiceTypeEnum {
   retur = 'retur',
   purchase = 'purchase',
 }
+export enum InvoicePPNTypeEnum {
+  Non_PPN = 'Non-PPN',
+  PPN = 'PPN',
+}
+export enum InvoicePPHTypeEnum {
+  Non_PPH = 'Non-PPH',
+  PPH_23 = 'PPH 23',
+  PPH_4_2 = 'PPH 4(2)',
+}
 export class InvoiceDto {
   company_name: string;
   customer_id: number;
@@ -14,11 +23,14 @@ export class InvoiceDto {
   @ApiProperty()
   company_phone_number?: string;
 
+  @ApiProperty({ enum: InvoicePPNTypeEnum })
+  ppn_type: InvoicePPNTypeEnum;
+
   @ApiProperty()
   ppn?: number;
 
-  @ApiProperty()
-  pph?: number;
+  @ApiProperty({ enum: InvoicePPHTypeEnum })
+  pph_type: InvoicePPHTypeEnum;
 
   @ApiProperty()
   discount?: number;
@@ -41,6 +53,7 @@ export class InvoiceDto {
   type: InvoiceTypeEnum;
 
   // @ApiProperty()
+  pph?: number;
   project_id: number;
 
   retur_id?: number;
@@ -59,9 +72,8 @@ export class InvoiceApprovalDto {
 }
 
 export enum InvoiceStatusEnum {
-  CreatedByThe = 'Created by the production team',
-  SendByThe = 'Sent by the finance team',
-  PaymentStatusConfirm = 'Payment status is confirmed by the finance team',
+  RequestByTheProduction = 'Requested by the production team',
+  CreatedByTheFinance = 'Created by the finance team',
 }
 
 export class InvoiceDetailDto {
