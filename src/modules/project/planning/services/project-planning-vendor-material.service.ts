@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
 import { Connection, IsNull, Not, Repository } from 'typeorm';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
@@ -48,22 +51,34 @@ export class ProjectPlanningVendorMaterialService {
     i18n,
   ) {
     try {
-      const data = await this.projectVendorMaterialDetailRepository.update(
-        {
-          id: vendor_material_detail_id,
-        },
-        {
-          vendor_id: projectPlanningVendorMaterialDto.vendor_id,
-          quantity: projectPlanningVendorMaterialDto.quantity,
-          quantity_unit: projectPlanningVendorMaterialDto.quantity_unit,
-          price: projectPlanningVendorMaterialDto.price,
-          price_unit: projectPlanningVendorMaterialDto.price_unit,
-          total_price: projectPlanningVendorMaterialDto.total_price,
-          updated_at: new Date().toISOString(),
-          updated_by: user_id,
-        },
-      );
-      return data;
+      const materialDetail =
+        await this.projectVendorMaterialDetailRepository.findOne({
+          where: {
+            id: vendor_material_detail_id,
+          },
+        });
+      const old_purchase_order_detail_id =
+        materialDetail.purchase_order_detail_id;
+      const old_purchase_order_id = materialDetail.purchase_order_id;
+
+      materialDetail.vendor_id = projectPlanningVendorMaterialDto.vendor_id;
+      materialDetail.quantity = projectPlanningVendorMaterialDto.quantity;
+      materialDetail.quantity_unit =
+        projectPlanningVendorMaterialDto.quantity_unit;
+      materialDetail.price = projectPlanningVendorMaterialDto.price;
+      materialDetail.price_unit = projectPlanningVendorMaterialDto.price_unit;
+      materialDetail.total_price = projectPlanningVendorMaterialDto.total_price;
+      materialDetail.updated_at = new Date().toISOString();
+      materialDetail.updated_by = user_id;
+      materialDetail.status_purchase_order = null;
+      materialDetail.purchase_order_detail_id = null;
+      materialDetail.purchase_order_id = null;
+      await this.projectVendorMaterialDetailRepository.save(materialDetail);
+      return {
+        ...materialDetail,
+        old_purchase_order_detail_id,
+        old_purchase_order_id,
+      };
     } catch (error) {
       throw new AppErrorException(error);
     }
@@ -72,12 +87,27 @@ export class ProjectPlanningVendorMaterialService {
     vendor_material_id: number,
     vendor_material_detail_id: number,
   ) {
+    const purchaseOrderExist =
+      await this.projectVendorMaterialDetailRepository.findOne({
+        where: {
+          project_vendor_material_id: vendor_material_id,
+          id: vendor_material_detail_id,
+        },
+        select: {
+          purchase_order_detail_id: true,
+          purchase_order_id: true,
+        },
+      });
+
+    const old_purchase_order_detail_id =
+      purchaseOrderExist.purchase_order_detail_id;
+    const old_purchase_order_id = purchaseOrderExist.purchase_order_id;
     try {
       const data = await this.projectVendorMaterialDetailRepository.delete({
         project_vendor_material_id: vendor_material_id,
         id: vendor_material_detail_id,
       });
-      return data;
+      return { ...data, old_purchase_order_detail_id, old_purchase_order_id };
     } catch (error) {
       throw new AppErrorException(error);
     }
@@ -111,7 +141,7 @@ export class ProjectPlanningVendorMaterialService {
       vendorMaterial.total_consumption = total_quantity ? total_quantity : 0;
       vendorMaterial.total_item = variant_total_item;
       vendorMaterial.total_price = sumPrice ? sumPrice : 0;
-      this.projectVendorMaterialRepository.save(vendorMaterial);
+      await this.projectVendorMaterialRepository.save(vendorMaterial);
     } catch (error) {
       console.log(error);
     }

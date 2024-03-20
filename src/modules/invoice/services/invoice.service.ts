@@ -102,10 +102,6 @@ export class InvoiceService {
           invoiceDto.pph = null;
           break;
       }
-
-      if (invoiceDto.pph_type === InvoicePPHTypeEnum.PPH_4_2) {
-        invoiceDto.pph = 0.5;
-      }
       const data = await this.invoiceRepository.update(
         { id },
         {

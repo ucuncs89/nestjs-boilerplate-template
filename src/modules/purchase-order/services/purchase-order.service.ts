@@ -12,6 +12,8 @@ import {
 import {
   PurchaseApprovalDto,
   PurchaseOrderDto,
+  PurchaseOrderPPHTypeEnum,
+  PurchaseOrderPPNTypeEnum,
   PurchaseOrderStatusEnum,
   PurchaseOrderTypeEnum,
   StatusPurchaseOrderEnum,
@@ -55,18 +57,14 @@ export class PurchaseOrderService {
       const status = this.purchaseOrderStatusRepository.create([
         {
           purchase_order_id: purchaseOrder.id,
-          status_desc: PurchaseOrderStatusEnum.CreatedByThe,
+          status_desc: PurchaseOrderStatusEnum.RequestByTheProduction,
           updated_by: user_id,
           updated_at: new Date().toISOString(),
           status: StatusPurchaseOrderEnum.Approved,
         },
         {
           purchase_order_id: purchaseOrder.id,
-          status_desc: PurchaseOrderStatusEnum.SendByThe,
-        },
-        {
-          purchase_order_id: purchaseOrder.id,
-          status_desc: PurchaseOrderStatusEnum.PaymentStatusConfirm,
+          status_desc: PurchaseOrderStatusEnum.CreatedByTheFinance,
         },
       ]);
       await this.purchaseOrderStatusRepository.save(status);
@@ -142,9 +140,9 @@ export class PurchaseOrderService {
         company_address: true,
         company_phone_number: true,
         ppn: true,
-        ppn_unit: true,
+        ppn_type: true,
         pph: true,
-        pph_unit: true,
+        pph_type: true,
         discount: true,
         bank_name: true,
         bank_account_number: true,
@@ -209,7 +207,7 @@ export class PurchaseOrderService {
     const pph_result = (purchaseOrder.pph * subGrandTotal) / 100;
     const ppn_result = (purchaseOrder.ppn * subGrandTotal) / 100;
     const resultGrandTotal =
-      subGrandTotal + pph_result + ppn_result - purchaseOrder.discount;
+      subGrandTotal + pph_result - ppn_result - purchaseOrder.discount;
     const purchase_order_status = await this.findPurchaseOrderStatus(id);
     return {
       ...purchaseOrder,
@@ -246,6 +244,20 @@ export class PurchaseOrderService {
     user_id: number,
   ) {
     try {
+      if (purchaseOrderDto.ppn_type === PurchaseOrderPPNTypeEnum.Non_PPN) {
+        purchaseOrderDto.ppn = null;
+      }
+      switch (purchaseOrderDto.pph_type) {
+        case PurchaseOrderPPHTypeEnum.PPH_23:
+          purchaseOrderDto.pph = 2;
+          break;
+        case PurchaseOrderPPHTypeEnum.PPH_4_2:
+          purchaseOrderDto.pph = 0.5;
+          break;
+        default:
+          purchaseOrderDto.pph = null;
+          break;
+      }
       const data = await this.purchaseOrderRepository.update(
         {
           id,
@@ -255,17 +267,17 @@ export class PurchaseOrderService {
         {
           company_address: purchaseOrderDto.company_address,
           company_phone_number: purchaseOrderDto.company_phone_number,
+          ppn_type: purchaseOrderDto.ppn_type,
           ppn: purchaseOrderDto.ppn,
+          pph_type: purchaseOrderDto.pph_type,
           pph: purchaseOrderDto.pph,
           discount: purchaseOrderDto.discount,
           bank_name: purchaseOrderDto.bank_name,
+          bank_account_number: purchaseOrderDto.bank_account_number,
           bank_account_houlders_name:
             purchaseOrderDto.bank_account_houlders_name,
-          bank_account_number: purchaseOrderDto.bank_account_number,
           payment_term: purchaseOrderDto.payment_term,
           notes: purchaseOrderDto.notes,
-          updated_at: new Date().toISOString(),
-          updated_by: user_id,
         },
       );
       return data;
@@ -292,7 +304,7 @@ export class PurchaseOrderService {
       status.status = purchaseApprovalDto.status;
       status.reason = purchaseApprovalDto.reason;
       await this.purchaseOrderStatusRepository.save(status);
-      if (status.status_desc === PurchaseOrderStatusEnum.PaymentStatusConfirm) {
+      if (status.status_desc === PurchaseOrderStatusEnum.CreatedByTheFinance) {
         updateToProject = await this.updateToProject(
           purchase_order_id,
           purchaseApprovalDto.status,
@@ -398,14 +410,14 @@ export class PurchaseOrderService {
     // detail.map((v) => arrRelationsIds.push(v.relation_id));
     // detail.map((v) => arrPurchaseDetailIds.push(v.id));
     // if (type === PurchaseOrderTypeEnum.Material) {
-    this.projectVendorMaterialDetailRepository.update(
+    await this.projectVendorMaterialDetailRepository.update(
       {
         purchase_order_id,
       },
       { status_purchase_order: status },
     );
     // } else if (type === PurchaseOrderTypeEnum.Production) {
-    this.projectVendorProductionDetailRepository.update(
+    await this.projectVendorProductionDetailRepository.update(
       {
         purchase_order_id,
       },
@@ -441,5 +453,29 @@ export class PurchaseOrderService {
     );
 
     return { status, updateToProject };
+  }
+  async deletePurchaseOrderDetail(
+    purchase_order_id: number,
+    purchase_order_detail_id: number,
+  ) {
+    const data = await this.purchaseOrderDetailRepository.delete({
+      purchase_order_id,
+      id: purchase_order_detail_id,
+    });
+    const purchaseOrderExist = await this.purchaseOrderDetailRepository.findOne(
+      { where: { purchase_order_id }, select: { id: true } },
+    );
+    if (!purchaseOrderExist) {
+      await this.purchaseOrderRepository.update(
+        {
+          id: purchase_order_id,
+        },
+        {
+          deleted_at: new Date().toISOString(),
+          deleted_by: 1,
+        },
+      );
+    }
+    return data;
   }
 }

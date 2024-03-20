@@ -5,6 +5,16 @@ export enum PurchaseOrderTypeEnum {
   Production = 'Production',
 }
 
+export enum PurchaseOrderPPNTypeEnum {
+  Non_PPN = 'Non-PPN',
+  PPN = 'PPN',
+}
+export enum PurchaseOrderPPHTypeEnum {
+  Non_PPH = 'Non-PPH',
+  PPH_23 = 'PPH 23',
+  PPH_4_2 = 'PPH 4(2)',
+}
+
 export class PurchaseOrderDto {
   company_name: string;
   vendor_id: number;
@@ -15,11 +25,14 @@ export class PurchaseOrderDto {
   @ApiProperty()
   company_phone_number?: string;
 
+  @ApiProperty({ enum: PurchaseOrderPPNTypeEnum })
+  ppn_type: PurchaseOrderPPNTypeEnum;
+
   @ApiProperty()
   ppn?: number;
 
-  @ApiProperty()
-  pph?: number;
+  @ApiProperty({ enum: PurchaseOrderPPHTypeEnum })
+  pph_type: PurchaseOrderPPHTypeEnum;
 
   @ApiProperty()
   discount?: number;
@@ -39,10 +52,11 @@ export class PurchaseOrderDto {
   @ApiProperty()
   notes?: string;
 
-  @ApiProperty()
+  // @ApiProperty()
   type: PurchaseOrderTypeEnum;
 
   // @ApiProperty()
+  pph?: number;
   project_id: number;
 }
 export enum StatusPurchaseOrderEnum {
@@ -59,7 +73,6 @@ export class PurchaseApprovalDto {
 }
 
 export enum PurchaseOrderStatusEnum {
-  CreatedByThe = 'Created by the production team',
-  SendByThe = 'Sent by the finance team',
-  PaymentStatusConfirm = 'Payment status is confirmed by the finance team',
+  RequestByTheProduction = 'Requested by the production team',
+  CreatedByTheFinance = 'Created by the finance team',
 }

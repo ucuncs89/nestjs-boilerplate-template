@@ -18,6 +18,8 @@ import { AppErrorException } from 'src/exceptions/app-exception';
 import { PurchaseOrderService } from 'src/modules/purchase-order/services/purchase-order.service';
 import { VendorsService } from 'src/modules/vendors/services/vendors.service';
 import {
+  PurchaseOrderPPHTypeEnum,
+  PurchaseOrderPPNTypeEnum,
   PurchaseOrderTypeEnum,
   StatusPurchaseOrderEnum,
 } from 'src/modules/purchase-order/dto/purchase-order.dto';
@@ -101,6 +103,12 @@ export class ProjectPlanningVendorMaterialController {
       await this.projectPlanningMaterialService.updateTotalPlanningAndAvgCost(
         material,
       );
+      if (data.old_purchase_order_detail_id) {
+        await this.purchaseOrderService.deletePurchaseOrderDetail(
+          data.old_purchase_order_id,
+          data.old_purchase_order_detail_id,
+        );
+      }
     }
     return { data };
   }
@@ -130,6 +138,12 @@ export class ProjectPlanningVendorMaterialController {
       await this.projectPlanningMaterialService.updateTotalPlanningAndAvgCost(
         material,
       );
+      if (data.old_purchase_order_detail_id) {
+        await this.purchaseOrderService.deletePurchaseOrderDetail(
+          data.old_purchase_order_id,
+          data.old_purchase_order_detail_id,
+        );
+      }
     }
     return { data };
   }
@@ -174,6 +188,8 @@ export class ProjectPlanningVendorMaterialController {
           bank_account_number: detailVendor.bank_account_number,
           bank_account_houlders_name: detailVendor.bank_account_holder_name,
           company_phone_number: detailVendor.company_phone_number,
+          pph_type: PurchaseOrderPPHTypeEnum.Non_PPH,
+          ppn_type: PurchaseOrderPPNTypeEnum.Non_PPN,
         },
         req.user.id,
       );
@@ -217,7 +233,7 @@ export class ProjectPlanningVendorMaterialController {
         );
       purchase_order_id = purchaseOrder.id;
     }
-    this.projectPlanningVendorMaterialService.updateStatusPurchaseOrder(
+    await this.projectPlanningVendorMaterialService.updateStatusPurchaseOrder(
       vendor_material_detail_id,
       StatusPurchaseOrderEnum.Waiting,
       purchase_order_detail_id,

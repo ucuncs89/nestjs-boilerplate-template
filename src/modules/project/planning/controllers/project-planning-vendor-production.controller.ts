@@ -22,6 +22,8 @@ import { ProjectDetailCalculateService } from '../../general/services/project-de
 import { AppErrorException } from 'src/exceptions/app-exception';
 import { PurchaseOrderService } from 'src/modules/purchase-order/services/purchase-order.service';
 import {
+  PurchaseOrderPPHTypeEnum,
+  PurchaseOrderPPNTypeEnum,
   PurchaseOrderTypeEnum,
   StatusPurchaseOrderEnum,
 } from 'src/modules/purchase-order/dto/purchase-order.dto';
@@ -110,6 +112,12 @@ export class ProjectPlanningVendorProductionController {
         i18n,
         project_id,
       );
+    if (data.old_purchase_order_detail_id) {
+      await this.purchaseOrderService.deletePurchaseOrderDetail(
+        data.old_purchase_order_id,
+        data.old_purchase_order_detail_id,
+      );
+    }
     return { data };
   }
 
@@ -130,6 +138,12 @@ export class ProjectPlanningVendorProductionController {
         req.user.id,
         project_id,
       );
+    if (data.old_purchase_order_detail_id) {
+      await this.purchaseOrderService.deletePurchaseOrderDetail(
+        data.old_purchase_order_id,
+        data.old_purchase_order_detail_id,
+      );
+    }
     return { data };
   }
 
@@ -204,6 +218,8 @@ export class ProjectPlanningVendorProductionController {
           bank_account_number: detailVendor.bank_account_number,
           bank_account_houlders_name: detailVendor.bank_account_holder_name,
           company_phone_number: detailVendor.company_phone_number,
+          pph_type: PurchaseOrderPPHTypeEnum.Non_PPH,
+          ppn_type: PurchaseOrderPPNTypeEnum.Non_PPN,
         },
         req.user.id,
       );
