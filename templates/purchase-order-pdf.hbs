@@ -127,14 +127,10 @@
             </div>
             <div class='row'>
               <div class='col gap-2 border-bottom'>
-                {{#if ppn}}
-                  <p>PPN {{ppn}} %</p>
-                {{else}}
-                  <p>PPN 0 %</p>
-                {{/if}}
+                <p>{{pph_type}} </p>
               </div>
               <div class='col gap-2 border-bottom'>
-                <p>{{formatCurrency pph_result}}</p>
+                <p>- {{formatCurrency pph_result}}</p>
               </div>
             </div>
             <div class='row py-4'>
