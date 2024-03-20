@@ -69,9 +69,13 @@ export class ProjectCostingRecapService {
       profit_unit = {
         cost_of_good_sold: cost_of_good_sold.total_cost,
         loss_percentage: price.loss_percentage,
+        loss_percentage_result:
+          (price.loss_percentage / 100) * cost_of_good_sold.total_cost,
         total_cost_of_good_sold: totalCOGS,
         additional_cost: additionalCost.total_cost,
         commission: price.commission,
+        commission_result:
+          (price.commission / 100) * price.selling_price_per_item,
         selling_price: price.selling_price_per_item,
         profit_loss_unit,
       };
