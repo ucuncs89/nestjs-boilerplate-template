@@ -34,6 +34,7 @@ export class ProjectPlanningVendorProductionDetailDto {
   @ApiProperty()
   activity_name: string;
 
+  project_vendor_production_id: number;
   created_by?: number;
   created_at?: string;
 }

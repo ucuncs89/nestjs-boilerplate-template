@@ -357,11 +357,14 @@ export class ProjectService {
         project.company,
         project.order_type,
       );
-      project.status = StatusProjectEnum.Project_Created;
+      if (project.status === 'Draft') {
+        project.status = StatusProjectEnum.Project_Created;
+        project.code = generateCode.codeProject;
+        project.sequential_number = generateCode.sequential_number;
+      }
       project.updated_at = new Date().toISOString();
       project.updated_by = user_id;
-      project.code = generateCode.codeProject;
-      project.sequential_number = generateCode.sequential_number;
+
       await this.projectRepository.save(project);
       return project;
     } catch (error) {

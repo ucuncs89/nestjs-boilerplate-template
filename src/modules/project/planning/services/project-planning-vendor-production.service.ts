@@ -134,8 +134,8 @@ export class ProjectPlanningVendorProductionService {
         added_in_section: StatusProjectEnum.Planning,
       });
       await this.projectVendorProductionDetailRepository.save(vendor);
-      this.updateTotalQuantitySubtotal(project_vendor_production_id);
-      this.updateGrandTotalProductionPerProject(project_id);
+      await this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      await this.updateGrandTotalProductionPerProject(project_id);
       return vendor;
     } catch (error) {
       throw new AppErrorException(error);
@@ -151,24 +151,59 @@ export class ProjectPlanningVendorProductionService {
     project_id: number,
   ) {
     try {
+      const findVendorProductionActivity = await this.findOneProductionActivty(
+        project_id,
+        projectPlanningVendorProductionDetailDto.activity_id,
+      );
+
+      if (!findVendorProductionActivity) {
+        const insert = await this.createVendorProductionActivity(
+          project_id,
+          projectPlanningVendorProductionDetailDto.activity_id,
+          projectPlanningVendorProductionDetailDto.activity_name,
+          user_id,
+          i18n,
+        );
+
+        projectPlanningVendorProductionDetailDto.project_vendor_production_id =
+          insert.id;
+      } else {
+        projectPlanningVendorProductionDetailDto.project_vendor_production_id =
+          findVendorProductionActivity.id;
+      }
+      const purchaseOrderExist =
+        await this.projectVendorProductionDetailRepository.findOne({
+          where: { id: project_vendor_production_detail_id },
+          select: {
+            id: true,
+            purchase_order_id: true,
+            purchase_order_detail_id: true,
+          },
+        });
       delete projectPlanningVendorProductionDetailDto.activity_id;
       delete projectPlanningVendorProductionDetailDto.activity_name;
       const data = await this.projectVendorProductionDetailRepository.update(
         {
           id: project_vendor_production_detail_id,
-          project_vendor_production_id,
-          deleted_at: IsNull(),
-          deleted_by: IsNull(),
         },
         {
           ...projectPlanningVendorProductionDetailDto,
           updated_at: new Date().toISOString(),
           updated_by: user_id,
+          purchase_order_detail_id: null,
+          purchase_order_id: null,
+          status_purchase_order: null,
         },
       );
-      this.updateTotalQuantitySubtotal(project_vendor_production_id);
-      this.updateGrandTotalProductionPerProject(project_id);
-      return data;
+
+      await this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      await this.updateGrandTotalProductionPerProject(project_id);
+      return {
+        ...data,
+        old_purchase_order_id: purchaseOrderExist.purchase_order_id || null,
+        old_purchase_order_detail_id:
+          purchaseOrderExist.purchase_order_detail_id || null,
+      };
     } catch (error) {
       throw new AppErrorException(error);
     }
@@ -181,14 +216,31 @@ export class ProjectPlanningVendorProductionService {
     project_id: number,
   ) {
     try {
+      const purchaseOrderExist =
+        await this.projectVendorProductionDetailRepository.findOne({
+          where: { id: project_vendor_production_detail_id },
+          select: {
+            id: true,
+            purchase_order_id: true,
+            purchase_order_detail_id: true,
+          },
+        });
       const data = await this.projectVendorProductionDetailRepository.delete({
         project_vendor_production_id,
         id: project_vendor_production_detail_id,
       });
-      this.updateTotalQuantitySubtotal(project_vendor_production_id);
-      this.deleteIfNotExistActivity(project_vendor_production_id, user_id);
-      this.updateGrandTotalProductionPerProject(project_id);
-      return data;
+      await this.updateTotalQuantitySubtotal(project_vendor_production_id);
+      await this.deleteIfNotExistActivity(
+        project_vendor_production_id,
+        user_id,
+      );
+      await this.updateGrandTotalProductionPerProject(project_id);
+      return {
+        ...data,
+        old_purchase_order_id: purchaseOrderExist.purchase_order_id || null,
+        old_purchase_order_detail_id:
+          purchaseOrderExist.purchase_order_detail_id || null,
+      };
     } catch (error) {
       throw new AppErrorException(error);
     }
