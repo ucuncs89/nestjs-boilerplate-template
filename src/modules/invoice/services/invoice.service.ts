@@ -114,6 +114,7 @@ export class InvoiceService {
           ppn_type: invoiceDto.ppn_type,
           ppn: invoiceDto.ppn,
           pph_type: invoiceDto.pph_type,
+          pph: invoiceDto.pph,
           discount: invoiceDto.discount,
           bank_name: invoiceDto.bank_name,
           bank_account_number: invoiceDto.bank_account_number,
@@ -289,7 +290,7 @@ export class InvoiceService {
     const pph_result = (invoice.pph * subGrandTotal) / 100;
     const ppn_result = (invoice.ppn * subGrandTotal) / 100;
     const resultGrandTotal =
-      subGrandTotal + pph_result + ppn_result - invoice.discount;
+      subGrandTotal + ppn_result - pph_result - invoice.discount;
     const invoice_status = await this.findInvoiceStatus(id);
     return {
       ...invoice,
