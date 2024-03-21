@@ -15,7 +15,11 @@ import { InvoiceService } from '../services/invoice.service';
 import { GetListInvoiceDto } from '../dto/get-list-invoice.dto';
 import { Pagination } from 'src/utils/pagination';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { InvoiceApprovalDto, InvoiceDto } from '../dto/invoice.dto';
+import {
+  InvoiceApprovalDto,
+  InvoiceDto,
+  InvoiceStatusPaymentDto,
+} from '../dto/invoice.dto';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
 @Controller('invoice')
@@ -40,6 +44,9 @@ export class InvoiceController {
       sort_by: query.sort_by || 'created_at',
       order_by: query.order_by || 'DESC',
       keyword: query.keyword,
+      start_date: query.start_date,
+      end_date: query.end_date,
+      type: query.type,
     });
     const pagination = await Pagination.pagination(
       data.total_data,
@@ -114,6 +121,19 @@ export class InvoiceController {
     const data = await this.invoiceService.cancelInvoiceApproval(
       id,
       approval_id,
+      req.user.id,
+    );
+    return { data };
+  }
+  @Post(':id/payment_status')
+  async updatePaymentStatus(
+    @Req() req,
+    @Param('id') id: number,
+    @Body() invoiceStatusPaymentDto: InvoiceStatusPaymentDto,
+  ) {
+    const data = await this.invoiceService.updateStatusPayment(
+      id,
+      invoiceStatusPaymentDto,
       req.user.id,
     );
     return { data };

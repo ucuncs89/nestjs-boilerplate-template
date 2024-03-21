@@ -13,6 +13,8 @@ import { RolesEntity } from '../roles/roles.entity';
 import { UsersDetailEntity } from './users_detail.entity';
 import { ProjectHistoryEntity } from '../project/project_history.entity';
 import { PurchaseOrderStatusEntity } from '../purchase-order/purchase_order_status.entity';
+import { InvoiceEntity } from '../invoice/invoice.entity';
+import { PurchaseOrderEntity } from '../purchase-order/purchase_order.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -101,4 +103,18 @@ export class UsersEntity {
   )
   @JoinColumn({ name: 'updated_by' })
   purchase_order_status_approval: PurchaseOrderStatusEntity[];
+
+  @OneToMany(
+    () => InvoiceEntity,
+    (invoice: InvoiceEntity) => invoice.payment_attempt,
+  )
+  @JoinColumn({ name: 'status_payment_attempt_user' })
+  invoice_payment_attempt: InvoiceEntity[];
+
+  @OneToMany(
+    () => PurchaseOrderEntity,
+    (purchase_order: PurchaseOrderEntity) => purchase_order.payment_attempt,
+  )
+  @JoinColumn({ name: 'status_payment_attempt_user' })
+  purchase_order_payment_attempt: PurchaseOrderEntity[];
 }
