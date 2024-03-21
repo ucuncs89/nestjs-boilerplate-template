@@ -2,11 +2,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PurchaseOrderHistoryEntity } from './purchase_order_history.entity';
 import { PurchaseOrderStatusEntity } from './purchase_order_status.entity';
+import { UsersEntity } from '../users/users.entity';
 
 @Entity('purchase_order')
 export class PurchaseOrderEntity {
@@ -70,6 +72,12 @@ export class PurchaseOrderEntity {
   @Column({ type: 'varchar', nullable: true })
   type: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  status_payment: string;
+
+  @Column({ type: 'int', nullable: true })
+  status_payment_attempt_user: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
@@ -103,6 +111,13 @@ export class PurchaseOrderEntity {
   )
   @JoinColumn({ name: 'purchase_order_id' })
   history: PurchaseOrderHistoryEntity[];
+
+  @ManyToOne(
+    () => UsersEntity,
+    (user: UsersEntity) => user.purchase_order_payment_attempt,
+  )
+  @JoinColumn({ name: 'status_payment_attempt_user' })
+  public payment_attempt: UsersEntity;
 
   // @OneToMany(
   //   () => PurchaseOrderStatusEntity,

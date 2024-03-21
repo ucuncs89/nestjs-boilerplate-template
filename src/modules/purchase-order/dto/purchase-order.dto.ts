@@ -76,3 +76,14 @@ export enum PurchaseOrderStatusEnum {
   RequestByTheProduction = 'Requested by the production team',
   CreatedByTheFinance = 'Created by the finance team',
 }
+
+export enum PurchaseOrderStatusPaymentEnum {
+  Approved = 'Approved',
+  Waiting = 'Waiting',
+  Rejected = 'Rejected',
+  Cancel = 'Cancel',
+}
+export class PurchaseOrderStatusPaymentDto {
+  @ApiProperty({ enum: PurchaseOrderStatusPaymentEnum })
+  status_payment: PurchaseOrderStatusPaymentEnum;
+}

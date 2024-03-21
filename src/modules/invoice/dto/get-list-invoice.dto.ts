@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { InvoiceTypeEnum } from './invoice.dto';
 
 export class GetListInvoiceDto {
   @ApiProperty({ required: false })
@@ -15,4 +16,13 @@ export class GetListInvoiceDto {
 
   @ApiProperty({ required: false })
   keyword?: string;
+
+  @ApiProperty({ required: false, enum: InvoiceTypeEnum })
+  type?: InvoiceTypeEnum;
+
+  @ApiProperty({ required: false })
+  start_date?: string;
+
+  @ApiProperty({ required: false })
+  end_date?: string;
 }

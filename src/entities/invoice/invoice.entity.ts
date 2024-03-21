@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { InvoiceHistoryEntity } from './invoice_history.entity';
 import { ProjectEntity } from '../project/project.entity';
+import { UsersEntity } from '../users/users.entity';
 
 @Entity('invoice')
 export class InvoiceEntity {
@@ -69,6 +70,12 @@ export class InvoiceEntity {
   status: string;
 
   @Column({ type: 'varchar', nullable: true })
+  status_payment: string;
+
+  @Column({ type: 'int', nullable: true })
+  status_payment_attempt_user: number;
+
+  @Column({ type: 'varchar', nullable: true })
   type: string;
 
   @Column({ type: 'int', nullable: true })
@@ -111,4 +118,11 @@ export class InvoiceEntity {
   @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.invoice)
   @JoinColumn({ name: 'project_id' })
   public project: ProjectEntity;
+
+  @ManyToOne(
+    () => UsersEntity,
+    (user: UsersEntity) => user.invoice_payment_attempt,
+  )
+  @JoinColumn({ name: 'status_payment_attempt_user' })
+  public payment_attempt: UsersEntity;
 }
