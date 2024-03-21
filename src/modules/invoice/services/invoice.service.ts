@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, ILike, IsNull, Not, Repository } from 'typeorm';
+import { Between, Connection, ILike, IsNull, Not, Repository } from 'typeorm';
 import { GetListInvoiceDto } from '../dto/get-list-invoice.dto';
 import {
   AppErrorException,
@@ -14,6 +14,7 @@ import {
   InvoicePPHTypeEnum,
   InvoicePPNTypeEnum,
   InvoiceStatusEnum,
+  InvoiceStatusPaymentDto,
   InvoiceTypeEnum,
   StatusInvoiceEnum,
 } from '../dto/invoice.dto';
@@ -126,7 +127,7 @@ export class InvoiceService {
   }
 
   async findAll(query: GetListInvoiceDto) {
-    const { page, page_size, sort_by, order_by, keyword } = query;
+    const { page, page_size, sort_by, order_by, keyword, type } = query;
     let orderObj = {};
     switch (sort_by) {
       case 'name':
@@ -143,23 +144,86 @@ export class InvoiceService {
         };
         break;
     }
+    const start_date = query.start_date
+      ? new Date(`${query.start_date}T00:00:00.007Z`).toISOString()
+      : null;
+    const end_date = query.end_date
+      ? new Date(`${query.end_date}T23:59:59.597Z`).toISOString()
+      : null;
+
     const [data, total] = await this.invoiceRepository.findAndCount({
       where: [
         {
           company_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
           deleted_at: IsNull(),
           deleted_by: IsNull(),
+          created_at:
+            start_date && end_date
+              ? Between(start_date, end_date)
+              : Not(IsNull()),
+          type: type ? type : Not(IsNull()),
         },
         {
           code: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
           deleted_at: IsNull(),
           deleted_by: IsNull(),
+          created_at:
+            start_date && end_date
+              ? Between(start_date, end_date)
+              : Not(IsNull()),
+          type: type ? type : Not(IsNull()),
         },
       ],
+      select: {
+        id: true,
+        project_id: true,
+        code: true,
+        customer_id: true,
+        company_name: true,
+        company_address: true,
+        company_phone_number: true,
+        ppn: true,
+        ppn_type: true,
+        pph: true,
+        pph_type: true,
+        discount: true,
+        bank_name: true,
+        bank_account_number: true,
+        bank_account_houlders_name: true,
+        payment_term: true,
+        payment_term_unit: true,
+        notes: true,
+        status: true,
+        type: true,
+        retur_id: true,
+        created_at: true,
+        project: {
+          id: true,
+          style_name: true,
+          order_type: true,
+          users: {
+            id: true,
+            full_name: true,
+            path_picture: true,
+            base_path: true,
+          },
+          departements: {
+            id: true,
+            code: true,
+            name: true,
+          },
+          categories: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       order: orderObj,
       take: page_size,
       skip: page,
-      relations: { project: true },
+      relations: {
+        project: { users: true, departements: true, categories: true },
+      },
     });
     return {
       data,
@@ -193,20 +257,14 @@ export class InvoiceService {
         delivery_date: true,
         grand_total: true,
         created_at: true,
+        payment_attempt: {
+          id: true,
+          full_name: true,
+        },
       },
-      //   approval: {
-      //     id: true,
-      //     status: true,
-      //     status_desc: true,
-      //     invoice_id: true,
-      //   },
-      // },
-      // relations: {
-      //   approval: true,
-      // },
-      // order: {
-      //   approval: { id: 'ASC' },
-      // },
+      relations: {
+        payment_attempt: true,
+      },
     });
     if (!data) {
       throw new AppErrorNotFoundException();
@@ -381,5 +439,19 @@ export class InvoiceService {
       { status: StatusInvoiceEnum.Waiting },
     );
     return { status, updateToProject };
+  }
+  async updateStatusPayment(
+    invoice_id: number,
+    invoiceStatusPaymentDto: InvoiceStatusPaymentDto,
+    user_id: number,
+  ) {
+    const data = await this.invoiceRepository.update(
+      { id: invoice_id },
+      {
+        status_payment: invoiceStatusPaymentDto.status_payment,
+        status_payment_attempt_user: user_id,
+      },
+    );
+    return data;
   }
 }

@@ -89,3 +89,13 @@ export class InvoiceDetailDto {
 
   sub_total: number;
 }
+export enum InvoiceStatusPaymentEnum {
+  Approved = 'Approved',
+  Waiting = 'Waiting',
+  Rejected = 'Rejected',
+  Cancel = 'Cancel',
+}
+export class InvoiceStatusPaymentDto {
+  @ApiProperty({ enum: InvoiceStatusPaymentEnum })
+  status_payment: InvoiceStatusPaymentEnum;
+}

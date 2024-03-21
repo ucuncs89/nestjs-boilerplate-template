@@ -18,6 +18,7 @@ import { Pagination } from 'src/utils/pagination';
 import {
   PurchaseApprovalDto,
   PurchaseOrderDto,
+  PurchaseOrderStatusPaymentDto,
 } from '../dto/purchase-order.dto';
 
 @ApiBearerAuth()
@@ -108,6 +109,19 @@ export class PurchaseOrderController {
     const data = await this.purchaseOrderService.cancelPurchaseOrderApproval(
       id,
       approval_id,
+      req.user.id,
+    );
+    return { data };
+  }
+  @Post(':id/payment_status')
+  async updatePaymentStatus(
+    @Req() req,
+    @Param('id') id: number,
+    @Body() purchaseOrderStatusPaymentDto: PurchaseOrderStatusPaymentDto,
+  ) {
+    const data = await this.purchaseOrderService.updateStatusPayment(
+      id,
+      purchaseOrderStatusPaymentDto,
       req.user.id,
     );
     return { data };
