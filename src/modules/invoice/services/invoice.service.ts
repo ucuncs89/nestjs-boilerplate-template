@@ -197,6 +197,9 @@ export class InvoiceService {
         type: true,
         retur_id: true,
         created_at: true,
+        grand_total: true,
+        status_payment: true,
+        status_payment_attempt_user: true,
         project: {
           id: true,
           style_name: true,
