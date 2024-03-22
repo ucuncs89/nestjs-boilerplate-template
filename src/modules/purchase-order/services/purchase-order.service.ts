@@ -106,6 +106,7 @@ export class PurchaseOrderService {
         code: true,
         company_name: true,
         grand_total: true,
+        type: true,
         status: true,
       },
       where: [
