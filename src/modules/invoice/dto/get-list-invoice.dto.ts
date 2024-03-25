@@ -25,4 +25,6 @@ export class GetListInvoiceDto {
 
   @ApiProperty({ required: false })
   end_date?: string;
+
+  project_id?: number;
 }
