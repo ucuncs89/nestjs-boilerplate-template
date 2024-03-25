@@ -77,6 +77,7 @@ export class ProjectProformaInvoiceController {
         type: InvoiceTypeEnum.proforma,
         pph_type: InvoicePPHTypeEnum.Non_PPH,
         ppn_type: InvoicePPNTypeEnum.Non_PPN,
+        description: projectProformaInvoiceDto.description,
       },
       req.user.id,
       invoiceDetailDto,

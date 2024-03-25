@@ -202,6 +202,7 @@ export class InvoiceService {
         grand_total: true,
         status_payment: true,
         status_payment_attempt_user: true,
+        description: true,
         project: {
           id: true,
           style_name: true,
