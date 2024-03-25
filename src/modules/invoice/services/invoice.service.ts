@@ -260,6 +260,7 @@ export class InvoiceService {
         delivery_date: true,
         grand_total: true,
         created_at: true,
+        type: true,
         payment_attempt: {
           id: true,
           full_name: true,
