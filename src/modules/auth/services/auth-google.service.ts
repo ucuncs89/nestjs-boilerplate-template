@@ -17,9 +17,9 @@ export class AuthGoogleService {
     private jwtService: JwtService,
   ) {}
 
-  async googleLogin(googlePayload, i18n) {
+  async googleLogin(email: string, i18n) {
     const findUser = await this.userRepository.findOne({
-      where: [{ email: googlePayload.email.toLowerCase() }],
+      where: [{ email: email.toLowerCase() }],
       relations: { roles: true },
     });
     const roles = findUser.roles.map((v) => v.id);
