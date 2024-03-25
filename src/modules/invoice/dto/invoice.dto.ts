@@ -57,6 +57,7 @@ export class InvoiceDto {
   project_id: number;
 
   retur_id?: number;
+  description?: string;
 }
 export enum StatusInvoiceEnum {
   Approved = 'Approved',

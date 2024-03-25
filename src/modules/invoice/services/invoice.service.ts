@@ -127,7 +127,8 @@ export class InvoiceService {
   }
 
   async findAll(query: GetListInvoiceDto) {
-    const { page, page_size, sort_by, order_by, keyword, type } = query;
+    const { page, page_size, sort_by, order_by, keyword, type, project_id } =
+      query;
     let orderObj = {};
     switch (sort_by) {
       case 'name':
@@ -162,6 +163,7 @@ export class InvoiceService {
               ? Between(start_date, end_date)
               : Not(IsNull()),
           type: type ? type : Not(IsNull()),
+          project_id: project_id ? project_id : Not(IsNull()),
         },
         {
           code: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
@@ -171,7 +173,7 @@ export class InvoiceService {
             start_date && end_date
               ? Between(start_date, end_date)
               : Not(IsNull()),
-          type: type ? type : Not(IsNull()),
+          project_id: project_id ? project_id : Not(IsNull()),
         },
       ],
       select: {
@@ -200,6 +202,7 @@ export class InvoiceService {
         grand_total: true,
         status_payment: true,
         status_payment_attempt_user: true,
+        description: true,
         project: {
           id: true,
           style_name: true,

@@ -34,11 +34,14 @@ export class ProjectProformaInvoiceController {
     @Param('project_id') project_id: number,
     @I18n() i18n: I18nContext,
   ) {
-    const data = await this.invoiceService.findByProjectId(
+    const data = await this.invoiceService.findAll({
+      page: 0,
+      page_size: 99999,
+      order_by: 'DESC',
+      type: InvoiceTypeEnum.proforma,
       project_id,
-      InvoiceTypeEnum.proforma,
-    );
-    return { message: 'Successfully', data };
+    });
+    return { message: 'Successfully', ...data };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -74,6 +77,7 @@ export class ProjectProformaInvoiceController {
         type: InvoiceTypeEnum.proforma,
         pph_type: InvoicePPHTypeEnum.Non_PPH,
         ppn_type: InvoicePPNTypeEnum.Non_PPN,
+        description: projectProformaInvoiceDto.description,
       },
       req.user.id,
       invoiceDetailDto,
