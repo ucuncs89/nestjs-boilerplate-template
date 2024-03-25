@@ -104,6 +104,7 @@ import { ProjectProductionShippingPdfService } from './production/services/proje
 import { ProjectReturAdditionalCostController } from './retur/controllers/project-retur-additional-cost.controller';
 import { ProjectReturAdditionalCostService } from './retur/services/project-retur-additional-cost.service';
 import { ProjectReturInvoiceController } from './retur/controllers/project-retur-invoice.controller';
+import { ProjectProformaInvoiceController } from './general/controllers/project-proforma-invoice.controller';
 
 @Module({
   imports: [
@@ -175,6 +176,7 @@ import { ProjectReturInvoiceController } from './retur/controllers/project-retur
     ProjectReturShippingController,
     ProjectReturAdditionalCostController,
     ProjectReturInvoiceController,
+    ProjectProformaInvoiceController,
   ],
   providers: [
     ProjectService,
