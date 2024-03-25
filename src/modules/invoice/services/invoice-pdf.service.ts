@@ -2,12 +2,27 @@ import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as handlebars from 'handlebars';
 import { AppErrorException } from 'src/exceptions/app-exception';
+import { InvoiceTypeEnum } from '../dto/invoice.dto';
 // import moment from 'moment';
 
 @Injectable()
 export class InvoicePdfService {
   async generatePdf(data: any) {
     try {
+      switch (data.type) {
+        case InvoiceTypeEnum.retur:
+          data.title_invoice = 'Retur Invoice';
+          break;
+        case InvoiceTypeEnum.proforma:
+          data.title_invoice = 'Proforma Invoice';
+          break;
+        case InvoiceTypeEnum.purchase:
+          data.title_invoice = 'Invoice';
+          break;
+        default:
+          data.title_invoice = 'Invoice';
+          break;
+      }
       const template = fs.readFileSync('templates/invoice-pdf.hbs', 'utf-8');
       handlebars.registerHelper('incremented', function (index) {
         index++;
