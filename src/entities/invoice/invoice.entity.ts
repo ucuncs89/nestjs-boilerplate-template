@@ -108,6 +108,9 @@ export class InvoiceEntity {
   @Column({ type: 'double precision', nullable: true })
   grand_total: number;
 
+  @Column({ type: 'text', nullable: true })
+  description: string;
+
   @OneToMany(
     () => InvoiceHistoryEntity,
     (history: InvoiceHistoryEntity) => history.invoice,
