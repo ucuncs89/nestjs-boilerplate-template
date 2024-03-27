@@ -57,8 +57,8 @@ export class InvoiceEntity {
   @Column({ type: 'varchar', nullable: true, length: '64' })
   bank_account_houlders_name: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  payment_term: string;
+  @Column({ type: 'int', nullable: true })
+  payment_term: number;
 
   @Column({ type: 'varchar', nullable: true })
   payment_term_unit: string;

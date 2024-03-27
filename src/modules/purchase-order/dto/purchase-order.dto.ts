@@ -47,7 +47,7 @@ export class PurchaseOrderDto {
   bank_account_number?: string;
 
   @ApiProperty()
-  payment_term?: string;
+  payment_term?: number;
 
   @ApiProperty()
   notes?: string;
