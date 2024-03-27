@@ -171,7 +171,11 @@
               >
                 <div class='d-flex justify-content-between max-width'>
                   <p class='text-dark'>Payment Term</p>
-                  <p class='text-end text-low'>{{payment_term}}</p>
+                  {{#if payment_term}}
+                    <p class='text-end text-low'>{{payment_term}} Days</p>
+                  {{else}}
+                    <p class='text-end text-low'>-</p>
+                  {{/if}}
                 </div>
                 <div class='d-flex justify-content-between max-width'>
                   <p class='text-dark'>Delivery Date</p>
