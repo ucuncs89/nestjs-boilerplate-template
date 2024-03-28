@@ -49,4 +49,12 @@ export class ProjectCostingController {
     );
     return { data };
   }
+  @Post(':project_id/cancel-publish')
+  async cancelPublish(@Req() req, @Param('project_id') project_id: number) {
+    const data = await this.projectCostingService.cancelPublishCosting(
+      project_id,
+      req.user.id,
+    );
+    return { data };
+  }
 }
