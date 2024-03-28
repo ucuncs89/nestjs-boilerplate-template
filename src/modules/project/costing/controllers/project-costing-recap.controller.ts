@@ -11,6 +11,10 @@ import { ProjectCostingShippingService } from '../services/project-costing-shipp
 import { ProjectCostingSamplingService } from '../services/project-costing-sampling.service';
 import { ProjectCostingAdditionalCostService } from '../services/project-costing-additional-cost.service';
 import { ProjectCostingPriceService } from '../services/project-costing-price.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ProjectEntity } from 'src/entities/project/project.entity';
+import { Repository } from 'typeorm';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @ApiBearerAuth()
 @ApiTags('project costing')
@@ -27,6 +31,9 @@ export class ProjectCostingRecapController {
     private readonly projectCostingAdditionalCostService: ProjectCostingAdditionalCostService,
     private readonly projectCostingSamplingService: ProjectCostingSamplingService,
     private readonly projectCostingPriceService: ProjectCostingPriceService,
+
+    @InjectRepository(ProjectEntity)
+    private projectRepository: Repository<ProjectEntity>,
   ) {}
 
   @Get(':project_id/recap/size-quantity')
@@ -41,6 +48,14 @@ export class ProjectCostingRecapController {
   }
   @Get(':project_id/recap/calculate')
   async recapCalculate(@Param('project_id') project_id: number) {
+    const project = await this.projectRepository.findOne({
+      where: {
+        id: project_id,
+      },
+      select: { id: true, status: true },
+    });
+    const can_edit_costing =
+      project.status === StatusProjectEnum.Costing ? true : false;
     const fabric = await this.projectCostingMaterialService.findRecap(
       project_id,
       ProjectMaterialItemEnum.Fabric,
@@ -81,6 +96,7 @@ export class ProjectCostingRecapController {
       sampling,
       price,
     );
+    data.can_edit_costing = can_edit_costing;
     return { data };
   }
 }

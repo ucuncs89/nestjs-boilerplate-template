@@ -62,6 +62,19 @@ export class ProjectCostingService {
     }
     return { data: 'Already' };
   }
+  async cancelPublishCosting(project_id: number, user_id: number) {
+    const project = await this.projectRepository.findOne({
+      where: { id: project_id, deleted_at: IsNull(), deleted_by: IsNull() },
+    });
+    if (project.status === StatusProjectEnum.Costing) {
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        { can_planning: false },
+      );
+      return data;
+    }
+    return { data: 'Already' };
+  }
   async generateFinishedGood(project_id: number, user_id: number) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
