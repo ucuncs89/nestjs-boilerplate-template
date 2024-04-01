@@ -14,6 +14,9 @@ export class AccessoriesPackagingEntity {
   @Column('text', { array: true })
   category: string[];
 
+  @Column('text', { array: true, nullable: true })
+  unit_of_measure: string[];
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',

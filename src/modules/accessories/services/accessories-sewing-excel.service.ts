@@ -25,6 +25,9 @@ export class AccessoriesSewingExcelService {
           const payloadSewing = {
             name: data.accessories_name,
             category: data.category ? data.category.split(',') : null,
+            unit_of_measure: data.unit_of_measure
+              ? data.unit_of_measure.split(',')
+              : null,
           };
           await this.accessoriesSewingService.create(
             payloadSewing,

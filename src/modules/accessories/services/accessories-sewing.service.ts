@@ -27,6 +27,9 @@ export class AccessoriesSewingService {
     }
     const code = await this.generateCodeAccessroiesSewing();
     const arrCategory = [...new Set(createAccessorySewingDto.category)];
+    const arrUnitOfMeasure = [
+      ...new Set(createAccessorySewingDto.unit_of_measure),
+    ];
     try {
       const data = this.accessoriesSewingRepository.create({
         code,
@@ -34,6 +37,7 @@ export class AccessoriesSewingService {
         category: arrCategory,
         created_by: user_id,
         created_at: new Date().toISOString(),
+        unit_of_measure: arrUnitOfMeasure,
       });
       await this.accessoriesSewingRepository.save(data);
       return data;
@@ -69,6 +73,7 @@ export class AccessoriesSewingService {
           code: true,
           name: true,
           category: true,
+          unit_of_measure: true,
         },
         where: [
           {
@@ -135,12 +140,16 @@ export class AccessoriesSewingService {
       }
     }
     const arrCategory = [...new Set(updateAccessorySewingDto.category)];
+    const arrUnitOfMeasure = [
+      ...new Set(updateAccessorySewingDto.unit_of_measure),
+    ];
     try {
       sewing.updated_at = new Date().toISOString();
       sewing.updated_by = user_id;
       sewing.name = updateAccessorySewingDto.name;
       sewing.category = arrCategory;
-      this.accessoriesSewingRepository.save(sewing);
+      sewing.unit_of_measure = arrUnitOfMeasure;
+      await this.accessoriesSewingRepository.save(sewing);
       return true;
     } catch (error) {
       throw new AppErrorException(error);

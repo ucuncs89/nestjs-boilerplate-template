@@ -9,4 +9,8 @@ export class CreateAccessorySewingDto {
   @IsNotEmpty()
   @ApiProperty({ isArray: true })
   category: string[];
+
+  @IsNotEmpty()
+  @ApiProperty({ isArray: true })
+  unit_of_measure: string[];
 }
