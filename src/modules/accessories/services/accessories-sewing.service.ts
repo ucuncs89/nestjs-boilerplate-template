@@ -109,6 +109,7 @@ export class AccessoriesSewingService {
         name: true,
         code: true,
         category: true,
+        unit_of_measure: true,
       },
     });
     if (!data) {
