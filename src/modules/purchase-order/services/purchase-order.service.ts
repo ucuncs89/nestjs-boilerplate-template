@@ -16,6 +16,7 @@ import {
   PurchaseOrderPPNTypeEnum,
   PurchaseOrderStatusEnum,
   PurchaseOrderStatusPaymentDto,
+  PurchaseOrderStatusReceiveDto,
   PurchaseOrderTypeEnum,
   StatusPurchaseOrderEnum,
 } from '../dto/purchase-order.dto';
@@ -161,9 +162,11 @@ export class PurchaseOrderService {
         status_payment: true,
         status_payment_attempt_user: true,
         payment_attempt: { id: true, full_name: true },
+        receive_attempt: { id: true, full_name: true },
       },
       relations: {
         payment_attempt: true,
+        receive_attempt: true,
       },
     });
     if (!data) {
@@ -496,6 +499,20 @@ export class PurchaseOrderService {
       {
         status_payment: purchaseOrderStatusPaymentDto.status_payment,
         status_payment_attempt_user: user_id,
+      },
+    );
+    return data;
+  }
+  async updateStatusReceive(
+    purchase_order_id: number,
+    purchaseOrderStatusReceiveDto: PurchaseOrderStatusReceiveDto,
+    user_id: number,
+  ) {
+    const data = await this.purchaseOrderRepository.update(
+      { id: purchase_order_id },
+      {
+        status_receive: purchaseOrderStatusReceiveDto.status_receive,
+        status_receive_attempt_user: user_id,
       },
     );
     return data;

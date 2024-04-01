@@ -27,6 +27,9 @@ export class AccessoriesPackagingService {
     }
     const code = await this.generateCodeAccessroiesPackaging();
     const arrCategory = [...new Set(createAccessoryPackagingDto.category)];
+    const arrUnitOfMeasure = [
+      ...new Set(createAccessoryPackagingDto.unit_of_measure),
+    ];
     try {
       const data = this.accessoriesPackagingRepository.create({
         code,
@@ -34,6 +37,7 @@ export class AccessoriesPackagingService {
         category: arrCategory,
         created_by: user_id,
         created_at: new Date().toISOString(),
+        unit_of_measure: arrUnitOfMeasure,
       });
       await this.accessoriesPackagingRepository.save(data);
       return data;
@@ -69,6 +73,7 @@ export class AccessoriesPackagingService {
           code: true,
           name: true,
           category: true,
+          unit_of_measure: true,
         },
         where: [
           {
@@ -136,12 +141,16 @@ export class AccessoriesPackagingService {
       }
     }
     const arrCategory = [...new Set(updateAccessoryPackagingDto.category)];
+    const arrUnitOfMeasure = [
+      ...new Set(updateAccessoryPackagingDto.unit_of_measure),
+    ];
     try {
       packaging.updated_at = new Date().toISOString();
       packaging.updated_by = user_id;
       packaging.name = updateAccessoryPackagingDto.name;
       packaging.category = arrCategory;
-      this.accessoriesPackagingRepository.save(packaging);
+      packaging.unit_of_measure = arrUnitOfMeasure;
+      await this.accessoriesPackagingRepository.save(packaging);
       return true;
     } catch (error) {
       throw new AppErrorException(error);

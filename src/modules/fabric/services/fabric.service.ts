@@ -22,6 +22,7 @@ export class FabricService {
     }
     const code = await this.generateCodeFabric();
     const arrCategory = [...new Set(createFabricDto.category)];
+    const arrUnitOfMeasure = [...new Set(createFabricDto.unit_of_measure)];
     try {
       const data = this.fabricRepository.create({
         code,
@@ -29,6 +30,7 @@ export class FabricService {
         category: arrCategory,
         created_by: user_id,
         created_at: new Date().toISOString(),
+        unit_of_measure: arrUnitOfMeasure,
       });
       await this.fabricRepository.save(data);
       return data;
@@ -63,6 +65,7 @@ export class FabricService {
         code: true,
         name: true,
         category: true,
+        unit_of_measure: true,
       },
       where: [
         {
@@ -122,12 +125,15 @@ export class FabricService {
       }
     }
     const arrCategory = [...new Set(updateFabricDto.category)];
+
+    const arrUnitOfMeasure = [...new Set(updateFabricDto.unit_of_measure)];
     try {
       fabric.updated_at = new Date().toISOString();
       fabric.updated_by = user_id;
       fabric.name = updateFabricDto.name;
       fabric.category = arrCategory;
-      this.fabricRepository.save(fabric);
+      fabric.unit_of_measure = arrUnitOfMeasure;
+      await this.fabricRepository.save(fabric);
       return true;
     } catch (error) {
       throw new AppErrorException(error);

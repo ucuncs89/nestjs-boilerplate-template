@@ -27,6 +27,9 @@ export class AccessoriesExcelPackagingService {
           const payloadPackaging = {
             name: data.accessories_name,
             category: data.category ? data.category.split(',') : null,
+            unit_of_measure: data.unit_of_measure
+              ? data.unit_of_measure.split(',')
+              : null,
           };
           await this.accessoriesPackagingService.create(
             payloadPackaging,
