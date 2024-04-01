@@ -14,6 +14,7 @@ import {
 import {
   CreateProjectDto,
   ProjectMaterialSourceDto,
+  ProjectPaymentMethod,
 } from '../dto/create-project.dto';
 import {
   AppErrorException,
@@ -324,7 +325,26 @@ export class ProjectService {
     if (!data) {
       throw new AppErrorNotFoundException();
     }
-    return data;
+    let due_date_payment_duration: string = null;
+    let is_past_due_date_payment_duration: boolean = null;
+    if (
+      data.payment_method === ProjectPaymentMethod.tempo &&
+      data.payment_duration
+    ) {
+      const createdAt = new Date(data.created_at);
+      createdAt.setDate(createdAt.getDate() + data.payment_duration);
+      due_date_payment_duration = new Date(createdAt).toISOString();
+      if (createdAt.getTime() < new Date().getTime()) {
+        is_past_due_date_payment_duration = true;
+      } else {
+        is_past_due_date_payment_duration = false;
+      }
+    }
+    return {
+      ...data,
+      due_date_payment_duration,
+      is_past_due_date_payment_duration,
+    };
   }
   async updateMaterialSource(
     project_id: number,
