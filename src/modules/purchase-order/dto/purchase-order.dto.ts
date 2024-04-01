@@ -83,7 +83,17 @@ export enum PurchaseOrderStatusPaymentEnum {
   Rejected = 'Rejected',
   Cancel = 'Cancel',
 }
+export enum PurchaseOrderStatusReceiveEnum {
+  Approved = 'Approved',
+  Waiting = 'Waiting',
+  Rejected = 'Rejected',
+  Cancel = 'Cancel',
+}
 export class PurchaseOrderStatusPaymentDto {
   @ApiProperty({ enum: PurchaseOrderStatusPaymentEnum })
   status_payment: PurchaseOrderStatusPaymentEnum;
+}
+export class PurchaseOrderStatusReceiveDto {
+  @ApiProperty({ enum: PurchaseOrderStatusReceiveEnum })
+  status_receive: PurchaseOrderStatusReceiveEnum;
 }

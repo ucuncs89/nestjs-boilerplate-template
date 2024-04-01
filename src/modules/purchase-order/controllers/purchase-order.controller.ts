@@ -19,6 +19,7 @@ import {
   PurchaseApprovalDto,
   PurchaseOrderDto,
   PurchaseOrderStatusPaymentDto,
+  PurchaseOrderStatusReceiveDto,
 } from '../dto/purchase-order.dto';
 
 @ApiBearerAuth()
@@ -122,6 +123,19 @@ export class PurchaseOrderController {
     const data = await this.purchaseOrderService.updateStatusPayment(
       id,
       purchaseOrderStatusPaymentDto,
+      req.user.id,
+    );
+    return { data };
+  }
+  @Post(':id/receive_status')
+  async updateReceiveStatus(
+    @Req() req,
+    @Param('id') id: number,
+    @Body() purchaseOrderStatusReceiveDto: PurchaseOrderStatusReceiveDto,
+  ) {
+    const data = await this.purchaseOrderService.updateStatusReceive(
+      id,
+      purchaseOrderStatusReceiveDto,
       req.user.id,
     );
     return { data };
