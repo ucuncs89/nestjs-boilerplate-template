@@ -78,6 +78,12 @@ export class PurchaseOrderEntity {
   @Column({ type: 'int', nullable: true })
   status_payment_attempt_user: number;
 
+  @Column({ type: 'varchar', nullable: true })
+  status_receive: string;
+
+  @Column({ type: 'int', nullable: true })
+  status_receive_attempt_user: number;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
@@ -118,6 +124,13 @@ export class PurchaseOrderEntity {
   )
   @JoinColumn({ name: 'status_payment_attempt_user' })
   public payment_attempt: UsersEntity;
+
+  @ManyToOne(
+    () => UsersEntity,
+    (user: UsersEntity) => user.purchase_order_payment_attempt,
+  )
+  @JoinColumn({ name: 'status_receive_attempt_user' })
+  public receive_attempt: UsersEntity;
 
   // @OneToMany(
   //   () => PurchaseOrderStatusEntity,
