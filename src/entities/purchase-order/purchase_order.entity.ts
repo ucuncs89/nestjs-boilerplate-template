@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PurchaseOrderHistoryEntity } from './purchase_order_history.entity';
-import { PurchaseOrderStatusEntity } from './purchase_order_status.entity';
 import { UsersEntity } from '../users/users.entity';
+import { ProjectEntity } from '../project/project.entity';
 
 @Entity('purchase_order')
 export class PurchaseOrderEntity {
@@ -131,6 +131,13 @@ export class PurchaseOrderEntity {
   )
   @JoinColumn({ name: 'status_receive_attempt_user' })
   public receive_attempt: UsersEntity;
+
+  @ManyToOne(
+    () => ProjectEntity,
+    (project: ProjectEntity) => project.purchase_order,
+  )
+  @JoinColumn({ name: 'project_id' })
+  public project: ProjectEntity;
 
   // @OneToMany(
   //   () => PurchaseOrderStatusEntity,
