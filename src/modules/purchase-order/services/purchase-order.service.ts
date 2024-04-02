@@ -163,6 +163,8 @@ export class PurchaseOrderService {
         created_at: true,
         status_payment: true,
         status_payment_attempt_user: true,
+        status_receive: true,
+        status_receive_attempt_user: true,
         payment_attempt: { id: true, full_name: true },
         receive_attempt: { id: true, full_name: true },
       },
