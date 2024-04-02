@@ -77,14 +77,7 @@ export class PurchaseOrderService {
   }
 
   async findAll(query: GetListPurchaseOrderDto) {
-    const {
-      page,
-      page_size,
-      sort_by,
-      order_by,
-
-      keyword,
-    } = query;
+    const { page, page_size, sort_by, order_by, keyword } = query;
     let orderObj = {};
     switch (sort_by) {
       case 'name':
@@ -109,6 +102,14 @@ export class PurchaseOrderService {
         grand_total: true,
         type: true,
         status: true,
+        status_payment: true,
+        status_payment_attempt_user: true,
+        status_receive: true,
+        status_receive_attempt_user: true,
+        project: {
+          style_name: true,
+          code: true,
+        },
       },
       where: [
         {
@@ -122,6 +123,7 @@ export class PurchaseOrderService {
           deleted_by: IsNull(),
         },
       ],
+      relations: { project: true },
       order: orderObj,
       take: page_size,
       skip: page,
