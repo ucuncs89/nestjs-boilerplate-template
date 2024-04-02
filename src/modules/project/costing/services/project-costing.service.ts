@@ -26,7 +26,10 @@ export class ProjectCostingService {
       },
     });
 
-    if (project.status === 'Project Created') {
+    if (
+      project.status === StatusProjectEnum.Project_Created ||
+      project.status === StatusProjectEnum.Costing
+    ) {
       const data = await this.projectRepository.update(
         { id: project_id },
         {
@@ -86,11 +89,13 @@ export class ProjectCostingService {
         {
           where: {
             type: ProjectMaterialItemEnum.Finishedgoods,
+            project_id,
             deleted_at: IsNull(),
             deleted_by: IsNull(),
           },
         },
       );
+
       if (!dataExist) {
         insert = await queryRunner.manager.insert(ProjectMaterialItemEntity, {
           type: ProjectMaterialItemEnum.Finishedgoods,
@@ -118,6 +123,7 @@ export class ProjectCostingService {
             });
           }
         }
+        console.log('masuk 2');
       }
       await queryRunner.commitTransaction();
       return { insert };
