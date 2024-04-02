@@ -15,6 +15,7 @@ import { CustomersEntity } from '../customers/customers.entity';
 import { ProjectHistoryEntity } from './project_history.entity';
 import { ProjectVariantEntity } from './project_variant.entity';
 import { InvoiceEntity } from '../invoice/invoice.entity';
+import { PurchaseOrderEntity } from '../purchase-order/purchase_order.entity';
 
 @Entity('project')
 export class ProjectEntity {
@@ -188,4 +189,11 @@ export class ProjectEntity {
   @OneToMany(() => InvoiceEntity, (invoice: InvoiceEntity) => invoice.project)
   @JoinColumn({ name: 'project_id' })
   invoice: InvoiceEntity[];
+
+  @OneToMany(
+    () => PurchaseOrderEntity,
+    (purchase_order: PurchaseOrderEntity) => purchase_order.project,
+  )
+  @JoinColumn({ name: 'project_id' })
+  purchase_order: PurchaseOrderEntity[];
 }
