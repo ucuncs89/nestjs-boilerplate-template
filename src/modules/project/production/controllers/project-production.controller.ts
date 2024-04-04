@@ -29,9 +29,18 @@ export class ProjectProductionController {
     );
     return { data };
   }
-  // @Post(':project_id/publish')
-  // async publish(@Req() req, @Param('project_id') project_id: number) {
-  //
-  //   return { data:"belum" };
-  // }
+  @Post(':project_id/publish')
+  async publish(@Req() req, @Param('project_id') project_id: number) {
+    const data = await this.projectProductionService.publishProduction(
+      project_id,
+      req.user.id,
+    );
+    this.projectHistoryService.create(
+      { status: StatusProjectEnum.Complete },
+      project_id,
+      req.user.id,
+      {},
+    );
+    return { data };
+  }
 }
