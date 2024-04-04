@@ -5,7 +5,10 @@ import { ProjectAdditionalCostEntity } from 'src/entities/project/project_additi
 import { ProjectShippingEntity } from 'src/entities/project/project_shipping.entity';
 import { Connection, IsNull, Repository } from 'typeorm';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
-import { AppErrorException } from 'src/exceptions/app-exception';
+import {
+  AppErrorException,
+  AppErrorNotFoundException,
+} from 'src/exceptions/app-exception';
 import { ProjectPlanningShippingService } from '../../planning/services/project-planning-shipping.service';
 import { ProjectPlanningAdditionalCostService } from '../../planning/services/project-planning-additional-cost.service';
 
@@ -103,5 +106,25 @@ export class ProjectProductionService {
     } finally {
       await queryRunner.release();
     }
+  }
+  async publishProduction(project_id: number, user_id: number) {
+    const project = await this.projectRepository.findOne({
+      where: { id: project_id, deleted_at: IsNull(), deleted_by: IsNull() },
+    });
+    if (!project) {
+      throw new AppErrorNotFoundException('Data Project Not Found');
+    }
+    if (project.status === StatusProjectEnum.Production) {
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        {
+          can_production: true,
+          updated_by: user_id,
+          status: StatusProjectEnum.Complete,
+        },
+      );
+      return data;
+    }
+    return { data: 'Already' };
   }
 }
