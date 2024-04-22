@@ -46,7 +46,11 @@ export class ProjectProductionService {
         additionalCost,
         duplicate,
       };
-    } else {
+    }
+    if (
+      project.status === StatusProjectEnum.Costing ||
+      project.status === StatusProjectEnum.Project_Created
+    ) {
       throw new AppErrorException(
         `Sorry, can't continue to the next step because the previous section is not "planning"`,
       );
