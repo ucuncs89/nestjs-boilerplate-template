@@ -29,6 +29,7 @@ export class ProjectCostingRecapService {
     const finishedGoods = await this.calculateMaterialRecap(
       listFinishedGoodsItem,
     );
+    finishedGoods.total_cost = finishedGoods.detail[0]?.avg_price;
     const production = await this.calculateProductionRecap(listProduction);
     const shipping = await this.calculateShipping(listShipping);
     const additionalCost = await this.calculateAdditional(listAdditionalCost);
