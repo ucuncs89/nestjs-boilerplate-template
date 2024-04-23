@@ -39,51 +39,53 @@ export class ProjectPlanningService {
       select: { id: true, status: true },
     });
 
-    // if (
-    //   project.status === StatusProjectEnum.Costing ||
-    //   project.status === StatusProjectEnum.Sampling
-    // ) {
-    const material =
-      await this.projectCostingMaterialService.findVendorMaterialCosting(
+    if (
+      project.status === StatusProjectEnum.Costing ||
+      project.status === StatusProjectEnum.Sampling
+    ) {
+      const material =
+        await this.projectCostingMaterialService.findVendorMaterialCosting(
+          project_id,
+        );
+      const production =
+        await this.projectCostingVendorProductionService.findProductionCosting(
+          project_id,
+        );
+      const shipping =
+        await this.projectCostingShippingService.findShippingCosting(
+          project_id,
+        );
+      const additionalCost =
+        await this.projectCostingAdditionalCostService.findAdditionalCosting(
+          project_id,
+        );
+      const price = await this.projectCostingPriceService.findPriceCosting(
         project_id,
       );
-    const production =
-      await this.projectCostingVendorProductionService.findProductionCosting(
+      const sampling = await this.projectSamplingService.findSamplingAll(
         project_id,
       );
-    const shipping =
-      await this.projectCostingShippingService.findShippingCosting(project_id);
-    const additionalCost =
-      await this.projectCostingAdditionalCostService.findAdditionalCosting(
+      const duplicate = await this.duplicateCostingToPlanning(
         project_id,
+        material,
+        production,
+        shipping,
+        additionalCost,
+        sampling,
+        price,
       );
-    const price = await this.projectCostingPriceService.findPriceCosting(
-      project_id,
-    );
-    const sampling = await this.projectSamplingService.findSamplingAll(
-      project_id,
-    );
-    const duplicate = await this.duplicateCostingToPlanning(
-      project_id,
-      material,
-      production,
-      shipping,
-      additionalCost,
-      sampling,
-      price,
-    );
-    return {
-      material,
-      production,
-      shipping,
-      additionalCost,
-      sampling,
-      price,
-      duplicate,
-    };
-    // } else {
-    //   return true;
-    // }
+      return {
+        material,
+        production,
+        shipping,
+        additionalCost,
+        sampling,
+        price,
+        duplicate,
+      };
+    } else {
+      return true;
+    }
   }
 
   async duplicateCostingToPlanning(
