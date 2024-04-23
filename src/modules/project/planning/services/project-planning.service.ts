@@ -83,9 +83,8 @@ export class ProjectPlanningService {
         price,
         duplicate,
       };
-    } else {
-      return true;
     }
+    return true;
   }
 
   async duplicateCostingToPlanning(
