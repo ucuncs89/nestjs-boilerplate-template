@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectVendorMaterialDetailEntity } from 'src/entities/project/project_vendor_material_detail.entity';
 import { AppErrorException } from 'src/exceptions/app-exception';
-import { Connection, IsNull, Not, Repository } from 'typeorm';
+import { Connection, In, IsNull, Not, Repository } from 'typeorm';
 import { ProjectCostingVendorMaterialDto } from '../dto/project-costing-vendor-material.dto';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
@@ -148,5 +148,40 @@ export class ProjectCostingVendorMaterialService {
       },
     });
     return data;
+  }
+  async updateQuantityPriceUnitByMaterialId(
+    project_material_item_id: number,
+    unit_of_measure: string,
+  ) {
+    const arrIds = [];
+    const findVendorMaterialId =
+      await this.projectVendorMaterialRepository.find({
+        where: {
+          project_material_item_id,
+          added_in_section: StatusProjectEnum.Costing,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        select: {
+          id: true,
+        },
+      });
+    if (findVendorMaterialId.length > 0) {
+      try {
+        findVendorMaterialId.map((v) => arrIds.push(v.id));
+        const data = await this.projectVendorMaterialDetailRepository.update(
+          {
+            project_vendor_material_id: In(arrIds),
+          },
+          {
+            price_unit: unit_of_measure,
+            quantity_unit: unit_of_measure,
+          },
+        );
+        return data;
+      } catch (error) {
+        return false;
+      }
+    }
   }
 }

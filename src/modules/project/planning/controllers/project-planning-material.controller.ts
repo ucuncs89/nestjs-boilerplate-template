@@ -21,6 +21,7 @@ import { ProjectCostingMaterialService } from '../../costing/services/project-co
 import { ProjectPlanningApprovalService } from '../../general/services/project-planning-approval.service';
 import { StatusApprovalEnum } from '../../general/dto/project-planning-approval.dto';
 import { TypeProjectDetailCalculateEnum } from '../../general/dto/project-detail.dto';
+import { ProjectPlanningVendorMaterialService } from '../services/project-planning-vendor-material.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -31,6 +32,7 @@ export class ProjectPlanningMaterialController {
     private readonly projectPlanningMaterialService: ProjectPlanningMaterialService,
     private readonly projectCostingMaterialService: ProjectCostingMaterialService,
     private readonly projectPlanningApprovalService: ProjectPlanningApprovalService,
+    private readonly projectPlanningVendorMaterialService: ProjectPlanningVendorMaterialService,
   ) {}
 
   @Get(':project_id/material')
@@ -111,6 +113,12 @@ export class ProjectPlanningMaterialController {
         projectMaterialItemDto,
         req.user.id,
       );
+    if (data) {
+      await this.projectPlanningVendorMaterialService.updateQuantityPriceUnitByMaterialId(
+        material_item_id,
+        projectMaterialItemDto.consumption_unit,
+      );
+    }
     return {
       data,
     };

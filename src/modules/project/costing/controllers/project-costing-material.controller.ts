@@ -18,6 +18,7 @@ import {
   ProjectMaterialItemDto,
 } from '../dto/project-costing-material.dto';
 import { ProjectCostingMaterialService } from '../services/project-costing-material.service';
+import { ProjectCostingVendorMaterialService } from '../services/project-costing-vendor-material.service';
 
 @ApiBearerAuth()
 @ApiTags('project costing')
@@ -26,6 +27,7 @@ import { ProjectCostingMaterialService } from '../services/project-costing-mater
 export class ProjectCostingMaterialController {
   constructor(
     private readonly projectCostingMaterialService: ProjectCostingMaterialService,
+    private readonly projectCostingVendorMaterialService: ProjectCostingVendorMaterialService,
   ) {}
 
   @Get(':project_id/material')
@@ -84,6 +86,12 @@ export class ProjectCostingMaterialController {
       projectMaterialItemDto,
       req.user.id,
     );
+    if (data) {
+      await this.projectCostingVendorMaterialService.updateQuantityPriceUnitByMaterialId(
+        material_item_id,
+        projectMaterialItemDto.consumption_unit,
+      );
+    }
     return {
       data,
     };
