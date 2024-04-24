@@ -5,7 +5,7 @@ import {
   AppErrorException,
   AppErrorNotFoundException,
 } from 'src/exceptions/app-exception';
-import { Connection, IsNull, Not, Repository } from 'typeorm';
+import { Connection, In, IsNull, Not, Repository } from 'typeorm';
 import { ProjectVendorMaterialEntity } from 'src/entities/project/project_vendor_material.entity';
 import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 import { ProjectPlanningVendorMaterialDto } from '../dto/project-planning-vendor-material.dto';
@@ -212,5 +212,41 @@ export class ProjectPlanningVendorMaterialService {
       },
     );
     return data;
+  }
+
+  async updateQuantityPriceUnitByMaterialId(
+    project_material_item_id: number,
+    unit_of_measure: string,
+  ) {
+    const arrIds = [];
+    const findVendorMaterialId =
+      await this.projectVendorMaterialRepository.find({
+        where: {
+          project_material_item_id,
+          added_in_section: StatusProjectEnum.Planning,
+          deleted_at: IsNull(),
+          deleted_by: IsNull(),
+        },
+        select: {
+          id: true,
+        },
+      });
+    if (findVendorMaterialId.length > 0) {
+      try {
+        findVendorMaterialId.map((v) => arrIds.push(v.id));
+        const data = await this.projectVendorMaterialDetailRepository.update(
+          {
+            project_vendor_material_id: In(arrIds),
+          },
+          {
+            price_unit: unit_of_measure,
+            quantity_unit: unit_of_measure,
+          },
+        );
+        return data;
+      } catch (error) {
+        return false;
+      }
+    }
   }
 }
