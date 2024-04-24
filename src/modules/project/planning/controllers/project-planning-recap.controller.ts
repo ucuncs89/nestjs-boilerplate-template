@@ -41,6 +41,9 @@ export class ProjectPlanningRecapController {
   }
   @Get(':project_id/recap/calculate')
   async recapCalculate(@Param('project_id') project_id: number) {
+    const quantityTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+
     const fabric = await this.projectPlanningMaterialService.findRecap(
       project_id,
       ProjectMaterialItemEnum.Fabric,
@@ -71,6 +74,7 @@ export class ProjectPlanningRecapController {
 
     const price = await this.projectPlanningPriceService.findOne(project_id);
     const data = await this.projectRecapService.calculateRecap(
+      quantityTotalItem,
       fabric,
       sewing,
       packaging,

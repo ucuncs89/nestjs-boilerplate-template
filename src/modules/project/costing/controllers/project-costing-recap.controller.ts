@@ -56,6 +56,9 @@ export class ProjectCostingRecapController {
     });
     const can_edit_costing =
       project.status === StatusProjectEnum.Costing ? true : false;
+    const quantityTotalItem =
+      await this.projectVariantService.sumTotalItemByProjectId(project_id);
+
     const fabric = await this.projectCostingMaterialService.findRecap(
       project_id,
       ProjectMaterialItemEnum.Fabric,
@@ -86,6 +89,7 @@ export class ProjectCostingRecapController {
 
     const price = await this.projectCostingPriceService.findOne(project_id);
     const data = await this.projectRecapService.calculateRecap(
+      quantityTotalItem,
       fabric,
       sewing,
       packaging,
