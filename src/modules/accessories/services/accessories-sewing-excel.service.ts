@@ -18,18 +18,25 @@ export class AccessoriesSewingExcelService {
       if (!data.accessories_name) {
         continue;
       } else {
+        const payloadSewing = {
+          name: data.accessories_name,
+          category: data.category ? data.category.split(',') : null,
+          unit_of_measure: data.unit_of_measure
+            ? data.unit_of_measure.split(',')
+            : null,
+        };
         const findByName = await this.accessoriesSewingService.findByName(
           data.accessories_name,
         );
         if (!findByName) {
-          const payloadSewing = {
-            name: data.accessories_name,
-            category: data.category ? data.category.split(',') : null,
-            unit_of_measure: data.unit_of_measure
-              ? data.unit_of_measure.split(',')
-              : null,
-          };
           await this.accessoriesSewingService.create(
+            payloadSewing,
+            user_id,
+            i18n,
+          );
+        } else {
+          await this.accessoriesSewingService.update(
+            findByName.id,
             payloadSewing,
             user_id,
             i18n,
