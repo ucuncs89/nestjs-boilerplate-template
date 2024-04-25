@@ -23,15 +23,22 @@ export class AccessoriesExcelPackagingService {
         const findByName = await this.accessoriesPackagingService.findByName(
           data.accessories_name,
         );
+        const payloadPackaging = {
+          name: data.accessories_name,
+          category: data.category ? data.category.split(',') : null,
+          unit_of_measure: data.unit_of_measure
+            ? data.unit_of_measure.split(',')
+            : null,
+        };
         if (!findByName) {
-          const payloadPackaging = {
-            name: data.accessories_name,
-            category: data.category ? data.category.split(',') : null,
-            unit_of_measure: data.unit_of_measure
-              ? data.unit_of_measure.split(',')
-              : null,
-          };
           await this.accessoriesPackagingService.create(
+            payloadPackaging,
+            user_id,
+            i18n,
+          );
+        } else {
+          await this.accessoriesPackagingService.update(
+            findByName.id,
             payloadPackaging,
             user_id,
             i18n,

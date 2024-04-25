@@ -18,18 +18,25 @@ export class FabricExcelService {
       if (!data.fabric_name) {
         continue;
       } else {
+        const payloadFabric = {
+          name: data.fabric_name,
+          category: data.category ? data.category.split(',') : null,
+          unit_of_measure: data.unit_of_measure
+            ? data.unit_of_measure.split(',')
+            : null,
+        };
         const findByName = await this.fabricService.findByName(
           data.fabric_name,
         );
         if (!findByName) {
-          const payloadFabric = {
-            name: data.fabric_name,
-            category: data.category ? data.category.split(',') : null,
-            unit_of_measure: data.unit_of_measure
-              ? data.unit_of_measure.split(',')
-              : null,
-          };
           await this.fabricService.create(payloadFabric, user_id, i18n);
+        } else {
+          await this.fabricService.update(
+            findByName.id,
+            payloadFabric,
+            user_id,
+            i18n,
+          );
         }
       }
     }
