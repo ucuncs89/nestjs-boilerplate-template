@@ -259,6 +259,8 @@ export class ProjectService {
         payment_method: true,
         down_payment_percentage: true,
         payment_duration: true,
+        total_planning_price: true,
+        total_production_price: true,
         size: {
           id: true,
           project_id: true,
@@ -331,7 +333,7 @@ export class ProjectService {
       data.payment_method === ProjectPaymentMethod.tempo &&
       data.payment_duration
     ) {
-      const createdAt = new Date(data.created_at);
+      const createdAt = new Date(data.deadline);
       createdAt.setDate(createdAt.getDate() + data.payment_duration);
       due_date_payment_duration = new Date(createdAt).toISOString();
       if (createdAt.getTime() < new Date().getTime()) {
@@ -501,5 +503,19 @@ export class ProjectService {
       return null;
     }
     return data.customers;
+  }
+  async updateTotalPlanningPrice(
+    project_id: number,
+    total_planning_price: number,
+  ) {
+    const data = await this.projectRepository.update(
+      {
+        id: project_id,
+      },
+      {
+        total_planning_price,
+      },
+    );
+    return data;
   }
 }
