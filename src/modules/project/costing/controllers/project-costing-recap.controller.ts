@@ -101,6 +101,7 @@ export class ProjectCostingRecapController {
       price,
     );
     data.can_edit_costing = can_edit_costing;
+
     return { data };
   }
 }
