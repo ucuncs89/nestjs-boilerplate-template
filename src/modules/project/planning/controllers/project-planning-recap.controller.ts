@@ -11,6 +11,10 @@ import { ProjectPlanningSamplingService } from '../services/project-planning-sam
 import { ProjectPlanningPriceService } from '../services/project-planning-price.service';
 import { ProjectPlanningMaterialService } from '../services/project-planning-material.service';
 import { ProjectMaterialItemEnum } from '../dto/project-planning-material.dto';
+import { ProjectEntity } from 'src/entities/project/project.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ProjectService } from '../../general/services/project.service';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -27,6 +31,10 @@ export class ProjectPlanningRecapController {
     private readonly projectPlanningAdditionalCostService: ProjectPlanningAdditionalCostService,
     private readonly projectPlanningSamplingService: ProjectPlanningSamplingService,
     private readonly projectPlanningPriceService: ProjectPlanningPriceService,
+    private readonly projectService: ProjectService,
+
+    @InjectRepository(ProjectEntity)
+    private projectRepository: Repository<ProjectEntity>,
   ) {}
 
   @Get(':project_id/recap/size-quantity')
@@ -41,6 +49,12 @@ export class ProjectPlanningRecapController {
   }
   @Get(':project_id/recap/calculate')
   async recapCalculate(@Param('project_id') project_id: number) {
+    const project = await this.projectRepository.findOne({
+      where: {
+        id: project_id,
+      },
+      select: { id: true, status: true, total_planning_price: true },
+    });
     const quantityTotalItem =
       await this.projectVariantService.sumTotalItemByProjectId(project_id);
 
@@ -85,6 +99,18 @@ export class ProjectPlanningRecapController {
       sampling,
       price,
     );
+
+    if (data.profit_unit_all_item.total_cost_of_good_sold) {
+      if (
+        data.profit_unit_all_item.total_cost_of_good_sold !==
+        project.total_planning_price
+      ) {
+        this.projectService.updateTotalPlanningPrice(
+          project_id,
+          data.profit_unit_all_item.total_cost_of_good_sold,
+        );
+      }
+    }
     return { data };
   }
 }
