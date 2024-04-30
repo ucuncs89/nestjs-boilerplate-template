@@ -64,6 +64,9 @@ export class ProjectEntity {
   @Column({ type: 'varchar', nullable: true })
   status: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  status_before_change: string;
+
   @Column({ type: 'varchar', length: 50, nullable: true })
   material_source: string;
 

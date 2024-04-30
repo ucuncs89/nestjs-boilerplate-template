@@ -456,32 +456,100 @@ export class ProjectService {
     hold_description: string,
     user_id: number,
   ) {
-    const data = await this.projectRepository.update(
-      { id: project_id },
-      {
-        hold_description,
-        status: StatusProjectEnum.Hold,
-        updated_at: new Date().toISOString(),
-        updated_by: user_id,
+    const project = await this.projectRepository.findOne({
+      where: {
+        id: project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
       },
-    );
-    return data;
+    });
+    if (!project) {
+      throw new AppErrorNotFoundException('Project not found');
+    }
+    if (project.status === StatusProjectEnum.Hold) {
+      return true;
+    }
+    try {
+      project.hold_description = hold_description;
+      project.status_before_change = project.status;
+      project.updated_at = new Date().toISOString();
+      project.updated_by = user_id;
+      project.status = StatusProjectEnum.Hold;
+      await this.projectRepository.save(project);
+      return project;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
   }
   async cancelProject(
     project_id: number,
     cancel_description: string,
     user_id: number,
   ) {
-    const data = await this.projectRepository.update(
-      { id: project_id },
-      {
-        cancel_description,
-        status: StatusProjectEnum.Canceled,
-        updated_at: new Date().toISOString(),
-        updated_by: user_id,
+    const project = await this.projectRepository.findOne({
+      where: {
+        id: project_id,
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
       },
-    );
-    return data;
+    });
+    if (!project) {
+      throw new AppErrorNotFoundException('Project not found');
+    }
+    if (project.status === StatusProjectEnum.Canceled) {
+      return true;
+    }
+    try {
+      project.cancel_description = cancel_description;
+      project.status_before_change = project.status;
+      project.updated_at = new Date().toISOString();
+      project.updated_by = user_id;
+      project.status = StatusProjectEnum.Canceled;
+      await this.projectRepository.save(project);
+      return project;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+  async unCancelProject(project_id: number) {
+    const project = await this.projectRepository.findOne({
+      where: { id: project_id },
+    });
+    if (!project) {
+      throw new AppErrorNotFoundException('Project Not Found');
+    }
+    if (project.status_before_change === null) {
+      return true;
+    }
+    try {
+      project.status = project.status_before_change;
+      project.status_before_change = null;
+      project.cancel_description = null;
+      await this.projectRepository.save(project);
+      return project;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
+  }
+  async unHoldProject(project_id: number) {
+    const project = await this.projectRepository.findOne({
+      where: { id: project_id },
+    });
+    if (!project) {
+      throw new AppErrorNotFoundException('Project Not Found');
+    }
+    if (project.status_before_change === null) {
+      return true;
+    }
+    try {
+      project.status = project.status_before_change;
+      project.status_before_change = null;
+      project.hold_description = null;
+      await this.projectRepository.save(project);
+      return project;
+    } catch (error) {
+      throw new AppErrorException(error);
+    }
   }
   async remove(id: number, user_id: number) {
     const data = await this.projectRepository.update(
