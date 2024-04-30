@@ -151,8 +151,11 @@ export class ProjectController {
       req.user.id,
     );
     if (data) {
-      this.projectHistoryService.create(
-        { status: StatusProjectEnum.Hold },
+      await this.projectHistoryService.create(
+        {
+          status: StatusProjectEnum.Hold,
+          status_description: hold_description,
+        },
         id,
         req.user.id,
         {},
@@ -187,8 +190,11 @@ export class ProjectController {
       req.user.id,
     );
     if (data) {
-      this.projectHistoryService.create(
-        { status: StatusProjectEnum.Canceled },
+      await this.projectHistoryService.create(
+        {
+          status: StatusProjectEnum.Canceled,
+          status_description: cancel_description,
+        },
         id,
         req.user.id,
         {},
@@ -201,5 +207,18 @@ export class ProjectController {
   async delete(@Req() req, @Param('id') id: string, @I18n() i18n: I18nContext) {
     const data = await this.projectService.remove(+id, req.user.id);
     return { message: 'Successfully', data };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/un-cancel')
+  async unCancelProject(@Req() req, @Param('id') id: number) {
+    const data = await this.projectService.unCancelProject(id);
+    return { data };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/un-hold')
+  async unHoldProject(@Req() req, @Param('id') id: number) {
+    const data = await this.projectService.unHoldProject(id);
+    return { data };
   }
 }

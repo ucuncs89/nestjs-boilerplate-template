@@ -26,8 +26,9 @@ export class ProjectHistoryService {
         project_id,
         created_at: new Date().toISOString(),
         created_by: user_id,
+        status_description: createProjectDto.status_description,
       });
-      this.projectHistoryRepository.save(data);
+      await this.projectHistoryRepository.save(data);
     }
   }
   async findAll(query: GetListProjectHistoryDto, project_id: number) {

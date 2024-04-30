@@ -8,5 +8,8 @@ export class CreateProjecHistorytDto {
   @IsNotEmpty()
   status: StatusProjectEnum;
 
+  @ApiProperty()
+  status_description?: string;
+
   project_id?: number;
 }

@@ -19,6 +19,9 @@ export class ProjectHistoryEntity {
   @Column({ type: 'varchar' })
   status: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  status_description: string;
+
   @Column({
     type: 'timestamp with time zone',
     default: 'NOW()',
