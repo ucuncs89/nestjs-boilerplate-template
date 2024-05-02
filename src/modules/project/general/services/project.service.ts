@@ -27,12 +27,17 @@ import {
 } from '../dto/get-list-project.dto';
 import { ProjectSizeEntity } from 'src/entities/project/project_size.entity';
 import { ProjectVariantEntity } from 'src/entities/project/project_variant.entity';
+import { ProjectHistoryEntity } from 'src/entities/project/project_history.entity';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectRepository(ProjectEntity)
     private projectRepository: Repository<ProjectEntity>,
+
+    @InjectRepository(ProjectHistoryEntity)
+    private projectHistoryRepository: Repository<ProjectHistoryEntity>,
+
     private connection: Connection,
   ) {}
   async generate(user_id: number) {
@@ -512,41 +517,55 @@ export class ProjectService {
     }
   }
   async unCancelProject(project_id: number) {
-    const project = await this.projectRepository.findOne({
-      where: { id: project_id },
+    const dataHistoryStatus = await this.projectHistoryRepository.findOne({
+      where: {
+        project_id,
+        status: Not(In([StatusProjectEnum.Canceled, StatusProjectEnum.Hold])),
+      },
+      order: { id: 'DESC' },
     });
-    if (!project) {
-      throw new AppErrorNotFoundException('Project Not Found');
-    }
-    if (project.status_before_change === null) {
-      return true;
+    if (!dataHistoryStatus) {
+      throw new AppErrorException(
+        'previous project history data does not exist',
+      );
     }
     try {
-      project.status = project.status_before_change;
-      project.status_before_change = null;
-      project.cancel_description = null;
-      await this.projectRepository.save(project);
-      return project;
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        {
+          status: dataHistoryStatus.status || StatusProjectEnum.Project_Created,
+          status_before_change: null,
+          cancel_description: null,
+        },
+      );
+      return data;
     } catch (error) {
       throw new AppErrorException(error);
     }
   }
   async unHoldProject(project_id: number) {
-    const project = await this.projectRepository.findOne({
-      where: { id: project_id },
+    const dataHistoryStatus = await this.projectHistoryRepository.findOne({
+      where: {
+        project_id,
+        status: Not(In([StatusProjectEnum.Canceled, StatusProjectEnum.Hold])),
+      },
+      order: { id: 'DESC' },
     });
-    if (!project) {
-      throw new AppErrorNotFoundException('Project Not Found');
-    }
-    if (project.status_before_change === null) {
-      return true;
+    if (!dataHistoryStatus) {
+      throw new AppErrorException(
+        'previous project history data does not exist',
+      );
     }
     try {
-      project.status = project.status_before_change;
-      project.status_before_change = null;
-      project.hold_description = null;
-      await this.projectRepository.save(project);
-      return project;
+      const data = await this.projectRepository.update(
+        { id: project_id },
+        {
+          status: dataHistoryStatus.status || StatusProjectEnum.Project_Created,
+          status_before_change: null,
+          hold_description: null,
+        },
+      );
+      return data;
     } catch (error) {
       throw new AppErrorException(error);
     }
