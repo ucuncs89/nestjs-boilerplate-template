@@ -29,6 +29,7 @@ import { MasterModule } from './modules/master/master.module';
 import { PurchaseOrderModule } from './modules/purchase-order/purchase-order.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
 import { ProjectModule } from './modules/project/project.module';
+import { HomeModule } from './modules/home/home.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { ProjectModule } from './modules/project/project.module';
     PurchaseOrderModule,
     InvoiceModule,
     ProjectModule,
+    HomeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
