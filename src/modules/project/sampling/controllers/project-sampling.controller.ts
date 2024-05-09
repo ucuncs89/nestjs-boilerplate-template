@@ -15,6 +15,10 @@ import { ProjectSamplingService } from '../services/project-sampling.service';
 import { ProjectSamplingDto } from '../dto/project-sampling.dto';
 import { ProjectCostingSamplingService } from '../../costing/services/project-costing-sampling.service';
 import { ProjectVariantService } from '../../general/services/project-variant.service';
+import { ProjectEntity } from 'src/entities/project/project.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @ApiBearerAuth()
 @ApiTags('project sampling')
@@ -25,6 +29,8 @@ export class ProjectSamplingController {
     private readonly projectSamplingService: ProjectSamplingService,
     private readonly projectCostingSamplingService: ProjectCostingSamplingService,
     private readonly projectVariantService: ProjectVariantService,
+    @InjectRepository(ProjectEntity)
+    private projectRepository: Repository<ProjectEntity>,
   ) {}
 
   @Get(':project_id')
@@ -123,6 +129,12 @@ export class ProjectSamplingController {
   @Get(':project_id/recap')
   async findListRecap(@Param('project_id') project_id: number) {
     const data = await this.projectSamplingService.calculateRecap(project_id);
+    if (data) {
+      await this.projectRepository.update(
+        { id: project_id },
+        { total_sampling_price: data.total_cost },
+      );
+    }
     return {
       ...data,
     };

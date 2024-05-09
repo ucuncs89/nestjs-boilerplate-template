@@ -25,6 +25,16 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+    const number_of_project_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: Not(In([StatusProjectEnum.Draft])),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
+
     const project_completed_count = await this.projectRepository.count({
       where: {
         status: In([StatusProjectEnum.Complete]),
@@ -33,6 +43,16 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+    const project_completed_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: In([StatusProjectEnum.Complete]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
+
     const project_in_progress_count = await this.projectRepository.count({
       where: {
         status: In([
@@ -46,6 +66,22 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+
+    const project_in_progress_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: In([
+          StatusProjectEnum.Costing,
+          StatusProjectEnum.Sampling,
+          StatusProjectEnum.Planning,
+          StatusProjectEnum.Production,
+        ]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
+
     const project_canceled_count = await this.projectRepository.count({
       where: {
         status: In([StatusProjectEnum.Canceled]),
@@ -54,6 +90,15 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+    const project_canceled_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: In([StatusProjectEnum.Canceled]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
     const project_holded_count = await this.projectRepository.count({
       where: {
         status: In([StatusProjectEnum.Hold]),
@@ -62,6 +107,15 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+    const project_holded_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: In([StatusProjectEnum.Hold]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
     const project_costing_count = await this.projectRepository.count({
       where: {
         status: In([StatusProjectEnum.Costing]),
@@ -70,6 +124,15 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+    const project_costing_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: In([StatusProjectEnum.Costing]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
     const project_sampling_count = await this.projectRepository.count({
       where: {
         status: In([StatusProjectEnum.Sampling]),
@@ -78,6 +141,15 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+    const project_sampling_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: In([StatusProjectEnum.Sampling]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
     const project_planning_count = await this.projectRepository.count({
       where: {
         status: In([StatusProjectEnum.Planning]),
@@ -86,6 +158,15 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+    const project_planning_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: In([StatusProjectEnum.Planning]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
     const project_production_count = await this.projectRepository.count({
       where: {
         status: In([StatusProjectEnum.Production]),
@@ -94,6 +175,15 @@ export class HomeService {
         created_at: Between(start_date, end_date),
       },
     });
+    const project_production_sum = await this.projectRepository.sum(
+      'project_price_selling',
+      {
+        status: In([StatusProjectEnum.Production]),
+        deleted_at: IsNull(),
+        deleted_by: IsNull(),
+        created_at: Between(start_date, end_date),
+      },
+    );
     return {
       number_of_project_count,
       project_completed_count,
@@ -104,6 +194,15 @@ export class HomeService {
       project_sampling_count,
       project_planning_count,
       project_production_count,
+      number_of_project_sum,
+      project_completed_sum,
+      project_in_progress_sum,
+      project_canceled_sum,
+      project_holded_sum,
+      project_costing_sum,
+      project_sampling_sum,
+      project_planning_sum,
+      project_production_sum,
     };
   }
 }

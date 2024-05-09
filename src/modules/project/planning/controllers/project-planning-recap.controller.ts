@@ -15,6 +15,7 @@ import { ProjectEntity } from 'src/entities/project/project.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectService } from '../../general/services/project.service';
+import { StatusProjectEnum } from '../../general/dto/get-list-project.dto';
 
 @ApiBearerAuth()
 @ApiTags('project planning')
@@ -53,7 +54,12 @@ export class ProjectPlanningRecapController {
       where: {
         id: project_id,
       },
-      select: { id: true, status: true, total_planning_price: true },
+      select: {
+        id: true,
+        status: true,
+        total_planning_price: true,
+        project_price_selling: true,
+      },
     });
     const quantityTotalItem =
       await this.projectVariantService.sumTotalItemByProjectId(project_id);
@@ -109,6 +115,14 @@ export class ProjectPlanningRecapController {
           project_id,
           data.profit_unit_all_item.total_cost_of_good_sold,
         );
+      }
+    }
+    if (project.status === StatusProjectEnum.Planning) {
+      if (price) {
+        if (price.selling_price_per_item !== project.project_price_selling) {
+          project.project_price_selling = price.selling_price_per_item;
+          await this.projectRepository.save(project);
+        }
       }
     }
     return { data };
