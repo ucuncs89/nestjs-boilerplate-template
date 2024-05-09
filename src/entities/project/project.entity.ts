@@ -116,10 +116,19 @@ export class ProjectEntity {
   is_sent_deadline: boolean;
 
   @Column({ type: 'double precision', nullable: true })
+  total_costing_price: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  total_sampling_price: number;
+
+  @Column({ type: 'double precision', nullable: true })
   total_planning_price: number;
 
   @Column({ type: 'double precision', nullable: true })
   total_production_price: number;
+
+  @Column({ type: 'double precision', nullable: true })
+  project_price_selling: number;
 
   @OneToMany(
     () => ProjectDocumentEntity,
