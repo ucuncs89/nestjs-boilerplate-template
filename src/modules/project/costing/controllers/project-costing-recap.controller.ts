@@ -52,7 +52,12 @@ export class ProjectCostingRecapController {
       where: {
         id: project_id,
       },
-      select: { id: true, status: true },
+      select: {
+        id: true,
+        status: true,
+        project_price_selling: true,
+        total_costing_price: true,
+      },
     });
     const can_edit_costing =
       project.status === StatusProjectEnum.Costing ? true : false;
@@ -101,7 +106,24 @@ export class ProjectCostingRecapController {
       price,
     );
     data.can_edit_costing = can_edit_costing;
-
+    if (project.status === StatusProjectEnum.Costing) {
+      if (price) {
+        if (price.selling_price_per_item !== project.project_price_selling) {
+          project.project_price_selling = price.selling_price_per_item;
+          await this.projectRepository.save(project);
+        }
+      }
+    }
+    if (data.profit_unit_all_item.total_cost_of_good_sold) {
+      if (
+        data.profit_unit_all_item.total_cost_of_good_sold !==
+        project.total_costing_price
+      ) {
+        project.total_costing_price =
+          data.profit_unit_all_item.total_cost_of_good_sold;
+        await this.projectRepository.save(project);
+      }
+    }
     return { data };
   }
 }
