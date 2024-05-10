@@ -19,15 +19,20 @@ import {
   InvoiceApprovalDto,
   InvoiceDto,
   InvoiceStatusPaymentDto,
+  InvoiceStatusPaymentEnum,
 } from '../dto/invoice.dto';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { InvoiceJurnalService } from '../services/invoice-jurnal.service';
 
 @Controller('invoice')
 @ApiTags('invoice')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class InvoiceController {
-  constructor(private readonly invoiceService: InvoiceService) {}
+  constructor(
+    private readonly invoiceService: InvoiceService,
+    private readonly invoiceJurnalService: InvoiceJurnalService,
+  ) {}
 
   // @Post()
   // create(@Body() createInvoiceDto: CreateInvoiceDto) {
@@ -136,6 +141,13 @@ export class InvoiceController {
       invoiceStatusPaymentDto,
       req.user.id,
     );
+    if (
+      invoiceStatusPaymentDto.status_payment ===
+      InvoiceStatusPaymentEnum.Approved
+    ) {
+      const data = await this.invoiceJurnalService.intregateToJurnalInvoice(id);
+      return { data };
+    }
     return { data };
   }
 }
