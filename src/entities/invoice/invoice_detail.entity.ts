@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { InvoiceEntity } from './invoice.entity';
 
 @Entity('invoice_detail')
 export class InvoiceDetailEntity {
@@ -43,4 +50,10 @@ export class InvoiceDetailEntity {
 
   @Column({ type: 'int', nullable: true })
   deleted_by: number;
+
+  @ManyToOne(() => InvoiceEntity, (invoice: InvoiceEntity) => invoice.detail, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'invoice_id' })
+  public invoice: InvoiceEntity;
 }

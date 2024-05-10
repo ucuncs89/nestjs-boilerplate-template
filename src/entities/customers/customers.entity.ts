@@ -9,6 +9,7 @@ import {
 import { CustomerDocumentsEntity } from './customer_documents.entity';
 import { ProvinceEntity } from '../master/province.entity';
 import { CityEntity } from '../master/city.entity';
+import { InvoiceEntity } from '../invoice/invoice.entity';
 
 @Entity('customers')
 export class CustomersEntity {
@@ -97,6 +98,10 @@ export class CustomersEntity {
   )
   @JoinColumn({ name: 'customer_id' })
   customer_documents: CustomerDocumentsEntity[];
+
+  @OneToMany(() => InvoiceEntity, (invoice: InvoiceEntity) => invoice.customer)
+  @JoinColumn({ name: 'customer_id' })
+  invoices: InvoiceEntity[];
 
   @ManyToOne(
     () => ProvinceEntity,

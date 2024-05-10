@@ -9,6 +9,8 @@ import {
 import { InvoiceHistoryEntity } from './invoice_history.entity';
 import { ProjectEntity } from '../project/project.entity';
 import { UsersEntity } from '../users/users.entity';
+import { CustomersEntity } from '../customers/customers.entity';
+import { InvoiceDetailEntity } from './invoice_detail.entity';
 
 @Entity('invoice')
 export class InvoiceEntity {
@@ -118,9 +120,23 @@ export class InvoiceEntity {
   @JoinColumn({ name: 'invoice_id' })
   history: InvoiceHistoryEntity[];
 
+  @OneToMany(
+    () => InvoiceDetailEntity,
+    (detail: InvoiceDetailEntity) => detail.invoice,
+  )
+  @JoinColumn({ name: 'invoice_id' })
+  detail: InvoiceDetailEntity[];
+
   @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.invoice)
   @JoinColumn({ name: 'project_id' })
   public project: ProjectEntity;
+
+  @ManyToOne(
+    () => CustomersEntity,
+    (customer: CustomersEntity) => customer.invoices,
+  )
+  @JoinColumn({ name: 'customer_id' })
+  public customer: CustomersEntity;
 
   @ManyToOne(
     () => UsersEntity,
