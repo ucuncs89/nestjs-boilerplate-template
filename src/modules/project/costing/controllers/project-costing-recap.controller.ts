@@ -93,6 +93,7 @@ export class ProjectCostingRecapController {
     );
 
     const price = await this.projectCostingPriceService.findOne(project_id);
+
     const data = await this.projectRecapService.calculateRecap(
       quantityTotalItem,
       fabric,

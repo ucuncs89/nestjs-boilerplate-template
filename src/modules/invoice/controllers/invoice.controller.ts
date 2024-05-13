@@ -141,13 +141,13 @@ export class InvoiceController {
       invoiceStatusPaymentDto,
       req.user.id,
     );
-    if (
-      invoiceStatusPaymentDto.status_payment ===
-      InvoiceStatusPaymentEnum.Approved
-    ) {
-      const data = await this.invoiceJurnalService.intregateToJurnalInvoice(id);
-      return { data };
-    }
+    // if (
+    //   invoiceStatusPaymentDto.status_payment ===
+    //   InvoiceStatusPaymentEnum.Approved
+    // ) {
+    //   const data = await this.invoiceJurnalService.intregateToJurnalInvoice(id);
+    //   return { data };
+    // }
     return { data };
   }
 }
