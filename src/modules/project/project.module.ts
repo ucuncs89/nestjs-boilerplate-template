@@ -105,6 +105,8 @@ import { ProjectReturAdditionalCostController } from './retur/controllers/projec
 import { ProjectReturAdditionalCostService } from './retur/services/project-retur-additional-cost.service';
 import { ProjectReturInvoiceController } from './retur/controllers/project-retur-invoice.controller';
 import { ProjectProformaInvoiceController } from './general/controllers/project-proforma-invoice.controller';
+import { ProjectSalesController } from './general/controllers/project-sales.controller';
+import { ProjectSalesService } from './general/services/project-sales.service';
 
 @Module({
   imports: [
@@ -146,6 +148,7 @@ import { ProjectProformaInvoiceController } from './general/controllers/project-
     ProjectHistoryController,
     ProjectRemarksController,
     ProjectPlanningApprovalController,
+    ProjectSalesController,
     ProjectCostingController,
     ProjectCostingMaterialController,
     ProjectCostingVendorMaterialController,
@@ -219,6 +222,7 @@ import { ProjectProformaInvoiceController } from './general/controllers/project-
     ProjectReturShippingService,
     ProjectProductionShippingPdfService,
     ProjectReturAdditionalCostService,
+    ProjectSalesService,
   ],
 })
 export class ProjectModule {}
