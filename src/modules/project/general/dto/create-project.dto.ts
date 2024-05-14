@@ -69,15 +69,12 @@ export class CreateProjectDto {
   target_price_for_buyer: number;
 
   @ApiProperty()
-  @IsNotEmpty()
   departement_id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
   category_id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
   sub_category_id: number;
 
   @ApiProperty({
