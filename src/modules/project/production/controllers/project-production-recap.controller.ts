@@ -35,15 +35,21 @@ export class ProjectProductionRecapController {
       await this.projectProductionAdditionalCostService.sumGrandAvgPriceTotalAdditionalPrice(
         project_id,
       );
-
+    const profit_unit = calculatePlanning.data.profit_unit;
+    const profit_loss_unit = profit_unit ? profit_unit.profit_loss_unit : 0;
+    const profit_loss_all_item =
+      profit_loss_unit * quantity_order +
+      additional_cost_in_production.total_cost;
     const data = {
+      // ...calculatePlanning,
       cost_of_good_sold,
       cost_of_good_sold_all_item,
       quantity_order,
       selling_price,
       sales,
       additional_cost_in_production,
-      profit_loss_all_item: 'belum',
+      profit_loss_unit,
+      profit_loss_all_item,
     };
     return {
       data,
