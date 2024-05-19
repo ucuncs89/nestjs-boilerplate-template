@@ -5,6 +5,7 @@ import { ProjectVariantService } from '../../general/services/project-variant.se
 import { ProjectPlanningPriceService } from '../../planning/services/project-planning-price.service';
 import { ProjectPlanningRecapController } from '../../planning/controllers/project-planning-recap.controller';
 import { ProjectProductionAdditionalCostService } from '../services/project-production-additional-cost.service';
+import { ProjectService } from '../../general/services/project.service';
 
 @ApiBearerAuth()
 @ApiTags('project production')
@@ -16,6 +17,7 @@ export class ProjectProductionRecapController {
     private readonly projectPlanningPriceService: ProjectPlanningPriceService,
     private readonly projectProductionAdditionalCostService: ProjectProductionAdditionalCostService,
     private readonly projectPlanningRecapController: ProjectPlanningRecapController,
+    private readonly projectService: ProjectService,
   ) {}
   @Get(':project_id/recap/calculate')
   async recapCalculate(@Param('project_id') project_id: number) {
@@ -40,6 +42,12 @@ export class ProjectProductionRecapController {
     const profit_loss_all_item =
       profit_loss_unit * quantity_order +
       additional_cost_in_production.total_cost;
+    if (cost_of_good_sold_all_item > 0) {
+      this.projectService.updateTotalProductionPrice(
+        project_id,
+        cost_of_good_sold_all_item,
+      );
+    }
     const data = {
       cost_of_good_sold,
       cost_of_good_sold_all_item,
