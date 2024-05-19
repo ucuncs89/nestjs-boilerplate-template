@@ -142,7 +142,15 @@ export class ProjectService {
       order_type,
       deadline,
     } = query;
-    const arrStatus: any[] = status ? status.split(',') : [];
+    let arrStatus: any[] = status ? status.split(',') : [];
+    if (status === StatusProjectEnum.In_Progress) {
+      arrStatus = [
+        StatusProjectEnum.Costing,
+        StatusProjectEnum.Sampling,
+        StatusProjectEnum.Planning,
+        StatusProjectEnum.Production,
+      ];
+    }
     let orderObj = {};
     switch (sort_by) {
       case 'name':

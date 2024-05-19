@@ -46,6 +46,7 @@ export class ProjectHistoryService {
         id: true,
         project_id: true,
         status: true,
+        status_description: true,
         created_at: true,
         created_by: true,
         updated_at: true,
