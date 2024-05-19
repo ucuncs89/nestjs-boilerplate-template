@@ -275,6 +275,8 @@ export class ProjectService {
         payment_duration: true,
         total_planning_price: true,
         total_production_price: true,
+        total_costing_price: true,
+        total_sampling_price: true,
         size: {
           id: true,
           project_id: true,
