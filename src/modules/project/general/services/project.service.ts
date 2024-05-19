@@ -142,6 +142,7 @@ export class ProjectService {
       order_type,
       deadline,
     } = query;
+    const arrStatus: any[] = status ? status.split(',') : [];
     let orderObj = {};
     switch (sort_by) {
       case 'name':
@@ -194,7 +195,7 @@ export class ProjectService {
       where: [
         {
           style_name: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
-          status: status ? status : Not(In(['Draft'])),
+          status: arrStatus.length > 0 ? In(arrStatus) : Not(In(['Draft'])),
           order_type: order_type ? order_type : Not(IsNull()),
           deleted_at: IsNull(),
           deadline:
@@ -209,7 +210,7 @@ export class ProjectService {
         },
         {
           code: keyword ? ILike(`%${keyword}%`) : Not(IsNull()),
-          status: status ? status : Not(In(['Draft'])),
+          status: arrStatus.length > 0 ? In(arrStatus) : Not(In(['Draft'])),
           order_type: order_type ? order_type : Not(IsNull()),
           deleted_at: IsNull(),
           deadline:

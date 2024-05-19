@@ -41,7 +41,6 @@ export class ProjectProductionRecapController {
       profit_loss_unit * quantity_order +
       additional_cost_in_production.total_cost;
     const data = {
-      // ...calculatePlanning,
       cost_of_good_sold,
       cost_of_good_sold_all_item,
       quantity_order,
