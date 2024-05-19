@@ -117,14 +117,14 @@ export class ProjectPlanningRecapController {
         );
       }
     }
-    if (project.status === StatusProjectEnum.Planning) {
-      if (price) {
-        if (price.selling_price_per_item !== project.project_price_selling) {
-          project.project_price_selling = price.selling_price_per_item;
-          await this.projectRepository.save(project);
-        }
+
+    if (price) {
+      if (price.selling_price_per_item !== project.project_price_selling) {
+        project.project_price_selling = price.selling_price_per_item;
+        await this.projectRepository.save(project);
       }
     }
+
     return { data };
   }
 }

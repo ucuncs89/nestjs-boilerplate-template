@@ -107,12 +107,11 @@ export class ProjectCostingRecapController {
       price,
     );
     data.can_edit_costing = can_edit_costing;
-    if (project.status === StatusProjectEnum.Costing) {
-      if (price) {
-        if (price.selling_price_per_item !== project.project_price_selling) {
-          project.project_price_selling = price.selling_price_per_item;
-          await this.projectRepository.save(project);
-        }
+
+    if (price) {
+      if (price.selling_price_per_item !== project.project_price_selling) {
+        project.project_price_selling = price.selling_price_per_item;
+        this.projectRepository.save(project);
       }
     }
     if (data.profit_unit_all_item.total_cost_of_good_sold) {
@@ -122,7 +121,7 @@ export class ProjectCostingRecapController {
       ) {
         project.total_costing_price =
           data.profit_unit_all_item.total_cost_of_good_sold;
-        await this.projectRepository.save(project);
+        this.projectRepository.save(project);
       }
     }
     return { data };

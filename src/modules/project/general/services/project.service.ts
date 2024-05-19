@@ -616,4 +616,18 @@ export class ProjectService {
     );
     return data;
   }
+  async updateTotalProductionPrice(
+    project_id: number,
+    total_production_price: number,
+  ) {
+    const data = await this.projectRepository.update(
+      {
+        id: project_id,
+      },
+      {
+        total_production_price,
+      },
+    );
+    return data;
+  }
 }

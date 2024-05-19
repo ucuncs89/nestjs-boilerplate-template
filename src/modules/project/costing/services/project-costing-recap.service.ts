@@ -73,15 +73,6 @@ export class ProjectCostingRecapService {
       shipping.total_cost +
       sampling.total_cost;
 
-    const cogs_all_item_total =
-      fabric.total_cost_all_item +
-      sewing.total_cost_all_item +
-      packaging.total_cost_all_item +
-      finishedGoods.total_cost_all_item +
-      production.total_cost_all_item +
-      shipping.total_cost_all_item +
-      sampling.total_cost_all_item;
-
     const cost_of_good_sold = {
       fabric_cost: fabric.total_cost,
       sewing_cost: sewing.total_cost,
@@ -101,7 +92,7 @@ export class ProjectCostingRecapService {
       production_cost: production.total_cost_all_item,
       shipping_cost: shipping.total_cost_all_item,
       sampling_cost: sampling.total_cost_all_item,
-      total_cost: cogs_all_item_total,
+      total_cost: cogs_total_cost * quantityTotalItem,
     };
 
     let profit_unit = {};
