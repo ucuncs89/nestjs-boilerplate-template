@@ -38,6 +38,7 @@ export class ProjectSalesService {
       quantity,
       price: project_selling_price,
       sub_total,
+      unit: arrVariant[0].item_unit,
     });
 
     const result = {
@@ -73,6 +74,7 @@ export class ProjectSalesService {
       quantity,
       price: project_selling_price,
       sub_total,
+      unit: arrVariant[0].item_unit,
     });
 
     const result = {
