@@ -48,6 +48,7 @@ export class ProjectCostingShippingController {
   ) {
     const variantTotalItem =
       await this.projectVariantService.sumTotalItemByProjectId(project_id);
+
     const cost_per_item =
       projectCostingShippingDto.total_shipping_cost / variantTotalItem;
     const data = await this.projectCostingShippingService.createShipping(
