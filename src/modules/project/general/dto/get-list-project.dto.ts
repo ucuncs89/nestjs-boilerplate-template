@@ -37,7 +37,7 @@ export class GetListProjectDto {
   keyword?: string;
 
   @ApiProperty({ required: false, enum: StatusProjectEnum })
-  status?: StatusProjectEnum;
+  status?: string;
 
   @ApiProperty({ required: false, enum: OrderTypeProjectEnum })
   order_type?: OrderTypeProjectEnum;
