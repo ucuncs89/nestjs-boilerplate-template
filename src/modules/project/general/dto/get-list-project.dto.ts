@@ -14,6 +14,7 @@ export enum StatusProjectEnum {
   Hold = 'Hold',
   Retur = 'Retur',
   Draft = 'Draft',
+  In_Progress = 'In Progress',
 }
 
 export enum DeadlineFilterProjectEnum {
