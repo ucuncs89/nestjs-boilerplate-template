@@ -2,12 +2,8 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from '../../../entities/users/users.entity';
-import {
-  AppErrorException,
-  AppErrorNotFoundException,
-} from '../../../exceptions/app-exception';
+import { AppErrorException } from '../../../exceptions/app-exception';
 import { Repository } from 'typeorm';
-import axios from 'axios';
 
 @Injectable()
 export class AuthGoogleService {
@@ -35,14 +31,6 @@ export class AuthGoogleService {
     return { token, expired_at, refresh_token: '' };
   }
 
-  async findUserCloamiWorkspace(email: string): Promise<any> {
-    const response = await axios({
-      method: 'GET',
-      url: `https://list.cloami.com/users.php?email=${email}`,
-    });
-
-    return response.data;
-  }
   async createGoogleAccount(payload) {
     try {
       const data = this.userRepository.create({

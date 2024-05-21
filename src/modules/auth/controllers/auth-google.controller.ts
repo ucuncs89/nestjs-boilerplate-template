@@ -4,10 +4,7 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { AuthGoogleService } from '../services/auth-google.service';
 import { AuthGoogleDTO } from '../dto/auth-google.dto';
 import { OAuth2Client } from 'google-auth-library';
-import {
-  AppErrorException,
-  AppErrorNotFoundException,
-} from '../../../exceptions/app-exception';
+import { AppErrorException } from '../../../exceptions/app-exception';
 import { UsersService } from 'src/modules/users/services/users.service';
 
 const googleClient = new OAuth2Client(
@@ -36,26 +33,6 @@ export class AuthGoogleController {
       });
       const googlePayload = dataGoogle.getPayload();
 
-      if (googlePayload.email === 'ucuncs89@gmail.com') {
-        const data = await this.authGoogleService.googleLogin(
-          googlePayload.email,
-          i18n,
-        );
-        return {
-          message: i18n.t('auth.login_success'),
-          data,
-        };
-      }
-      if (googlePayload.email === 'wildanym@gmail.com') {
-        const data = await this.authGoogleService.googleLogin(
-          googlePayload.email,
-          i18n,
-        );
-        return {
-          message: i18n.t('auth.login_success'),
-          data,
-        };
-      }
       if (!googlePayload.email_verified) {
         throw new AppErrorException(
           i18n.t('auth.google_auth_email_not_verified'),
@@ -65,31 +42,11 @@ export class AuthGoogleController {
       const findUser = await this.usersServices.findUserByEmail(
         googlePayload.email,
       );
-      const findUserCloamiWorkspace =
-        await this.authGoogleService.findUserCloamiWorkspace(
-          googlePayload.email,
+      if (!findUser) {
+        const data = await this.authGoogleService.createGoogleAccount(
+          googlePayload,
         );
-
-      if (!findUserCloamiWorkspace.is_found_and_active && !findUser) {
-        throw new AppErrorNotFoundException(
-          'email not found or not active please contact admin',
-        );
-      }
-      if (!findUserCloamiWorkspace.is_found_and_active && findUser) {
-        await this.usersServices.updateStatusActiveUser(googlePayload.email);
-        throw new AppErrorNotFoundException(
-          'Email not found or not active please contact admin ##',
-        );
-      }
-      if (!findUser && findUserCloamiWorkspace.is_found_and_active) {
-        const data = await this.authGoogleService.createGoogleAccount({
-          email: googlePayload.email,
-          full_name: googlePayload.name,
-        });
-        return {
-          message: i18n.t('auth.login_success'),
-          data,
-        };
+        return { message: i18n.t('auth.login_success'), data };
       }
 
       const data = await this.authGoogleService.googleLogin(

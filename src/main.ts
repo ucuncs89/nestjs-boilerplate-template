@@ -5,7 +5,6 @@ import { ResponseInterceptor } from './interceptors/response-interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './filter/exception-filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { RabbitMQService } from './rabbitmq/services/rabbit-mq.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,8 +13,8 @@ async function bootstrap() {
 
   // Access the version field
   const config = new DocumentBuilder()
-    .setTitle('Cloami')
-    .setDescription(`Cloami - Backend , Last Commit`)
+    .setTitle('Nestjs')
+    .setDescription(`Nestjs - Backend`)
     .setVersion('1.0')
     .addServer(
       env.SWAGGER_BASEPATH
@@ -25,16 +24,10 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('documentation', app, document, {
-    customfavIcon: 'https://dev.cloami.com/favicon.ico',
-    customSiteTitle: 'Cloami Backend',
-    customCss: `
-    .topbar-wrapper img {content:url('https://dashboard.cloami.com/_next/static/media/cloami-logo.28284e32.svg'); width:200px; height:auto;}
-    .swagger-ui .topbar { background-color: #f1f2f1; } `,
-  });
+  SwaggerModule.setup('swagger', app, document);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  const rabbitMQService = app.get(RabbitMQService);
-  app.useGlobalFilters(new GlobalExceptionFilter(rabbitMQService));
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
   await app.listen(env.APP_PORT);
 }

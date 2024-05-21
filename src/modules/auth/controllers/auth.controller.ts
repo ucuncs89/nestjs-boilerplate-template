@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { LoginUserDTO } from '../dto/auth.dto';
+import { LoginUserDTO, RegisterUserDTO } from '../dto/auth.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { OtpVerificationDto } from '../dto/otp-verification.dto.';
@@ -35,6 +35,14 @@ export class AuthController {
   ): Promise<any> {
     const data = await this.authService.login(loginUserDTO, i18n);
     return { message: i18n.t('auth.login_success'), data };
+  }
+  @Post('register')
+  async register(
+    @Body() registerUserDTO: RegisterUserDTO,
+    @I18n() i18n: I18nContext,
+  ) {
+    const data = await this.authService.register(registerUserDTO, i18n);
+    return { data };
   }
   @Post('forgot-password')
   async postFogotPassword(@Query('email') email: string) {

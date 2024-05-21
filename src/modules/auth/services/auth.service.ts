@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from '../../../entities/users/users.entity';
 import { UsersService } from '../../../modules/users/services/users.service';
 import { Repository } from 'typeorm';
-import { LoginUserDTO } from '../dto/auth.dto';
+import { LoginUserDTO, RegisterUserDTO } from '../dto/auth.dto';
 import {
   AppErrorException,
   AppErrorNotFoundException,
@@ -16,7 +16,6 @@ import {
   AuthNotActiveException,
 } from '../../../exceptions/auth-exception';
 import { GenerateOtp } from '../../../utils/generate-otp';
-import { ClientProxy } from '@nestjs/microservices';
 import { UsersOtpEntity } from '../../../entities/users/users_otp.entity';
 import { OtpRateLimiterEntity } from '../../../entities/users/otp_rate_limiter.entity';
 import { DateUtils } from '../../../utils/date-utils';
@@ -46,7 +45,6 @@ export class AuthService {
 
     private userService: UsersService,
     private jwtService: JwtService,
-    @Inject('cloami_rmq') private client: ClientProxy,
   ) {}
 
   async login(loginUserDTO: LoginUserDTO, i18n) {
@@ -127,11 +125,6 @@ export class AuthService {
       ['user_id'],
     );
 
-    this.client.emit('send-email-forgot-password', {
-      full_name: findUser.email,
-      email,
-      otp,
-    });
     return true;
   }
   async otpVerification(payload, i18n) {
@@ -228,11 +221,11 @@ export class AuthService {
             'auth_need_verify',
           );
         }
-        this.client.emit('send-email-forgot-password', {
-          full_name: usersExists.full_name,
-          email,
-          otp,
-        });
+        // this.client.emit('send-email-forgot-password', {
+        //   full_name: usersExists.full_name,
+        //   email,
+        //   otp,
+        // });
       }
 
       await this.userOtpRepository.upsert(
@@ -423,5 +416,36 @@ export class AuthService {
     } catch (error) {
       throw new AppErrorException(error);
     }
+  }
+  async register(registerUserDTO: RegisterUserDTO, i18n) {
+    const findUser = await this.userRepository.findOne({
+      where: [{ email: registerUserDTO.email.toLowerCase() }],
+      relations: { roles: true },
+    });
+    if (findUser) {
+      throw new AppErrorException('user already exists');
+    }
+    const passwordHash = await bcrypt.hash(
+      registerUserDTO.password,
+      saltOrRounds,
+    );
+    const user = this.userRepository.create({
+      email: registerUserDTO.email,
+      full_name: registerUserDTO.full_name,
+      password: passwordHash,
+      created_at: new Date().toISOString(),
+      is_active: true,
+      need_verification: false,
+    });
+    await this.userRepository.save(user);
+    const payloadJwt = {
+      id: findUser.id,
+      email: findUser.email,
+      full_name: findUser.full_name,
+      roles: [],
+    };
+    const token = this.jwtService.sign(payloadJwt);
+    const expired_at = new Date().setDate(new Date().getDate() + 1);
+    return { token, expired_at, refresh_token: '' };
   }
 }

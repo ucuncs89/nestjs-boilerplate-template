@@ -1,8 +1,8 @@
 {
-  "name": "cloami-gms-backend",
+  "name": "nestjs-backend",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Ilham Firdaus",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

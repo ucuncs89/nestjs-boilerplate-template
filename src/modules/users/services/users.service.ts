@@ -25,7 +25,6 @@ export class UsersService {
     private userTokenRepository: Repository<UsersTokenEntity>,
 
     private jwtService: JwtService,
-    @Inject('cloami_rmq') private client: ClientProxy,
 
     private connection: Connection,
   ) {}
@@ -64,11 +63,6 @@ export class UsersService {
       };
       const token = await this.jwtService.sign(payloadJwt, {
         secret: env.JWT_SECRET_KEY,
-      });
-      this.client.emit('send-email-create-user', {
-        full_name: insert.full_name,
-        email: insert.email,
-        token,
       });
       return true;
     } catch (error) {
